@@ -421,6 +421,1622 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        .report-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .pdf-icon {
+            font-size: 50px;
+        }
+
+        .report-info {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .report-filename {
+            font-size: 11px;
+            color: #667eea;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .report-meta {
+            font-size: 10px;
+            color: #666;
+            margin-top: auto;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .replace-btn {
+            padding: 8px;
+            background: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .replace-btn:active {
+            transform: scale(0.95);
+        }
+
+        .delete-confirm {
+            background: #ff4444 !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .empty-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .file-select-btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .selected-file {
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .btn-confirm {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fullscreen-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .fullscreen-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            padding: 15px;
+            touch-action: none;
+            position: relative;
+        }
+
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.1s ease-out;
+            cursor: grab;
+        }
+
+        .fullscreen-image.dragging {
+            cursor: grabbing;
+        }
+
+        .fullscreen-info {
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .fullscreen-info h2 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .zoom-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.9);
+            background: rgba(255,255,255,1);
+        }
+
+        .expand-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.2s;
+        }
+
+        .expand-btn:active {
+            transform: scale(0.9);
+            background: rgba(0,0,0,0.8);
+        }
+
+        .native-image-link {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+            
+            .directive-input-wrapper {
+                flex-direction: column;
+            }
+
+            .reports-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+
+            .report-slot {
+                min-height: 200px;
+            }
+
+            .report-preview {
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .fullscreen-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 긴급구조 e-리포트</h1>
+            <p>누구나 실시간으로 자료 확인 가능</p>
+            <div class="cloud-badge">☁️ Firebase Realtime Database</div>
+        </div>
+
+        <div class="main-content">
+            <!-- 로그인 화면 -->
+            <div class="login-container" id="loginContainer">
+                <div class="login-box">
+                    <h2>🔐 로그인</h2>
+                    <div class="form-group">
+                        <label>사용자 이름</label>
+                        <input type="text" id="usernameInput" placeholder="이름을 입력하세요" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>비밀번호</label>
+                        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요" autocomplete="off">
+                    </div>
+                    <button onclick="login()">로그인</button>
+                </div>
+            </div>
+
+            <!-- 메인 콘텐츠 영역 -->
+            <div class="content-area" id="contentArea">
+                <div class="user-section">
+                    <div class="current-user">
+                        <span>현재 사용자: <span id="currentUser"></span></span>
+                        <button class="logout-btn" onclick="logout()">로그아웃</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalReports">0</div>
+                        <div class="stat-label">총 보고서</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">총 사용자</div>
+                    </div>
+                </div>
+
+                <div class="directive-section">
+                    <div class="directive-input-area">
+                        <div class="directive-input-wrapper">
+                            <textarea 
+                                class="directive-input" 
+                                id="directiveInput" 
+                                placeholder="📢 긴급 지시사항을 입력하세요..."
+                                rows="2"
+                            ></textarea>
+                            <button class="directive-send-btn" id="directiveSendBtn" onclick="sendDirective()">
+                                📤 전송
+                            </button>
+                        </div>
+                        
+                        <div class="directive-display" id="directiveDisplay">
+                            <div class="directive-header">
+                                <div class="directive-title">
+                                    <span>📢</span>
+                                    <span>긴급 지시사항</span>
+                                </div>
+                                <button class="directive-delete-btn" id="directiveDeleteBtn" onclick="deleteDirective()">
+                                    🗑️ 삭제
+                                </button>
+                            </div>
+                            <div class="directive-content" id="directiveContent"></div>
+                            <div class="directive-meta" id="directiveMeta"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reports-grid" id="reportsGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3>📤 파일 업로드</h3>
+            <div class="form-group">
+                <label>제목 *</label>
+                <input type="text" id="reportTitle" placeholder="보고서 제목 입력" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>파일 선택 *</label>
+                <button class="file-select-btn" onclick="selectFile()">📁 파일 선택</button>
+                <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+                <div class="selected-file" id="selectedFile">선택된 파일 없음</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeUploadModal()">취소</button>
+                <button class="btn-confirm" onclick="confirmUpload()">업로드</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="fullscreen-header">
+            <button class="back-btn" onclick="closeFullscreen()">← 뒤로가기</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn-confirm" id="replaceBtn" style="display: none; padding: 10px 20px;" onclick="replaceFile()">🔄 교체</button>
+                <button class="btn-confirm" id="deleteBtn" style="display: none; padding: 10px 20px; background: #dc3545;" onclick="deleteFromFullscreen()">🗑️ 삭제</button>
+            </div>
+        </div>
+        <div class="zoom-controls" id="zoomControls" style="display: none;">
+            <button class="zoom-btn" onclick="openNativeImageView(currentViewSlot)" title="브라우저에서 열기">🔍</button>
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+            <button class="zoom-btn" onclick="zoomOut()">−</button>
+            <button class="zoom-btn" onclick="resetZoom()">⟲</button>
+        </div>
+        <div class="fullscreen-content" id="fullscreenContent"></div>
+        <div class="fullscreen-info" id="fullscreenInfo"></div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let reports = Array(10).fill(null);
+        let users = new Set();
+        let currentSlot = null;
+        let currentViewSlot = null;
+        let scale = 1;
+        let posX = 0;
+        let posY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let lastTouchDistance = 0;
+        let deleteConfirmSlot = null;
+        let deleteTimerId = null;
+        let currentDirective = null;
+
+        window.addEventListener('load', function() {
+            if (typeof firebase !== 'undefined' && isFirebaseEnabled) {
+                setupFirebaseSync();
+            } else {
+                loadData();
+                renderGrid();
+                updateStats();
+                loadDirective();
+            }
+        });
+
+        function setupFirebaseSync() {
+            database.ref('reports').on('value', (snapshot) => {
+                const data = snapshot.val();
+                reports = data ? data : Array(10).fill(null);
+                renderGrid();
+                updateStats();
+            });
+
+            database.ref('users').on('value', (snapshot) => {
+                const data = snapshot.val();
+                users = data ? new Set(data) : new Set();
+                updateStats();
+            });
+
+            database.ref('directive').on('value', (snapshot) => {
+                currentDirective = snapshot.val();
+                displayDirective();
+            });
+        }
+
+        function loadData() {
+            try {
+                const savedReports = localStorage.getItem('reports');
+                const savedUsers = localStorage.getItem('users');
+
+                if (savedReports) {
+                    const loaded = JSON.parse(savedReports);
+                    if (Array.isArray(loaded) && loaded.length === 10) {
+                        reports = loaded;
+                    }
+                }
+
+                if (savedUsers) {
+                    users = new Set(JSON.parse(savedUsers));
+                }
+            } catch (e) {
+                console.error('데이터 로드 오류:', e);
+            }
+        }
+
+        function saveData() {
+            if (isFirebaseEnabled) {
+                database.ref('reports').set(reports);
+                database.ref('users').set(Array.from(users));
+            } else {
+                localStorage.setItem('reports', JSON.stringify(reports));
+                localStorage.setItem('users', JSON.stringify(Array.from(users)));
+            }
+        }
+
+        function loadDirective() {
+            try {
+                const saved = localStorage.getItem('directive');
+                if (saved) {
+                    currentDirective = JSON.parse(saved);
+                    displayDirective();
+                }
+            } catch (e) {
+                console.error('지시사항 로드 오류:', e);
+            }
+        }
+
+        function saveDirective() {
+            if (isFirebaseEnabled) {
+                database.ref('directive').set(currentDirective);
+            } else {
+                localStorage.setItem('directive', JSON.stringify(currentDirective));
+            }
+        }
+
+        function displayDirective() {
+            const display = document.getElementById('directiveDisplay');
+            const content = document.getElementById('directiveContent');
+            const meta = document.getElementById('directiveMeta');
+            const deleteBtn = document.getElementById('directiveDeleteBtn');
+
+            if (currentDirective && currentDirective.message) {
+                content.textContent = currentDirective.message;
+                const date = new Date(currentDirective.timestamp);
+                meta.innerHTML = `
+                    <span>👤 ${currentDirective.sender}</span>
+                    <span>📅 ${date.toLocaleString('ko-KR')}</span>
+                `;
+                deleteBtn.style.display = currentUser ? 'block' : 'none';
+                display.classList.add('active');
+            } else {
+                display.classList.remove('active');
+            }
+        }
+
+        function sendDirective() {
+            const input = document.getElementById('directiveInput');
+            const message = input.value.trim();
+            
+            if (!message) {
+                alert('⚠️ 지시사항을 입력해주세요.');
+                return;
+            }
+
+            currentDirective = {
+                message: message,
+                sender: currentUser,
+                timestamp: new Date().toISOString()
+            };
+
+            saveDirective();
+            displayDirective();
+            input.value = '';
+            alert('✅ 지시사항이 전송되었습니다!');
+        }
+
+        function deleteDirective() {
+            if (!currentUser) {
+                alert('⚠️ 로그인이 필요합니다.');
+                return;
+            }
+
+            if (confirm('지시사항을 삭제하시겠습니까?')) {
+                currentDirective = null;
+                saveDirective();
+                displayDirective();
+                alert('✅ 지시사항이 삭제되었습니다.');
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            
+            if (!username) {
+                alert('사용자 이름을 입력하세요');
+                return;
+            }
+
+            if (password !== '0119') {
+                alert('⚠️ 비밀번호가 올바르지 않습니다.');
+                document.getElementById('passwordInput').value = '';
+                return;
+            }
+
+            currentUser = username;
+            users.add(username);
+            saveData();
+
+            // 로그인 화면 숨기고 메인 콘텐츠 표시
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('contentArea').classList.add('active');
+            document.getElementById('currentUser').textContent = username;
+
+            document.getElementById('passwordInput').value = '';
+
+            renderGrid();
+            updateStats();
+            displayDirective();
+        }
+
+        function logout() {
+            currentUser = null;
+            
+            // 메인 콘텐츠 숨기고 로그인 화면 표시
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('contentArea').classList.remove('active');
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+
+            const directiveInput = document.getElementById('directiveInput');
+            directiveInput.value = '';
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('reportsGrid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 10; i++) {
+                const slot = document.createElement('div');
+                const report = reports[i];
+
+                if (report) {
+                    slot.className = 'report-slot filled';
+                    slot.onclick = () => viewReport(i);
+
+                    const date = new Date(report.uploadTime);
+                    const timeStr = date.toLocaleString('ko-KR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    let preview = '';
+                    if (report.type.startsWith('image/')) {
+                        preview = `
+                            <img src="${report.data}" alt="${report.title}">
+                            <button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(${i})" title="이미지 크게 보기">🔍</button>
+                        `;
+                    } else if (report.type === 'application/pdf') {
+                        preview = '<div class="pdf-icon">📄</div>';
+                    }
+
+                    slot.innerHTML = `
+                        <div class="slot-number">${i + 1}</div>
+                        <div class="report-preview">${preview}</div>
+                        <div class="report-info">
+                            <div class="report-title">${report.title}</div>
+                            <div class="report-filename">${report.filename}</div>
+                            <div class="report-meta">
+                                <div>👤 ${report.uploader}</div>
+                                <div>📅 ${timeStr}</div>
+                            </div>
+                            ${currentUser ?
+                                `<div style="display: flex; gap: 5px; margin-top: 8px;">
+                                    <button class="replace-btn" style="flex: 1;" onclick="event.stopPropagation(); openUploadModal(${i})">🔄 교체</button>
+                                    <button class="replace-btn ${deleteConfirmSlot === i ? 'delete-confirm' : ''}" style="flex: 1; background: ${deleteConfirmSlot === i ? '#ff4444' : '#dc3545'};" onclick="event.stopPropagation(); deleteReport(${i})">${deleteConfirmSlot === i ? '⚠️ 다시 클릭' : '🗑️ 삭제'}</button>
+                                </div>` :
+                                '<div style="margin-top: 10px; font-size: 11px; color: #999;">로그인 후 관리 가능</div>'}
+                        </div>
+                    `;
+                } else {
+                    slot.className = 'report-slot';
+                    slot.innerHTML = `
+                        <div class="slot-number">${i + 1}</div>
+                        <div class="empty-slot">
+                            <div class="empty-icon">📁</div>
+                            <div style="font-size: 12px;">비어있는 슬롯</div>
+                            ${currentUser ?
+                                `<button class="upload-btn" onclick="openUploadModal(${i})">📤 업로드</button>` :
+                                '<div style="margin-top: 10px; font-size: 11px;">로그인 후 업로드 가능</div>'}
+                        </div>
+                    `;
+                }
+
+                grid.appendChild(slot);
+            }
+        }
+
+        function deleteReport(index) {
+            const report = reports[index];
+            if (!report) return;
+
+            if (!currentUser) {
+                alert('⚠️ 로그인이 필요합니다.');
+                return;
+            }
+
+            if (deleteConfirmSlot === index) {
+                if (deleteTimerId) clearTimeout(deleteTimerId);
+
+                reports[index] = null;
+                saveData();
+
+                deleteConfirmSlot = null;
+                renderGrid();
+                updateStats();
+                alert('✅ 파일이 삭제되었습니다.');
+            } else {
+                deleteConfirmSlot = index;
+                renderGrid();
+                alert(`"${report.title}"\n\n삭제하려면 5초 이내에 🗑️ 삭제 버튼을 다시 클릭하세요.`);
+
+                if (deleteTimerId) clearTimeout(deleteTimerId);
+                deleteTimerId = setTimeout(() => {
+                    if (deleteConfirmSlot === index) {
+                        deleteConfirmSlot = null;
+                        renderGrid();
+                    }
+                }, 5000);
+            }
+        }
+
+        function openUploadModal(slotIndex) {
+            if (!currentUser) {
+                alert('로그인 후 이용해 주세요');
+                return;
+            }
+            currentSlot = slotIndex;
+
+            const existingReport = reports[slotIndex];
+            document.getElementById('reportTitle').value = existingReport ? existingReport.title : '';
+
+            document.getElementById('fileInput').value = '';
+            document.getElementById('selectedFile').textContent = '선택된 파일 없음';
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+        }
+
+        function selectFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const size = (file.size / 1024 / 1024).toFixed(2);
+                let message = `✅ ${file.name} (${size}MB)`;
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    if (file.type.startsWith('image/')) {
+                        message += ' - 자동 압축됩니다';
+                    } else if (file.type === 'application/pdf') {
+                        message += ' - 용량이 큽니다';
+                    }
+                }
+                
+                document.getElementById('selectedFile').textContent = message;
+            }
+        });
+
+        function confirmUpload() {
+            const title = document.getElementById('reportTitle').value.trim();
+            const file = document.getElementById('fileInput').files[0];
+
+            if (!title) {
+                alert('제목을 입력해 주세요');
+                return;
+            }
+            if (!file) {
+                alert('파일을 선택해 주세요');
+                return;
+            }
+
+            // 파일 크기와 관계없이 처리
+            if (file.type.startsWith('image/')) {
+                compressImage(file, (compressedData) => {
+                    saveReport(title, file.name, file.type, compressedData);
+                });
+            } else if (file.type === 'application/pdf') {
+                // PDF는 base64로 변환 후 크기 확인
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    let data = e.target.result;
+                    // 5MB 이상이면 경고만 표시하고 계속 진행
+                    const sizeInMB = (data.length * 0.75) / (1024 * 1024); // base64 크기 추정
+                    if (sizeInMB > 5) {
+                        if (!confirm(`파일이 약 ${sizeInMB.toFixed(1)}MB입니다. 업로드에 시간이 걸릴 수 있습니다. 계속하시겠습니까?`)) {
+                            return;
+                        }
+                    }
+                    saveReport(title, file.name, file.type, data);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('이미지 또는 PDF 파일만 업로드 가능합니다.');
+            }
+        }
+
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // 초기 크기 설정 (대용량 파일 대비)
+                    let maxSize = 1920;
+                    let quality = 0.7;
+
+                    // 파일 크기에 따라 압축 강도 조절
+                    const fileSizeInMB = file.size / (1024 * 1024);
+                    
+                    if (fileSizeInMB > 20) {
+                        maxSize = 1280;
+                        quality = 0.5;
+                    } else if (fileSizeInMB > 10) {
+                        maxSize = 1600;
+                        quality = 0.6;
+                    }
+
+                    // 이미지 리사이징
+                    if (width > maxSize || height > maxSize) {
+                        if (width > height) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        } else {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // 첫 번째 압축 시도
+                    let compressedData = canvas.toDataURL('image/jpeg', quality);
+                    
+                    // 5MB 이하가 될 때까지 품질 조정
+                    let attempts = 0;
+                    while (compressedData.length > 5 * 1024 * 1024 * 1.37 && attempts < 5) {
+                        quality -= 0.1;
+                        if (quality < 0.1) quality = 0.1;
+                        compressedData = canvas.toDataURL('image/jpeg', quality);
+                        attempts++;
+                    }
+
+                    // 여전히 크면 크기 추가 축소
+                    if (compressedData.length > 5 * 1024 * 1024 * 1.37) {
+                        width *= 0.7;
+                        height *= 0.7;
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        compressedData = canvas.toDataURL('image/jpeg', 0.5);
+                    }
+
+                    const finalSizeInMB = (compressedData.length * 0.75) / (1024 * 1024);
+                    console.log(`압축 완료: ${fileSizeInMB.toFixed(2)}MB → ${finalSizeInMB.toFixed(2)}MB`);
+                    
+                    callback(compressedData);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveReport(title, filename, type, data) {
+            const newReport = {
+                title,
+                filename,
+                type,
+                data,
+                uploader: currentUser,
+                uploadTime: new Date().toISOString()
+            };
+
+            reports[currentSlot] = newReport;
+            saveData();
+            renderGrid();
+            updateStats();
+            closeUploadModal();
+            alert('✅ 업로드 완료!');
+        }
+
+        function viewReport(index) {
+            const report = reports[index];
+            if (!report) return;
+
+            currentViewSlot = index;
+            scale = 1;
+            posX = 0;
+            posY = 0;
+
+            const modal = document.getElementById('fullscreenModal');
+            const content = document.getElementById('fullscreenContent');
+            const info = document.getElementById('fullscreenInfo');
+
+            document.getElementById('replaceBtn').style.display = currentUser ? 'block' : 'none';
+            document.getElementById('deleteBtn').style.display = currentUser ? 'block' : 'none';
+
+            const date = new Date(report.uploadTime);
+            info.innerHTML = `
+                <h2>${report.title}</h2>
+                <div>📄 ${report.filename}</div>
+                <div>👤 ${report.uploader}</div>
+                <div>📅 ${date.toLocaleString('ko-KR')}</div>
+            `;
+
+            if (report.type.startsWith('image/')) {
+                content.innerHTML = `
+                    <img src="${report.data}" class="fullscreen-image" id="zoomImage" alt="${report.title}">
+                    <a href="${report.data}" target="_blank" class="native-image-link" id="nativeImageLink"></a>
+                `;
+                document.getElementById('zoomControls').style.display = 'flex';
+                setTimeout(() => setupZoom(), 100);
+            } else if (report.type === 'application/pdf') {
+                content.innerHTML = `<iframe src="${report.data}" style="width: 90vw; height: 80vh; border: none;"></iframe>`;
+                document.getElementById('zoomControls').style.display = 'none';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function openNativeImageView(index) {
+            const report = reports[index];
+            if (!report || !report.type.startsWith('image/')) return;
+
+            // 새 창에서 이미지 열기 (네이티브 브라우저 뷰어 사용)
+            const newWindow = window.open();
+            if (newWindow) {
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+                        <title>${report.title}</title>
+                        <style>
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: #000;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                            }
+                            img {
+                                max-width: 100%;
+                                max-height: 100vh;
+                                object-fit: contain;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${report.data}" alt="${report.title}">
+                    </body>
+                    </html>
+                `);
+                newWindow.document.close();
+            }
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').classList.remove('active');
+        }
+
+        function replaceFile() {
+            const slot = currentViewSlot;
+            closeFullscreen();
+            setTimeout(() => openUploadModal(slot), 100);
+        }
+
+        function deleteFromFullscreen() {
+            const slot = currentViewSlot;
+            const report = reports[slot];
+
+            if (!currentUser) {
+                alert('⚠️ 로그인이 필요합니다.');
+                return;
+            }
+
+            if (confirm(`"${report.title}"를 삭제하시겠습니까?`)) {
+                reports[slot] = null;
+                saveData();
+                closeFullscreen();
+                renderGrid();
+                updateStats();
+                alert('✅ 파일이 삭제되었습니다.');
+            }
+        }
+
+        function setupZoom() {
+            const img = document.getElementById('zoomImage');
+            if (!img) return;
+
+            let lastTap = 0;
+            img.addEventListener('click', () => {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    scale === 1 ? zoomIn() : resetZoom();
+                }
+                lastTap = now;
+            });
+
+            img.addEventListener('mousedown', (e) => {
+                if (scale > 1) {
+                    isDragging = true;
+                    startX = e.clientX - posX;
+                    startY = e.clientY - posY;
+                    img.classList.add('dragging');
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && scale > 1) {
+                    posX = e.clientX - startX;
+                    posY = e.clientY - startY;
+                    updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                const zoomImg = document.getElementById('zoomImage');
+                if (zoomImg) zoomImg.classList.remove('dragging');
+            });
+
+            img.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1 && scale > 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - posX;
+                    startY = e.touches[0].clientY - posY;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    lastTouchDistance = getTouchDistance(e.touches);
+                }
+            });
+
+            img.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging && scale > 1) {
+                    e.preventDefault();
+                    posX = e.touches[0].clientX - startX;
+                    posY = e.touches[0].clientY - startY;
+                    updateTransform();
+                } else if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const currentDistance = getTouchDistance(e.touches);
+                    scale += (currentDistance - lastTouchDistance) * 0.01;
+                    scale = Math.max(1, Math.min(4, scale));
+                    lastTouchDistance = currentDistance;
+                    updateTransform();
+                }
+            });
+
+            img.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+        
+        function getTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function updateTransform() {
+            const img = document.getElementById('zoomImage');
+            if (img) {
+                img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            }
+        }
+
+        function zoomIn() {
+            scale = Math.min(scale + 0.5, 4);
+            updateTransform();
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale - 0.5, 1);
+            if (scale === 1) { 
+                posX = 0; 
+                posY = 0; 
+            }
+            updateTransform();
+        }
+
+        function resetZoom() {
+            scale = 1;
+            posX = 0;
+            posY = 0;
+            updateTransform();
+        }
+
+        function updateStats() {
+            document.getElementById('totalReports').textContent = reports.filter(r => r).length;
+            document.getElementById('totalUsers').textContent = users.size;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeUploadModal();
+                closeFullscreen();
+            }
+        });
+
+        document.getElementById('uploadModal').addEventListener('click', (e) => {
+            if (e.target.id === 'uploadModal') {
+                closeUploadModal();
+            }
+        });
+
+        // 엔터키로 로그인
+        document.getElementById('usernameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('passwordInput').focus();
+            }
+        });
+
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#667eea">
+    <title>긴급구조 e-리포트</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
+        authDomain: "project-3907456119741146864.firebaseapp.com",
+        databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "project-3907456119741146864",
+        storageBucket: "project-3907456119741146864.firebasestorage.app",
+        messagingSenderId: "690596721309",
+        appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+      const isFirebaseEnabled = true; 
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .cloud-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .login-box .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-box label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .login-box button:active {
+            transform: scale(0.98);
+        }
+
+        .content-area {
+            display: none;
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        .user-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .user-input {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-input input {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .user-input button {
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .current-user {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logout-btn {
+            padding: 8px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .directive-section {
+            margin-bottom: 25px;
+        }
+
+        .directive-input-area {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .directive-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .directive-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.95);
+            resize: vertical;
+            min-height: 50px;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        .directive-send-btn {
+            padding: 12px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: all 0.3s;
+            align-self: stretch;
+        }
+
+        .directive-send-btn:active {
+            background: #ff5252;
+            transform: scale(0.98);
+        }
+
+        .directive-send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .directive-display {
+            margin-top: 15px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .directive-display.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .directive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            gap: 10px;
+        }
+
+        .directive-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .directive-delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .directive-content {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .directive-meta {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-slot {
+            background: #f8f9fa;
+            border: 3px dashed #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .report-slot.filled {
+            background: white;
+            border: 3px solid #667eea;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .report-slot.filled:active {
+            transform: scale(0.98);
+        }
+
+        .slot-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #667eea;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            z-index: 1;
+        }
+
+        .report-preview {
+            width: 100%;
+            height: 130px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
         .report-preview img {
@@ -4329,4 +5945,5 @@
     </script>
 </body>
 </html>
+
 
