@@ -364,6 +364,21 @@
             gap: 8px;
         }
 
+        .directive-title.recent {
+            animation: pulse-text 1.5s infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% {
+                color: #ff4444;
+                text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+            }
+            50% {
+                color: #ff0000;
+                text-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
+            }
+        }
+
         .directive-delete-btn {
             background: #dc3545;
             color: white;
@@ -1009,8 +1024,67 @@
         let backPressToast = null;
         let presenceRef = null;
         let heartbeatInterval = null;
+        let lastReportCount = 0;
+        let audioContext = null;
+        let isAudioEnabled = false;
 
         const LOGIN_DURATION = 30 * 60 * 1000; // 30분 (밀리초)
+
+        // 알림음 초기화
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    isAudioEnabled = true;
+                } catch (e) {
+                    console.log('오디오 지원 안됨:', e);
+                    isAudioEnabled = false;
+                }
+            }
+        }
+
+        // 알림음 재생
+        function playNotificationSound() {
+            if (!isAudioEnabled || !audioContext) return;
+
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // 알림음 설정 (2개의 비프음)
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+
+                // 두 번째 비프음
+                setTimeout(() => {
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+
+                    oscillator2.frequency.value = 1000;
+                    oscillator2.type = 'sine';
+
+                    gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                    oscillator2.start(audioContext.currentTime);
+                    oscillator2.stop(audioContext.currentTime + 0.1);
+                }, 150);
+            } catch (e) {
+                console.log('알림음 재생 실패:', e);
+            }
+        }
 
         // 카카오톡 인앱 브라우저 감지
         function isKakaoTalkBrowser() {
@@ -1159,6 +1233,9 @@
                     
                     // 30분 이내면 자동 로그인
                     if (elapsed < LOGIN_DURATION) {
+                        // 오디오 초기화
+                        initAudio();
+                        
                         currentUser = loginData.username;
                         users.add(loginData.username);
                         
@@ -1187,6 +1264,9 @@
                         document.getElementById('loginContainer').style.display = 'none';
                         document.getElementById('contentArea').classList.add('active');
                         document.getElementById('currentUser').textContent = currentUser;
+                        
+                        // 현재 보고서 수 초기화
+                        lastReportCount = reports.filter(r => r).length;
                         
                         console.log('자동 로그인 성공:', currentUser);
                         return true;
@@ -1217,7 +1297,16 @@
         function setupFirebaseSync() {
             database.ref('reports').on('value', (snapshot) => {
                 const data = snapshot.val();
-                reports = data ? data : Array(10).fill(null);
+                const newReports = data ? data : Array(10).fill(null);
+                
+                // 새 보고서 업로드 감지
+                const newReportCount = newReports.filter(r => r).length;
+                if (lastReportCount > 0 && newReportCount > lastReportCount) {
+                    playNotificationSound();
+                }
+                lastReportCount = newReportCount;
+                
+                reports = newReports;
                 renderGrid();
                 updateStats();
             });
@@ -1228,8 +1317,19 @@
                 updateStats();
             });
 
+            let lastDirectiveTime = null;
             database.ref('directive').on('value', (snapshot) => {
-                currentDirective = snapshot.val();
+                const newDirective = snapshot.val();
+                
+                // 새 지시사항 감지 (시간 비교)
+                if (newDirective && newDirective.timestamp) {
+                    if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
+                        playNotificationSound();
+                    }
+                    lastDirectiveTime = newDirective.timestamp;
+                }
+                
+                currentDirective = newDirective;
                 displayDirective();
             });
 
@@ -1313,6 +1413,7 @@
             const content = document.getElementById('directiveContent');
             const meta = document.getElementById('directiveMeta');
             const deleteBtn = document.getElementById('directiveDeleteBtn');
+            const titleElement = display.querySelector('.directive-title');
 
             if (currentDirective && currentDirective.message) {
                 content.textContent = currentDirective.message;
@@ -1333,12 +1434,15 @@
                 // recent 클래스 추가/제거
                 if (isRecent) {
                     display.classList.add('active', 'recent');
+                    if (titleElement) titleElement.classList.add('recent');
                 } else {
                     display.classList.add('active');
                     display.classList.remove('recent');
+                    if (titleElement) titleElement.classList.remove('recent');
                 }
             } else {
                 display.classList.remove('active', 'recent');
+                if (titleElement) titleElement.classList.remove('recent');
             }
         }
 
