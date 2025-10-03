@@ -295,11 +295,28 @@
             padding: 15px;
             border-radius: 10px;
             display: none;
+            border: 3px solid transparent;
         }
 
         .directive-display.active {
             display: block;
             animation: fadeIn 0.3s ease-out;
+        }
+
+        .directive-display.recent {
+            border-color: #ff4444;
+            animation: fadeIn 0.3s ease-out, pulse-directive 1.5s infinite;
+        }
+
+        @keyframes pulse-directive {
+            0%, 100% {
+                border-color: #ff4444;
+                box-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
+            }
+            50% {
+                border-color: #ff0000;
+                box-shadow: 0 0 25px rgba(255, 68, 68, 1);
+            }
         }
 
         @keyframes fadeIn {
@@ -407,6 +424,40 @@
 
         .report-slot.filled:active {
             transform: scale(0.98);
+        }
+
+        .report-slot.recent-upload {
+            border-color: #ff4444;
+            animation: pulse-border 1.5s infinite;
+        }
+
+        .slot-number.recent {
+            background: #ff4444;
+            animation: pulse-number 1s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% {
+                border-color: #ff4444;
+                box-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
+            }
+            50% {
+                border-color: #ff0000;
+                box-shadow: 0 0 25px rgba(255, 68, 68, 1);
+            }
+        }
+
+        @keyframes pulse-number {
+            0%, 100% {
+                background: #ff4444;
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 68, 68, 0.7);
+            }
+            50% {
+                background: #ff0000;
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 68, 68, 1);
+            }
         }
 
         .slot-number {
@@ -855,8 +906,12 @@
                         <div class="stat-label">총 보고서</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number" id="totalUsers">0</div>
-                        <div class="stat-label">총 사용자</div>
+                        <div class="stat-number" id="onlineUsers">0</div>
+                        <div class="stat-label">동시접속자</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="todayUploads">0</div>
+                        <div class="stat-label">오늘 업로드</div>
                     </div>
                 </div>
 
@@ -937,6 +992,7 @@
         let currentUser = null;
         let reports = Array(10).fill(null);
         let users = new Set();
+        let onlineUsers = {};
         let currentSlot = null;
         let currentViewSlot = null;
         let scale = 1;
@@ -951,6 +1007,8 @@
         let currentDirective = null;
         let backPressTime = 0;
         let backPressToast = null;
+        let presenceRef = null;
+        let heartbeatInterval = null;
 
         const LOGIN_DURATION = 30 * 60 * 1000; // 30분 (밀리초)
 
@@ -1062,6 +1120,16 @@
         // 페이지 로드 시 히스토리 엔트리 추가
         window.history.pushState(null, '', window.location.href);
 
+        // 페이지 닫힐 때 온라인 상태 정리
+        window.addEventListener('beforeunload', function() {
+            if (presenceRef) {
+                presenceRef.remove();
+            }
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+            }
+        });
+
         window.addEventListener('load', function() {
             // 카카오톡 브라우저 경고 표시
             if (isKakaoTalkBrowser()) {
@@ -1089,10 +1157,31 @@
                     const now = Date.now();
                     const elapsed = now - loginData.timestamp;
                     
-                    // 1분 이내면 자동 로그인
+                    // 30분 이내면 자동 로그인
                     if (elapsed < LOGIN_DURATION) {
                         currentUser = loginData.username;
                         users.add(loginData.username);
+                        
+                        // Firebase 온라인 사용자 관리
+                        if (isFirebaseEnabled) {
+                            const userId = loginData.username + '_' + Date.now();
+                            presenceRef = database.ref('onlineUsers/' + userId);
+                            
+                            const userData = {
+                                username: loginData.username,
+                                loginTime: Date.now(),
+                                lastSeen: Date.now()
+                            };
+                            
+                            presenceRef.set(userData);
+                            presenceRef.onDisconnect().remove();
+                            
+                            heartbeatInterval = setInterval(() => {
+                                if (presenceRef) {
+                                    presenceRef.update({ lastSeen: Date.now() });
+                                }
+                            }, 30000);
+                        }
                         
                         // UI 업데이트
                         document.getElementById('loginContainer').style.display = 'none';
@@ -1102,7 +1191,7 @@
                         console.log('자동 로그인 성공:', currentUser);
                         return true;
                     } else {
-                        // 1분 지났으면 로그인 세션 삭제
+                        // 30분 지났으면 로그인 세션 삭제
                         localStorage.removeItem('loginSession');
                         console.log('로그인 세션 만료');
                     }
@@ -1142,6 +1231,30 @@
             database.ref('directive').on('value', (snapshot) => {
                 currentDirective = snapshot.val();
                 displayDirective();
+            });
+
+            // 온라인 사용자 실시간 동기화
+            database.ref('onlineUsers').on('value', (snapshot) => {
+                onlineUsers = snapshot.val() || {};
+                
+                // 1분 이상 업데이트 없는 사용자 제거 (클린업)
+                const now = Date.now();
+                const updates = {};
+                let hasChanges = false;
+                
+                Object.keys(onlineUsers).forEach(userId => {
+                    const userData = onlineUsers[userId];
+                    if (now - userData.lastSeen > 60000) { // 1분 초과
+                        updates[userId] = null;
+                        hasChanges = true;
+                    }
+                });
+                
+                if (hasChanges) {
+                    database.ref('onlineUsers').update(updates);
+                }
+                
+                updateStats();
             });
         }
 
@@ -1204,14 +1317,28 @@
             if (currentDirective && currentDirective.message) {
                 content.textContent = currentDirective.message;
                 const date = new Date(currentDirective.timestamp);
+                
+                // 5분 이내 전송 체크
+                const now = Date.now();
+                const directiveTime = new Date(currentDirective.timestamp).getTime();
+                const isRecent = (now - directiveTime) < (5 * 60 * 1000);
+                
                 meta.innerHTML = `
                     <span>👤 ${currentDirective.sender}</span>
                     <span>📅 ${date.toLocaleString('ko-KR')}</span>
+                    ${isRecent ? '<span style="color: #ff4444; font-weight: bold;">🆕 긴급</span>' : ''}
                 `;
                 deleteBtn.style.display = currentUser ? 'block' : 'none';
-                display.classList.add('active');
+                
+                // recent 클래스 추가/제거
+                if (isRecent) {
+                    display.classList.add('active', 'recent');
+                } else {
+                    display.classList.add('active');
+                    display.classList.remove('recent');
+                }
             } else {
-                display.classList.remove('active');
+                display.classList.remove('active', 'recent');
             }
         }
 
@@ -1285,6 +1412,18 @@
         }
 
         function logout() {
+            // Firebase 온라인 상태 제거
+            if (presenceRef) {
+                presenceRef.remove();
+                presenceRef = null;
+            }
+            
+            // heartbeat 정리
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+            
             currentUser = null;
             
             // 로그인 세션 삭제
@@ -1304,12 +1443,19 @@
             const grid = document.getElementById('reportsGrid');
             grid.innerHTML = '';
 
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000; // 5분을 밀리초로
+
             for (let i = 0; i < 10; i++) {
                 const slot = document.createElement('div');
                 const report = reports[i];
 
                 if (report) {
-                    slot.className = 'report-slot filled';
+                    // 5분 이내 업로드 체크
+                    const uploadTime = new Date(report.uploadTime).getTime();
+                    const isRecent = (now - uploadTime) < fiveMinutes;
+                    
+                    slot.className = isRecent ? 'report-slot filled recent-upload' : 'report-slot filled';
                     slot.onclick = () => viewReport(i);
 
                     const date = new Date(report.uploadTime);
@@ -1331,10 +1477,10 @@
                     }
 
                     slot.innerHTML = `
-                        <div class="slot-number">${i + 1}</div>
+                        <div class="slot-number ${isRecent ? 'recent' : ''}">${i + 1}</div>
                         <div class="report-preview">${preview}</div>
                         <div class="report-info">
-                            <div class="report-title">${report.title}</div>
+                            <div class="report-title">${report.title}${isRecent ? ' 🆕' : ''}</div>
                             <div class="report-filename">${report.filename}</div>
                             <div class="report-meta">
                                 <div>👤 ${report.uploader}</div>
@@ -1936,7 +2082,24 @@
 
         function updateStats() {
             document.getElementById('totalReports').textContent = reports.filter(r => r).length;
-            document.getElementById('totalUsers').textContent = users.size;
+            
+            // 동시접속자 수 계산
+            const onlineCount = Object.keys(onlineUsers).length;
+            document.getElementById('onlineUsers').textContent = onlineCount;
+            
+            // 오늘 업로드된 보고서 수 계산
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayTimestamp = today.getTime();
+            
+            const todayCount = reports.filter(r => {
+                if (!r || !r.uploadTime) return false;
+                const uploadDate = new Date(r.uploadTime);
+                uploadDate.setHours(0, 0, 0, 0);
+                return uploadDate.getTime() === todayTimestamp;
+            }).length;
+            
+            document.getElementById('todayUploads').textContent = todayCount;
         }
 
         document.addEventListener('keydown', (e) => {
