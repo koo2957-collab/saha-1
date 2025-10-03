@@ -313,6 +313,21 @@
             }
         }
 
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            10%, 90% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+        }
+
         .directive-header {
             display: flex;
             justify-content: space-between;
@@ -801,6 +816,18 @@
             <div class="login-container" id="loginContainer">
                 <div class="login-box">
                     <h2>🔐 로그인</h2>
+                    
+                    <!-- 카카오톡 브라우저 알림 -->
+                    <div id="kakaoWarning" style="display: none; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #856404; margin-bottom: 10px; line-height: 1.5;">
+                            <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
+                            더 나은 사용을 위해 외부 브라우저를 사용하세요
+                        </div>
+                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            🌐 Chrome/Safari에서 열기
+                        </button>
+                    </div>
+                    
                     <div class="form-group">
                         <label>사용자 이름</label>
                         <input type="text" id="usernameInput" placeholder="이름을 입력하세요" autocomplete="off">
@@ -922,6 +949,8 @@
         let deleteConfirmSlot = null;
         let deleteTimerId = null;
         let currentDirective = null;
+        let backPressTime = 0;
+        let backPressToast = null;
 
         const LOGIN_DURATION = 30 * 60 * 1000; // 30분 (밀리초)
 
@@ -936,7 +965,109 @@
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
 
+        // 외부 브라우저로 열기
+        function openInExternalBrowser() {
+            const currentUrl = window.location.href;
+            
+            // 모바일 OS 감지
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            
+            if (isIOS) {
+                // iOS - Safari로 열기 시도
+                window.location.href = currentUrl;
+                setTimeout(() => {
+                    alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
+                }, 500);
+            } else if (isAndroid) {
+                // Android - Chrome 또는 기본 브라우저로 열기
+                const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                window.location.href = intent;
+                
+                setTimeout(() => {
+                    // Chrome이 설치되어 있지 않은 경우 기본 브라우저로 폴백
+                    window.open(currentUrl, '_blank');
+                }, 500);
+            } else {
+                // 기타 플랫폼
+                window.open(currentUrl, '_blank');
+            }
+        }
+
+        // 뒤로가기 2번 터치 기능
+        function handleBackPress() {
+            const currentTime = Date.now();
+            
+            if (currentTime - backPressTime < 2000) {
+                // 2초 이내 두 번째 터치 - 앱 종료
+                if (backPressToast) {
+                    document.body.removeChild(backPressToast);
+                    backPressToast = null;
+                }
+                
+                // 브라우저 히스토리가 있으면 뒤로가기, 없으면 창 닫기
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.close();
+                }
+                
+                // 창이 닫히지 않는 경우를 위한 메시지
+                setTimeout(() => {
+                    if (!window.closed) {
+                        alert('브라우저를 종료하려면 뒤로가기 버튼을 사용하세요.');
+                    }
+                }, 100);
+            } else {
+                // 첫 번째 터치 - 토스트 메시지 표시
+                backPressTime = currentTime;
+                
+                if (backPressToast) {
+                    document.body.removeChild(backPressToast);
+                }
+                
+                backPressToast = document.createElement('div');
+                backPressToast.textContent = '뒤로가기 버튼을 한 번 더 누르면 종료됩니다';
+                backPressToast.style.cssText = `
+                    position: fixed;
+                    bottom: 80px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 25px;
+                    font-size: 14px;
+                    z-index: 10000;
+                    animation: fadeInOut 2s ease-in-out;
+                `;
+                document.body.appendChild(backPressToast);
+                
+                setTimeout(() => {
+                    if (backPressToast && document.body.contains(backPressToast)) {
+                        document.body.removeChild(backPressToast);
+                        backPressToast = null;
+                    }
+                }, 2000);
+            }
+        }
+
+        // popstate 이벤트로 뒤로가기 감지
+        window.addEventListener('popstate', function(event) {
+            handleBackPress();
+            // 히스토리 엔트리 추가 (뒤로가기를 다시 감지하기 위해)
+            window.history.pushState(null, '', window.location.href);
+        });
+
+        // 페이지 로드 시 히스토리 엔트리 추가
+        window.history.pushState(null, '', window.location.href);
+
         window.addEventListener('load', function() {
+            // 카카오톡 브라우저 경고 표시
+            if (isKakaoTalkBrowser()) {
+                document.getElementById('kakaoWarning').style.display = 'block';
+            }
+            
             // 자동 로그인 체크
             checkAutoLogin();
             
