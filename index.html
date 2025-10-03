@@ -159,33 +159,6 @@
             margin-bottom: 20px;
         }
 
-        .user-input {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .user-input input {
-            flex: 1;
-            min-width: 120px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .user-input button {
-            padding: 12px 25px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
         .current-user {
             text-align: center;
             color: #667eea;
@@ -282,11 +255,6 @@
         .directive-send-btn:active {
             background: #ff5252;
             transform: scale(0.98);
-        }
-
-        .directive-send-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
         }
 
         .directive-display {
@@ -410,6 +378,62 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+        }
+
+        /* 최근 업로드 섹션 */
+        .recent-uploads-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .recent-uploads-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-upload-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-left: 4px solid #ff6b6b;
+            transition: all 0.2s;
+        }
+
+        .recent-upload-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .recent-upload-item:active {
+            transform: translateX(3px);
+        }
+
+        .recent-upload-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .recent-upload-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .empty-recent {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 14px;
         }
 
         .reports-grid {
@@ -960,6 +984,15 @@
                     </div>
                 </div>
 
+                <!-- 최근 업로드 섹션 -->
+                <div class="recent-uploads-section">
+                    <div class="recent-uploads-title">
+                        <span>🆕</span>
+                        <span>최근 5분 이내 업로드</span>
+                    </div>
+                    <div id="recentUploadsList"></div>
+                </div>
+
                 <div class="reports-grid" id="reportsGrid"></div>
             </div>
         </div>
@@ -1054,7 +1087,6 @@
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
 
-                // 알림음 설정 (2개의 비프음)
                 oscillator.frequency.value = 800;
                 oscillator.type = 'sine';
 
@@ -1064,7 +1096,6 @@
                 oscillator.start(audioContext.currentTime);
                 oscillator.stop(audioContext.currentTime + 0.1);
 
-                // 두 번째 비프음
                 setTimeout(() => {
                     const oscillator2 = audioContext.createOscillator();
                     const gainNode2 = audioContext.createGain();
@@ -1101,27 +1132,22 @@
         function openInExternalBrowser() {
             const currentUrl = window.location.href;
             
-            // 모바일 OS 감지
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             const isAndroid = /Android/i.test(navigator.userAgent);
             
             if (isIOS) {
-                // iOS - Safari로 열기 시도
                 window.location.href = currentUrl;
                 setTimeout(() => {
                     alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
                 }, 500);
             } else if (isAndroid) {
-                // Android - Chrome 또는 기본 브라우저로 열기
                 const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
                 window.location.href = intent;
                 
                 setTimeout(() => {
-                    // Chrome이 설치되어 있지 않은 경우 기본 브라우저로 폴백
                     window.open(currentUrl, '_blank');
                 }, 500);
             } else {
-                // 기타 플랫폼
                 window.open(currentUrl, '_blank');
             }
         }
@@ -1131,27 +1157,23 @@
             const currentTime = Date.now();
             
             if (currentTime - backPressTime < 2000) {
-                // 2초 이내 두 번째 터치 - 앱 종료
                 if (backPressToast) {
                     document.body.removeChild(backPressToast);
                     backPressToast = null;
                 }
                 
-                // 브라우저 히스토리가 있으면 뒤로가기, 없으면 창 닫기
                 if (window.history.length > 1) {
                     window.history.back();
                 } else {
                     window.close();
                 }
                 
-                // 창이 닫히지 않는 경우를 위한 메시지
                 setTimeout(() => {
                     if (!window.closed) {
                         alert('브라우저를 종료하려면 뒤로가기 버튼을 사용하세요.');
                     }
                 }, 100);
             } else {
-                // 첫 번째 터치 - 토스트 메시지 표시
                 backPressTime = currentTime;
                 
                 if (backPressToast) {
@@ -1184,17 +1206,13 @@
             }
         }
 
-        // popstate 이벤트로 뒤로가기 감지
         window.addEventListener('popstate', function(event) {
             handleBackPress();
-            // 히스토리 엔트리 추가 (뒤로가기를 다시 감지하기 위해)
             window.history.pushState(null, '', window.location.href);
         });
 
-        // 페이지 로드 시 히스토리 엔트리 추가
         window.history.pushState(null, '', window.location.href);
 
-        // 페이지 닫힐 때 온라인 상태 정리
         window.addEventListener('beforeunload', function() {
             if (presenceRef) {
                 presenceRef.remove();
@@ -1205,12 +1223,10 @@
         });
 
         window.addEventListener('load', function() {
-            // 카카오톡 브라우저 경고 표시
             if (isKakaoTalkBrowser()) {
                 document.getElementById('kakaoWarning').style.display = 'block';
             }
             
-            // 자동 로그인 체크
             checkAutoLogin();
             
             if (typeof firebase !== 'undefined' && isFirebaseEnabled) {
@@ -1218,6 +1234,7 @@
             } else {
                 loadData();
                 renderGrid();
+                renderRecentUploads();
                 updateStats();
                 loadDirective();
             }
@@ -1231,15 +1248,12 @@
                     const now = Date.now();
                     const elapsed = now - loginData.timestamp;
                     
-                    // 30분 이내면 자동 로그인
                     if (elapsed < LOGIN_DURATION) {
-                        // 오디오 초기화
                         initAudio();
                         
                         currentUser = loginData.username;
                         users.add(loginData.username);
                         
-                        // Firebase 온라인 사용자 관리
                         if (isFirebaseEnabled) {
                             const userId = loginData.username + '_' + Date.now();
                             presenceRef = database.ref('onlineUsers/' + userId);
@@ -1260,18 +1274,15 @@
                             }, 30000);
                         }
                         
-                        // UI 업데이트
                         document.getElementById('loginContainer').style.display = 'none';
                         document.getElementById('contentArea').classList.add('active');
                         document.getElementById('currentUser').textContent = currentUser;
                         
-                        // 현재 보고서 수 초기화
                         lastReportCount = reports.filter(r => r).length;
                         
                         console.log('자동 로그인 성공:', currentUser);
                         return true;
                     } else {
-                        // 30분 지났으면 로그인 세션 삭제
                         localStorage.removeItem('loginSession');
                         console.log('로그인 세션 만료');
                     }
@@ -1299,7 +1310,6 @@
                 const data = snapshot.val();
                 const newReports = data ? data : Array(10).fill(null);
                 
-                // 새 보고서 업로드 감지
                 const newReportCount = newReports.filter(r => r).length;
                 if (lastReportCount > 0 && newReportCount > lastReportCount) {
                     playNotificationSound();
@@ -1308,6 +1318,7 @@
                 
                 reports = newReports;
                 renderGrid();
+                renderRecentUploads();
                 updateStats();
             });
 
@@ -1321,7 +1332,6 @@
             database.ref('directive').on('value', (snapshot) => {
                 const newDirective = snapshot.val();
                 
-                // 새 지시사항 감지 (시간 비교)
                 if (newDirective && newDirective.timestamp) {
                     if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
                         playNotificationSound();
@@ -1333,18 +1343,16 @@
                 displayDirective();
             });
 
-            // 온라인 사용자 실시간 동기화
             database.ref('onlineUsers').on('value', (snapshot) => {
                 onlineUsers = snapshot.val() || {};
                 
-                // 1분 이상 업데이트 없는 사용자 제거 (클린업)
                 const now = Date.now();
                 const updates = {};
                 let hasChanges = false;
                 
                 Object.keys(onlineUsers).forEach(userId => {
                     const userData = onlineUsers[userId];
-                    if (now - userData.lastSeen > 60000) { // 1분 초과
+                    if (now - userData.lastSeen > 60000) {
                         updates[userId] = null;
                         hasChanges = true;
                     }
@@ -1419,7 +1427,6 @@
                 content.textContent = currentDirective.message;
                 const date = new Date(currentDirective.timestamp);
                 
-                // 5분 이내 전송 체크
                 const now = Date.now();
                 const directiveTime = new Date(currentDirective.timestamp).getTime();
                 const isRecent = (now - directiveTime) < (5 * 60 * 1000);
@@ -1431,7 +1438,6 @@
                 `;
                 deleteBtn.style.display = currentUser ? 'block' : 'none';
                 
-                // recent 클래스 추가/제거
                 if (isRecent) {
                     display.classList.add('active', 'recent');
                     if (titleElement) titleElement.classList.add('recent');
@@ -1496,33 +1502,54 @@
                 return;
             }
 
+            initAudio();
+
             currentUser = username;
             users.add(username);
             saveData();
             
-            // 로그인 세션 저장 (1분 유지)
             saveLoginSession(username);
 
-            // 로그인 화면 숨기고 메인 콘텐츠 표시
+            if (isFirebaseEnabled) {
+                const userId = username + '_' + Date.now();
+                presenceRef = database.ref('onlineUsers/' + userId);
+                
+                const userData = {
+                    username: username,
+                    loginTime: Date.now(),
+                    lastSeen: Date.now()
+                };
+                
+                presenceRef.set(userData);
+                presenceRef.onDisconnect().remove();
+                
+                heartbeatInterval = setInterval(() => {
+                    if (presenceRef) {
+                        presenceRef.update({ lastSeen: Date.now() });
+                    }
+                }, 30000);
+            }
+
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('contentArea').classList.add('active');
             document.getElementById('currentUser').textContent = username;
 
             document.getElementById('passwordInput').value = '';
 
+            lastReportCount = reports.filter(r => r).length;
+
             renderGrid();
+            renderRecentUploads();
             updateStats();
             displayDirective();
         }
 
         function logout() {
-            // Firebase 온라인 상태 제거
             if (presenceRef) {
                 presenceRef.remove();
                 presenceRef = null;
             }
             
-            // heartbeat 정리
             if (heartbeatInterval) {
                 clearInterval(heartbeatInterval);
                 heartbeatInterval = null;
@@ -1530,10 +1557,8 @@
             
             currentUser = null;
             
-            // 로그인 세션 삭제
             clearLoginSession();
             
-            // 메인 콘텐츠 숨기고 로그인 화면 표시
             document.getElementById('loginContainer').style.display = 'flex';
             document.getElementById('contentArea').classList.remove('active');
             document.getElementById('usernameInput').value = '';
@@ -1543,19 +1568,74 @@
             directiveInput.value = '';
         }
 
+        function renderRecentUploads() {
+            const container = document.getElementById('recentUploadsList');
+            if (!container) return;
+            
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000;
+
+            const recentReports = reports
+                .map((report, index) => ({ report, index }))
+                .filter(item => {
+                    if (!item.report || !item.report.uploadTime) return false;
+                    const uploadTime = new Date(item.report.uploadTime).getTime();
+                    return (now - uploadTime) < fiveMinutes;
+                })
+                .sort((a, b) => {
+                    return new Date(b.report.uploadTime) - new Date(a.report.uploadTime);
+                })
+                .slice(0, 3);
+
+            if (recentReports.length === 0) {
+                container.innerHTML = '<div class="empty-recent">최근 5분 이내 업로드된 보고서가 없습니다</div>';
+                return;
+            }
+
+            container.innerHTML = recentReports.map(item => {
+                const { report, index } = item;
+                const date = new Date(report.uploadTime);
+                const timeStr = date.toLocaleString('ko-KR', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return `
+                    <div class="recent-upload-item" onclick="scrollToReport(${index})">
+                        <div class="recent-upload-title">슬롯 ${index + 1}: ${report.title}</div>
+                        <div class="recent-upload-time">⏰ ${timeStr}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function scrollToReport(index) {
+            const grid = document.getElementById('reportsGrid');
+            const slots = grid.children;
+            if (slots[index]) {
+                slots[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                slots[index].style.transition = 'transform 0.3s';
+                slots[index].style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    slots[index].style.transform = 'scale(1)';
+                }, 300);
+            }
+        }
+
         function renderGrid() {
             const grid = document.getElementById('reportsGrid');
             grid.innerHTML = '';
 
             const now = Date.now();
-            const fiveMinutes = 5 * 60 * 1000; // 5분을 밀리초로
+            const fiveMinutes = 5 * 60 * 1000;
 
             for (let i = 0; i < 10; i++) {
                 const slot = document.createElement('div');
                 const report = reports[i];
 
                 if (report) {
-                    // 5분 이내 업로드 체크
                     const uploadTime = new Date(report.uploadTime).getTime();
                     const isRecent = (now - uploadTime) < fiveMinutes;
                     
@@ -1633,6 +1713,7 @@
 
                 deleteConfirmSlot = null;
                 renderGrid();
+                renderRecentUploads();
                 updateStats();
                 alert('✅ 파일이 삭제되었습니다.');
             } else {
@@ -1805,6 +1886,7 @@
             reports[currentSlot] = newReport;
             saveData();
             renderGrid();
+            renderRecentUploads();
             updateStats();
             closeUploadModal();
             alert('✅ 업로드 완료!');
@@ -1842,7 +1924,6 @@
                 document.getElementById('zoomControls').style.display = 'flex';
                 setTimeout(() => setupZoom(), 100);
             } else if (report.type === 'application/pdf') {
-                // 카카오톡 브라우저에서는 PDF를 외부 브라우저로 열기
                 if (isKakaoTalkBrowser()) {
                     content.innerHTML = `
                         <div style="text-align: center; color: white; padding: 40px 20px;">
@@ -1865,7 +1946,6 @@
                     `;
                     document.getElementById('zoomControls').style.display = 'none';
                 } else if (isMobileDevice()) {
-                    // 일반 모바일 브라우저에서도 새 창 옵션 제공
                     content.innerHTML = `
                         <div style="text-align: center; color: white; padding: 40px 20px;">
                             <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
@@ -1889,7 +1969,6 @@
                     `;
                     document.getElementById('zoomControls').style.display = 'none';
                 } else {
-                    // 데스크톱에서는 기존처럼 iframe으로 표시
                     content.innerHTML = `<iframe src="${report.data}" style="width: 90vw; height: 80vh; border: none;"></iframe>`;
                     document.getElementById('zoomControls').style.display = 'none';
                 }
@@ -1902,7 +1981,6 @@
             const report = reports[index];
             if (!report || !report.type.startsWith('image/')) return;
 
-            // 모바일에서 최적화된 이미지 뷰어로 새 창 열기
             const newWindow = window.open();
             if (newWindow) {
                 newWindow.document.write(`
@@ -1950,7 +2028,6 @@
                                 display: block;
                                 touch-action: manipulation;
                             }
-                            /* 모바일에서 이미지를 더 크게 */
                             @media (max-width: 768px) {
                                 img {
                                     max-width: none;
@@ -2005,7 +2082,6 @@
             const report = reports[index];
             if (!report || report.type !== 'application/pdf') return;
 
-            // PDF를 새 창에서 열기
             const newWindow = window.open('', '_blank');
             if (newWindow) {
                 newWindow.document.write(`
@@ -2076,6 +2152,7 @@
                 saveData();
                 closeFullscreen();
                 renderGrid();
+                renderRecentUploads();
                 updateStats();
                 alert('✅ 파일이 삭제되었습니다.');
             }
@@ -2187,11 +2264,9 @@
         function updateStats() {
             document.getElementById('totalReports').textContent = reports.filter(r => r).length;
             
-            // 동시접속자 수 계산
             const onlineCount = Object.keys(onlineUsers).length;
             document.getElementById('onlineUsers').textContent = onlineCount;
             
-            // 오늘 업로드된 보고서 수 계산
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const todayTimestamp = today.getTime();
