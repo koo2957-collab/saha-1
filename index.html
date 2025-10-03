@@ -2326,4 +2326,842 @@
         }
 
         // Enhanced scroll to report
-        function scrollToReport
+        function scrollToReport(index) {
+            try {
+                const grid = document.getElementById('reportsGrid');
+                if (!grid) return;
+                
+                const slots = grid.children;
+                if (slots[index]) {
+                    slots[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    slots[index].style.transition = 'transform 0.3s';
+                    slots[index].style.transform = 'scale(1.05)';
+                    setTimeout(function() {
+                        slots[index].style.transform = 'scale(1)';
+                    }, 300);
+                }
+            } catch (e) {
+                console.error('스크롤 오류:', e);
+            }
+        }
+
+        // Enhanced grid rendering
+        function renderGrid() {
+            try {
+                const grid = document.getElementById('reportsGrid');
+                if (!grid) return;
+                
+                grid.innerHTML = '';
+
+                const now = Date.now();
+                const fiveMinutes = 5 * 60 * 1000;
+                
+                for (let i = 0; i < 10; i++) {
+                    const slot = document.createElement('div');
+                    const report = reports[i];
+
+                    if (report) {
+                        const uploadTime = new Date(report.uploadTime).getTime();
+                        const isRecent = (now - uploadTime) < fiveMinutes;
+                        
+                        slot.className = isRecent ? 'report-slot filled recent-upload' : 'report-slot filled';
+                        slot.onclick = function() { viewReport(i); };
+
+                        const date = new Date(report.uploadTime);
+                        const timeStr = date.toLocaleString('ko-KR', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        let preview = '';
+                        if (report.type && report.type.startsWith('image/')) {
+                            preview = '<img src="' + (report.data || '') + '" alt="' + (report.title || '') + '">' +
+                                    '<button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(' + i + ')" title="이미지 크게 보기">' +
+                                    '<i class="fa-solid fa-expand"></i></button>';
+                        } else if (report.type === 'application/pdf') {
+                            preview = '<div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>';
+                        }
+
+                        const deleteConfirmClass = deleteConfirmSlot === i ? 'delete-confirm' : '';
+                        const deleteConfirmBg = deleteConfirmSlot === i ? '#ff4444' : '#dc3545';
+                        const deleteConfirmText = deleteConfirmSlot === i ? '⚠️ 다시 클릭' : '🗑️ 삭제';
+
+                        slot.innerHTML = '<div class="slot-number ' + (isRecent ? 'recent' : '') + '">' + (i + 1) + '</div>' +
+                                '<div class="report-preview">' + preview + '</div>' +
+                                '<div class="report-info">' +
+                                '<div class="report-title">' + (report.title || 'Untitled') + (isRecent ? ' 🆕' : '') + '</div>' +
+                                '<div class="report-filename">' + (report.filename || 'Unknown file') + '</div>' +
+                                '<div class="report-meta">' +
+                                '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
+                                '<div>📅 ' + timeStr + '</div>' +
+                                '</div>' +
+                                (currentUser ?
+                                '<div style="display: flex; gap: 5px; margin-top: 8px;">' +
+                                '<button class="replace-btn" style="flex: 1;" onclick="event.stopPropagation(); openUploadModal(' + i + ')">' +
+                                '<i class="fa-solid fa-retweet"></i> 교체</button>' +
+                                '<button class="replace-btn ' + deleteConfirmClass + '" style="flex: 1; background: ' + deleteConfirmBg + ';" ' +
+                                'onclick="event.stopPropagation(); deleteReport(' + i + ')">' + deleteConfirmText + '</button>' +
+                                '</div>' :
+                                '<div style="margin-top: 10px; font-size: 11px; color: #999;">로그인 후 관리 가능</div>') +
+                                '</div>';
+                    } else {
+                        slot.className = 'report-slot';
+                        slot.innerHTML = '<div class="slot-number">' + (i + 1) + '</div>' +
+                                '<div class="empty-slot">' +
+                                '<div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>' +
+                                '<div style="font-size: 12px;">비어있는 슬롯</div>' +
+                                (currentUser ?
+                                '<button class="upload-btn" onclick="openUploadModal(' + i + ')">' +
+                                '<i class="fa-solid fa-arrow-up-from-bracket"></i> 업로드</button>' :
+                                '<div style="margin-top: 10px; font-size: 11px;">로그인 후 업로드 가능</div>') +
+                                '</div>';
+                    }
+
+                    grid.appendChild(slot);
+                }
+            } catch (e) {
+                console.error('그리드 렌더링 오류:', e);
+            }
+        }
+
+        // Enhanced report deletion
+        function deleteReport(index) {
+            try {
+                const report = reports[index];
+                if (!report) return;
+
+                if (!currentUser) {
+                    alert('⚠️ 로그인이 필요합니다.');
+                    return;
+                }
+
+                if (deleteConfirmSlot === index) {
+                    if (deleteTimerId) clearTimeout(deleteTimerId);
+                    reports[index] = null;
+                    saveData();
+
+                    deleteConfirmSlot = null;
+                    renderGrid();
+                    renderRecentUploads();
+                    updateStats();
+                    alert('✅ 파일이 삭제되었습니다.');
+                } else {
+                    deleteConfirmSlot = index;
+                    renderGrid();
+                    alert('"' + (report.title || 'Untitled') + '"\n\n삭제하려면 5초 이내에 🗑️ 삭제 버튼을 다시 클릭하세요.');
+
+                    if (deleteTimerId) clearTimeout(deleteTimerId);
+                    deleteTimerId = setTimeout(function() {
+                        if (deleteConfirmSlot === index) {
+                            deleteConfirmSlot = null;
+                            renderGrid();
+                        }
+                    }, 5000);
+                }
+            } catch (e) {
+                console.error('파일 삭제 오류:', e);
+                alert('❌ 파일 삭제에 실패했습니다.');
+            }
+        }
+
+        // Enhanced modal functions
+        function openUploadModal(slotIndex) {
+            try {
+                if (!currentUser) {
+                    alert('로그인 후 이용해 주세요');
+                    return;
+                }
+                currentSlot = slotIndex;
+
+                const existingReport = reports[slotIndex];
+                const reportTitleEl = document.getElementById('reportTitle');
+                const fileInput = document.getElementById('fileInput');
+                const selectedFile = document.getElementById('selectedFile');
+                const uploadModal = document.getElementById('uploadModal');
+                
+                if (reportTitleEl) {
+                    reportTitleEl.value = existingReport ? (existingReport.title || '') : '';
+                }
+                if (fileInput) fileInput.value = '';
+                if (selectedFile) selectedFile.textContent = '선택된 파일 없음';
+                if (uploadModal) uploadModal.classList.add('active');
+                
+                hideError('uploadError');
+            } catch (e) {
+                console.error('업로드 모달 열기 오류:', e);
+            }
+        }
+
+        function closeUploadModal() {
+            try {
+                const uploadModal = document.getElementById('uploadModal');
+                if (uploadModal) {
+                    uploadModal.classList.remove('active');
+                }
+                hideError('uploadError');
+            } catch (e) {
+                console.error('업로드 모달 닫기 오류:', e);
+            }
+        }
+
+        function selectFile() {
+            try {
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) {
+                    fileInput.click();
+                }
+            } catch (e) {
+                console.error('파일 선택 오류:', e);
+            }
+        }
+
+        // Enhanced file selection
+        function setupFileInput() {
+            try {
+                const fileInput = document.getElementById('fileInput');
+                if (!fileInput) return;
+                
+                fileInput.addEventListener('change', function(e) {
+                    try {
+                        const file = e.target.files[0];
+                        const selectedFileEl = document.getElementById('selectedFile');
+                        
+                        if (file && selectedFileEl) {
+                            const size = (file.size / 1024 / 1024).toFixed(2);
+                            let message = '✅ ' + file.name + ' (' + size + 'MB)';
+                            
+                            if (file.size > 5 * 1024 * 1024) {
+                                if (file.type.startsWith('image/')) {
+                                    message += ' - 자동 압축됩니다';
+                                } else if (file.type === 'application/pdf') {
+                                    message += ' - 용량이 큽니다';
+                                }
+                            }
+                            
+                            selectedFileEl.textContent = message;
+                        }
+                    } catch (e) {
+                        console.error('파일 선택 처리 오류:', e);
+                    }
+                });
+            } catch (e) {
+                console.error('파일 입력 설정 오류:', e);
+            }
+        }
+
+        // Enhanced upload confirmation
+        function confirmUpload() {
+            try {
+                hideError('uploadError');
+                
+                const reportTitleEl = document.getElementById('reportTitle');
+                const fileInput = document.getElementById('fileInput');
+                
+                if (!reportTitleEl || !fileInput) {
+                    showError('uploadError', '업로드 폼을 찾을 수 없습니다.');
+                    return;
+                }
+                
+                const title = reportTitleEl.value.trim();
+                const file = fileInput.files[0];
+
+                if (!title) {
+                    showError('uploadError', '제목을 입력해 주세요.');
+                    reportTitleEl.focus();
+                    return;
+                }
+                if (!file) {
+                    showError('uploadError', '파일을 선택해 주세요.');
+                    return;
+                }
+
+                // File size check
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    showError('uploadError', '파일 크기가 너무 큽니다. (최대 10MB)');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let fileData = e.target.result;
+                        
+                        // Enhanced image compression
+                        if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
+                            compressImage(fileData, function(compressedData) {
+                                saveReport(title, file.name, file.type, compressedData);
+                            });
+                        } else {
+                            saveReport(title, file.name, file.type, fileData);
+                        }
+                    } catch (e) {
+                        console.error('파일 처리 오류:', e);
+                        showError('uploadError', '파일 처리 중 오류가 발생했습니다.');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showError('uploadError', '파일 읽기에 실패했습니다.');
+                };
+                
+                reader.readAsDataURL(file);
+            } catch (e) {
+                console.error('업로드 확인 오류:', e);
+                showError('uploadError', '업로드 처리 중 오류가 발생했습니다.');
+            }
+        }
+
+        // Enhanced image compression
+        function compressImage(dataUrl, callback) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    try {
+                        const maxWidth = 1920;
+                        const maxHeight = 1080;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width *= ratio;
+                            height *= ratio;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const compressedData = canvas.toDataURL('image/jpeg', 0.8);
+                        callback(compressedData);
+                    } catch (e) {
+                        console.error('이미지 압축 오류:', e);
+                        callback(dataUrl); // Fallback to original
+                    }
+                };
+                
+                img.onerror = function() {
+                    console.error('이미지 로드 실패');
+                    callback(dataUrl); // Fallback to original
+                };
+                
+                img.src = dataUrl;
+            } catch (e) {
+                console.error('이미지 압축 설정 오류:', e);
+                callback(dataUrl); // Fallback to original
+            }
+        }
+
+        // Enhanced report saving
+        function saveReport(title, filename, type, data) {
+            try {
+                const report = {
+                    title: title,
+                    filename: filename,
+                    type: type,
+                    data: data,
+                    uploader: currentUser,
+                    uploadTime: new Date().toISOString()
+                };
+
+                reports[currentSlot] = report;
+                saveData();
+
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                closeUploadModal();
+
+                alert('✅ 파일이 업로드되었습니다!');
+            } catch (e) {
+                console.error('보고서 저장 오류:', e);
+                showError('uploadError', '파일 저장에 실패했습니다.');
+            }
+        }
+
+        // Enhanced stats update
+        function updateStats() {
+            try {
+                const totalReportsEl = document.getElementById('totalReports');
+                const onlineUsersEl = document.getElementById('onlineUsers');
+                const todayUploadsEl = document.getElementById('todayUploads');
+                
+                if (totalReportsEl) {
+                    totalReportsEl.textContent = reports.filter(function(r) { return r; }).length;
+                }
+                
+                if (onlineUsersEl) {
+                    const onlineCount = Object.keys(onlineUsers).length;
+                    onlineUsersEl.textContent = onlineCount;
+                }
+                
+                if (todayUploadsEl) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const todayTimestamp = today.getTime();
+                    const todayCount = reports.filter(function(r) {
+                        if (!r || !r.uploadTime) return false;
+                        const uploadDate = new Date(r.uploadTime);
+                        uploadDate.setHours(0, 0, 0, 0);
+                        return uploadDate.getTime() === todayTimestamp;
+                    }).length;
+                    todayUploadsEl.textContent = todayCount;
+                }
+            } catch (e) {
+                console.error('통계 업데이트 오류:', e);
+            }
+        }
+
+        // Enhanced report viewing
+        function viewReport(index) {
+            try {
+                const report = reports[index];
+                if (!report) return;
+
+                currentViewSlot = index;
+                const modal = document.getElementById('fullscreenModal');
+                const content = document.getElementById('fullscreenContent');
+                const info = document.getElementById('fullscreenInfo');
+                const replaceBtn = document.getElementById('replaceBtn');
+                const deleteBtn = document.getElementById('deleteBtn');
+
+                if (!modal || !content || !info) return;
+
+                // 버튼 표시/숨기기
+                if (replaceBtn) {
+                    replaceBtn.style.display = currentUser ? 'block' : 'none';
+                }
+                if (deleteBtn) {
+                    deleteBtn.style.display = currentUser ? 'block' : 'none';
+                }
+
+                // 정보 표시
+                const date = new Date(report.uploadTime);
+                info.innerHTML = '<h2>' + (report.title || 'Untitled') + '</h2>' +
+                               '<div>📄 ' + (report.filename || 'Unknown file') + '</div>' +
+                               '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
+                               '<div>📅 ' + date.toLocaleString('ko-KR') + '</div>';
+
+                // 컨텐츠 표시
+                if (report.type && report.type.startsWith('image/')) {
+                    content.innerHTML = '<img src="' + (report.data || '') + '" class="fullscreen-image" id="zoomImage" alt="' + (report.title || '') + '">';
+                    const zoomControls = document.getElementById('zoomControls');
+                    if (zoomControls) zoomControls.style.display = 'flex';
+                    setTimeout(function() { setupZoom(); }, 100);
+                } else if (report.type === 'application/pdf') {
+                    const browserInfo = getBrowserInfo();
+                    
+                    if (browserInfo.isKakaoTalk) {
+                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
+                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
+                                          '<h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>' +
+                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
+                                          '카카오톡 브라우저에서는 PDF를 볼 수 없습니다.<br>' +
+                                          '아래 버튼을 눌러 외부 브라우저에서 열어주세요.' +
+                                          '</p>' +
+                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
+                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '🌐 새 창에서 PDF 열기' +
+                                          '</button>' +
+                                          '<p style="font-size: 13px; color: #999; margin-top: 20px;">' +
+                                          '* 버튼을 누른 후 \'다른 앱에서 열기\' 또는 \'브라우저에서 열기\'를 선택하세요' +
+                                          '</p>' +
+                                          '</div>';
+                    } else if (browserInfo.isMobile) {
+                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
+                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
+                                          '<h3 style="margin-bottom: 20px;">' + (report.title || 'PDF File') + '</h3>' +
+                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
+                                          'PDF를 보려면 아래 옵션 중 하나를 선택하세요' +
+                                          '</p>' +
+                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
+                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '🌐 새 창에서 열기' +
+                                          '</button>' +
+                                          '<button onclick="viewPDFInline(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto; padding: 15px 30px; ' +
+                                          'background: #28a745; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '📱 현재 창에서 보기' +
+                                          '</button>' +
+                                          '</div>';
+                    } else {
+                        content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
+                    }
+                    
+                    const zoomControls = document.getElementById('zoomControls');
+                    if (zoomControls) zoomControls.style.display = 'none';
+                }
+
+                modal.classList.add('active');
+            } catch (e) {
+                console.error('보고서 보기 오류:', e);
+                alert('❌ 보고서를 열 수 없습니다.');
+            }
+        }
+
+        // Enhanced PDF functions
+        function openPDFInNewWindow(index) {
+            try {
+                const report = reports[index];
+                if (!report || report.type !== 'application/pdf') return;
+                
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(
+                        '<html>' +
+                        '<head>' +
+                        '<title>' + (report.title || 'PDF Document') + '</title>' +
+                        '<style>body { margin: 0; }</style>' +
+                        '</head>' +
+                        '<body>' +
+                        '<iframe src="' + (report.data || '') + '" width="100%" height="100%" frameborder="0"></iframe>' +
+                        '</body>' +
+                        '</html>'
+                    );
+                } else {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                }
+            } catch (e) {
+                console.error('PDF 새 창 열기 오류:', e);
+                alert('❌ PDF를 열 수 없습니다.');
+            }
+        }
+
+        function viewPDFInline(index) {
+            try {
+                const report = reports[index];
+                if (!report || report.type !== 'application/pdf') return;
+                
+                const content = document.getElementById('fullscreenContent');
+                if (content) {
+                    content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
+                }
+            } catch (e) {
+                console.error('PDF 인라인 보기 오류:', e);
+            }
+        }
+
+        function openNativeImageView(index) {
+            try {
+                const report = reports[index];
+                if (!report || !report.type || !report.type.startsWith('image/')) return;
+                
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(
+                        '<html>' +
+                        '<head>' +
+                        '<title>' + (report.title || 'Image') + '</title>' +
+                        '<style>' +
+                        'body { margin: 0; padding: 20px; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }' +
+                        'img { max-width: 100%; max-height: 100vh; object-fit: contain; }' +
+                        '</style>' +
+                        '</head>' +
+                        '<body>' +
+                        '<img src="' + (report.data || '') + '" alt="' + (report.title || 'Image') + '">' +
+                        '</body>' +
+                        '</html>'
+                    );
+                } else {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                }
+            } catch (e) {
+                console.error('이미지 새 창 열기 오류:', e);
+            }
+        }
+
+        // Enhanced fullscreen functions
+        function closeFullscreen() {
+            try {
+                const fullscreenModal = document.getElementById('fullscreenModal');
+                const zoomControls = document.getElementById('zoomControls');
+                
+                if (fullscreenModal) {
+                    fullscreenModal.classList.remove('active');
+                }
+                if (zoomControls) {
+                    zoomControls.style.display = 'none';
+                }
+                resetZoom();
+            } catch (e) {
+                console.error('전체화면 닫기 오류:', e);
+            }
+        }
+
+        function replaceFile() {
+            try {
+                closeFullscreen();
+                openUploadModal(currentViewSlot);
+            } catch (e) {
+                console.error('파일 교체 오류:', e);
+            }
+        }
+
+        function deleteFromFullscreen() {
+            try {
+                if (confirm('이 파일을 삭제하시겠습니까?')) {
+                    reports[currentViewSlot] = null;
+                    saveData();
+                    closeFullscreen();
+                    renderGrid();
+                    renderRecentUploads();
+                    updateStats();
+                    alert('✅ 파일이 삭제되었습니다.');
+                }
+            } catch (e) {
+                console.error('전체화면에서 삭제 오류:', e);
+            }
+        }
+
+        // Enhanced zoom functionality
+        function setupZoom() {
+            try {
+                const img = document.getElementById('zoomImage');
+                if (!img) return;
+
+                let lastTap = 0;
+                img.addEventListener('click', function() {
+                    try {
+                        const now = Date.now();
+                        if (now - lastTap < 300) {
+                            scale === 1 ? zoomIn() : resetZoom();
+                        }
+                        lastTap = now;
+                    } catch (e) {
+                        console.error('클릭 줌 오류:', e);
+                    }
+                });
+
+                // Mouse events
+                img.addEventListener('mousedown', function(e) {
+                    try {
+                        if (scale > 1) {
+                            isDragging = true;
+                            startX = e.clientX - posX;
+                            startY = e.clientY - posY;
+                            img.classList.add('dragging');
+                            e.preventDefault();
+                        }
+                    } catch (e) {
+                        console.error('마우스 다운 오류:', e);
+                    }
+                });
+
+                document.addEventListener('mousemove', function(e) {
+                    try {
+                        if (isDragging && scale > 1) {
+                            posX = e.clientX - startX;
+                            posY = e.clientY - startY;
+                            updateTransform();
+                        }
+                    } catch (e) {
+                        console.error('마우스 이동 오류:', e);
+                    }
+                });
+
+                document.addEventListener('mouseup', function() {
+                    try {
+                        isDragging = false;
+                        const zoomImg = document.getElementById('zoomImage');
+                        if (zoomImg) zoomImg.classList.remove('dragging');
+                    } catch (e) {
+                        console.error('마우스 업 오류:', e);
+                    }
+                });
+
+                // Touch events
+                img.addEventListener('touchstart', function(e) {
+                    try {
+                        if (e.touches.length === 1 && scale > 1) {
+                            isDragging = true;
+                            startX = e.touches[0].clientX - posX;
+                            startY = e.touches[0].clientY - posY;
+                        } else if (e.touches.length === 2) {
+                            isDragging = false;
+                            lastTouchDistance = getTouchDistance(e.touches);
+                        }
+                    } catch (e) {
+                        console.error('터치 시작 오류:', e);
+                    }
+                });
+
+                img.addEventListener('touchmove', function(e) {
+                    try {
+                        if (e.touches.length === 1 && isDragging && scale > 1) {
+                            e.preventDefault();
+                            posX = e.touches[0].clientX - startX;
+                            posY = e.touches[0].clientY - startY;
+                            updateTransform();
+                        } else if (e.touches.length === 2) {
+                            e.preventDefault();
+                            const currentDistance = getTouchDistance(e.touches);
+                            scale += (currentDistance - lastTouchDistance) * 0.01;
+                            scale = Math.max(1, Math.min(4, scale));
+                            lastTouchDistance = currentDistance;
+                            updateTransform();
+                        }
+                    } catch (e) {
+                        console.error('터치 이동 오류:', e);
+                    }
+                });
+
+                img.addEventListener('touchend', function() {
+                    try {
+                        isDragging = false;
+                    } catch (e) {
+                        console.error('터치 종료 오류:', e);
+                    }
+                });
+
+            } catch (e) {
+                console.error('줌 설정 오류:', e);
+            }
+        }
+
+        // Helper functions for zoom
+        function getTouchDistance(touches) {
+            try {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            } catch (e) {
+                console.error('터치 거리 계산 오류:', e);
+                return 0;
+            }
+        }
+
+        function updateTransform() {
+            try {
+                const img = document.getElementById('zoomImage');
+                if (img) {
+                    img.style.transform = 'translate(' + posX + 'px, ' + posY + 'px) scale(' + scale + ')';
+                }
+            } catch (e) {
+                console.error('변형 업데이트 오류:', e);
+            }
+        }
+
+        function zoomIn() {
+            try {
+                scale = Math.min(scale + 0.5, 4);
+                updateTransform();
+            } catch (e) {
+                console.error('줌인 오류:', e);
+            }
+        }
+
+        function zoomOut() {
+            try {
+                scale = Math.max(scale - 0.5, 1);
+                if (scale === 1) {
+                    posX = 0;
+                    posY = 0;
+                }
+                updateTransform();
+            } catch (e) {
+                console.error('줌아웃 오류:', e);
+            }
+        }
+
+        function resetZoom() {
+            try {
+                scale = 1;
+                posX = 0;
+                posY = 0;
+                updateTransform();
+            } catch (e) {
+                console.error('줌 리셋 오류:', e);
+            }
+        }
+
+        // Enhanced keyboard and modal event handlers
+        function setupEventHandlers() {
+            try {
+                document.addEventListener('keydown', function(e) {
+                    try {
+                        if (e.key === 'Escape') {
+                            closeUploadModal();
+                            closeFullscreen();
+                        }
+                    } catch (e) {
+                        console.error('키보드 이벤트 오류:', e);
+                    }
+                });
+
+                const uploadModal = document.getElementById('uploadModal');
+                if (uploadModal) {
+                    uploadModal.addEventListener('click', function(e) {
+                        try {
+                            if (e.target.id === 'uploadModal') {
+                                closeUploadModal();
+                            }
+                        } catch (e) {
+                            console.error('모달 클릭 오류:', e);
+                        }
+                    });
+                }
+
+                const usernameInput = document.getElementById('usernameInput');
+                if (usernameInput) {
+                    usernameInput.addEventListener('keypress', function(e) {
+                        try {
+                            if (e.key === 'Enter') {
+                                const passwordInput = document.getElementById('passwordInput');
+                                if (passwordInput) passwordInput.focus();
+                            }
+                        } catch (e) {
+                            console.error('사용자명 입력 오류:', e);
+                        }
+                    });
+                }
+
+                const passwordInput = document.getElementById('passwordInput');
+                if (passwordInput) {
+                    passwordInput.addEventListener('keypress', function(e) {
+                        try {
+                            if (e.key === 'Enter') {
+                                login();
+                            }
+                        } catch (e) {
+                            console.error('비밀번호 입력 오류:', e);
+                        }
+                    });
+                }
+
+                // Setup file input
+                setupFileInput();
+
+                // Window resize handler for recent uploads
+                window.addEventListener('resize', function() {
+                    renderRecentUploads();
+                });
+
+            } catch (e) {
+                console.error('이벤트 핸들러 설정 오류:', e);
+            }
+        }
+
+        // Initialize everything when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setupEventListeners();
+                setupEventHandlers();
+            });
+        } else {
+            setupEventListeners();
+            setupEventHandlers();
+        }
+
+    </script>
+</body>
+</html>
