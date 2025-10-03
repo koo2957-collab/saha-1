@@ -923,7 +923,23 @@
         let deleteTimerId = null;
         let currentDirective = null;
 
+        const LOGIN_DURATION = 30 * 60 * 1000; // 30분 (밀리초)
+
+        // 카카오톡 인앱 브라우저 감지
+        function isKakaoTalkBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.includes('kakaotalk');
+        }
+
+        // 모바일 기기 감지
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
         window.addEventListener('load', function() {
+            // 자동 로그인 체크
+            checkAutoLogin();
+            
             if (typeof firebase !== 'undefined' && isFirebaseEnabled) {
                 setupFirebaseSync();
             } else {
@@ -933,6 +949,50 @@
                 loadDirective();
             }
         });
+
+        function checkAutoLogin() {
+            try {
+                const loginData = JSON.parse(localStorage.getItem('loginSession') || 'null');
+                
+                if (loginData && loginData.username && loginData.timestamp) {
+                    const now = Date.now();
+                    const elapsed = now - loginData.timestamp;
+                    
+                    // 1분 이내면 자동 로그인
+                    if (elapsed < LOGIN_DURATION) {
+                        currentUser = loginData.username;
+                        users.add(loginData.username);
+                        
+                        // UI 업데이트
+                        document.getElementById('loginContainer').style.display = 'none';
+                        document.getElementById('contentArea').classList.add('active');
+                        document.getElementById('currentUser').textContent = currentUser;
+                        
+                        console.log('자동 로그인 성공:', currentUser);
+                        return true;
+                    } else {
+                        // 1분 지났으면 로그인 세션 삭제
+                        localStorage.removeItem('loginSession');
+                        console.log('로그인 세션 만료');
+                    }
+                }
+            } catch (e) {
+                console.error('자동 로그인 체크 오류:', e);
+            }
+            return false;
+        }
+
+        function saveLoginSession(username) {
+            const loginData = {
+                username: username,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('loginSession', JSON.stringify(loginData));
+        }
+
+        function clearLoginSession() {
+            localStorage.removeItem('loginSession');
+        }
 
         function setupFirebaseSync() {
             database.ref('reports').on('value', (snapshot) => {
@@ -1077,6 +1137,9 @@
             currentUser = username;
             users.add(username);
             saveData();
+            
+            // 로그인 세션 저장 (1분 유지)
+            saveLoginSession(username);
 
             // 로그인 화면 숨기고 메인 콘텐츠 표시
             document.getElementById('loginContainer').style.display = 'none';
@@ -1092,6 +1155,9 @@
 
         function logout() {
             currentUser = null;
+            
+            // 로그인 세션 삭제
+            clearLoginSession();
             
             // 메인 콘텐츠 숨기고 로그인 화면 표시
             document.getElementById('loginContainer').style.display = 'flex';
@@ -1156,7 +1222,7 @@
                     slot.innerHTML = `
                         <div class="slot-number">${i + 1}</div>
                         <div class="empty-slot">
-                            <div class="empty-icon">📁</div>
+                            <div class="empty-icon">📋</div>
                             <div style="font-size: 12px;">비어있는 슬롯</div>
                             ${currentUser ?
                                 `<button class="upload-btn" onclick="openUploadModal(${i})">📤 업로드</button>` :
@@ -1257,18 +1323,15 @@
                 return;
             }
 
-            // 파일 크기와 관계없이 처리
             if (file.type.startsWith('image/')) {
                 compressImage(file, (compressedData) => {
                     saveReport(title, file.name, file.type, compressedData);
                 });
             } else if (file.type === 'application/pdf') {
-                // PDF는 base64로 변환 후 크기 확인
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     let data = e.target.result;
-                    // 5MB 이상이면 경고만 표시하고 계속 진행
-                    const sizeInMB = (data.length * 0.75) / (1024 * 1024); // base64 크기 추정
+                    const sizeInMB = (data.length * 0.75) / (1024 * 1024);
                     if (sizeInMB > 5) {
                         if (!confirm(`파일이 약 ${sizeInMB.toFixed(1)}MB입니다. 업로드에 시간이 걸릴 수 있습니다. 계속하시겠습니까?`)) {
                             return;
@@ -1291,11 +1354,9 @@
                     let width = img.width;
                     let height = img.height;
 
-                    // 초기 크기 설정 (대용량 파일 대비)
                     let maxSize = 1920;
                     let quality = 0.7;
 
-                    // 파일 크기에 따라 압축 강도 조절
                     const fileSizeInMB = file.size / (1024 * 1024);
                     
                     if (fileSizeInMB > 20) {
@@ -1306,7 +1367,6 @@
                         quality = 0.6;
                     }
 
-                    // 이미지 리사이징
                     if (width > maxSize || height > maxSize) {
                         if (width > height) {
                             height *= maxSize / width;
@@ -1322,10 +1382,8 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // 첫 번째 압축 시도
                     let compressedData = canvas.toDataURL('image/jpeg', quality);
                     
-                    // 5MB 이하가 될 때까지 품질 조정
                     let attempts = 0;
                     while (compressedData.length > 5 * 1024 * 1024 * 1.37 && attempts < 5) {
                         quality -= 0.1;
@@ -1334,7 +1392,6 @@
                         attempts++;
                     }
 
-                    // 여전히 크면 크기 추가 축소
                     if (compressedData.length > 5 * 1024 * 1024 * 1.37) {
                         width *= 0.7;
                         height *= 0.7;
@@ -1404,8 +1461,28 @@
                 document.getElementById('zoomControls').style.display = 'flex';
                 setTimeout(() => setupZoom(), 100);
             } else if (report.type === 'application/pdf') {
-                content.innerHTML = `<iframe src="${report.data}" style="width: 90vw; height: 80vh; border: none;"></iframe>`;
-                document.getElementById('zoomControls').style.display = 'none';
+                // 카카오톡 브라우저에서는 PDF를 외부 브라우저로 열기
+                if (isKakaoTalkBrowser()) {
+                    content.innerHTML = `
+                        <div style="text-align: center; color: white; padding: 40px 20px;">
+                            <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
+                            <h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>
+                            <p style="margin-bottom: 30px; line-height: 1.6;">
+                                카카오톡 브라우저에서는 PDF를 볼 수 없습니다.<br>
+                                아래 버튼을 눌러 외부 브라우저에서 열어주세요.
+                            </p>
+                            <a href="${report.data}" download="${report.filename}" 
+                               style="display: inline-block; padding: 15px 30px; background: #667eea; color: white; 
+                                      text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                                📥 PDF 다운로드 / 외부에서 열기
+                            </a>
+                        </div>
+                    `;
+                    document.getElementById('zoomControls').style.display = 'none';
+                } else {
+                    content.innerHTML = `<iframe src="${report.data}" style="width: 90vw; height: 80vh; border: none;"></iframe>`;
+                    document.getElementById('zoomControls').style.display = 'none';
+                }
             }
 
             modal.classList.add('active');
@@ -1415,34 +1492,98 @@
             const report = reports[index];
             if (!report || !report.type.startsWith('image/')) return;
 
-            // 새 창에서 이미지 열기 (네이티브 브라우저 뷰어 사용)
+            // 모바일에서 최적화된 이미지 뷰어로 새 창 열기
             const newWindow = window.open();
             if (newWindow) {
                 newWindow.document.write(`
                     <!DOCTYPE html>
                     <html>
                     <head>
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes">
+                        <meta name="apple-mobile-web-app-capable" content="yes">
                         <title>${report.title}</title>
                         <style>
-                            body {
+                            * {
                                 margin: 0;
                                 padding: 0;
+                                box-sizing: border-box;
+                                -webkit-touch-callout: default;
+                            }
+                            html, body {
+                                width: 100%;
+                                height: 100%;
+                                overflow: hidden;
                                 background: #000;
+                            }
+                            body {
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
-                                min-height: 100vh;
+                                position: relative;
+                            }
+                            .image-container {
+                                width: 100%;
+                                height: 100%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: auto;
+                                -webkit-overflow-scrolling: touch;
                             }
                             img {
                                 max-width: 100%;
-                                max-height: 100vh;
+                                max-height: 100%;
+                                width: auto;
+                                height: auto;
                                 object-fit: contain;
+                                display: block;
+                                touch-action: manipulation;
+                            }
+                            /* 모바일에서 이미지를 더 크게 */
+                            @media (max-width: 768px) {
+                                img {
+                                    max-width: none;
+                                    max-height: none;
+                                    width: 100vw;
+                                    height: auto;
+                                }
+                            }
+                            .info-bar {
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                background: rgba(0,0,0,0.7);
+                                color: white;
+                                padding: 10px;
+                                text-align: center;
+                                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                                font-size: 14px;
+                                z-index: 100;
+                            }
+                            .close-btn {
+                                position: fixed;
+                                top: 50px;
+                                right: 10px;
+                                background: rgba(255,255,255,0.9);
+                                border: none;
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                font-size: 20px;
+                                cursor: pointer;
+                                z-index: 101;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
                             }
                         </style>
                     </head>
                     <body>
-                        <img src="${report.data}" alt="${report.title}">
+                        <div class="info-bar">${report.title}</div>
+                        <button class="close-btn" onclick="window.close()">✕</button>
+                        <div class="image-container">
+                            <img src="${report.data}" alt="${report.title}">
+                        </div>
                     </body>
                     </html>
                 `);
@@ -1600,7 +1741,6 @@
             }
         });
 
-        // 엔터키로 로그인
         document.getElementById('usernameInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('passwordInput').focus();
