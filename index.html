@@ -1236,13 +1236,6 @@
                 <div class="card directive-section">
                     <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i>실시간 지시사항</h2>
                     <div class="directive-input-area">
-                        <div class="directive-input-wrapper">
-                            <textarea class="directive-input" id="directiveInput" placeholder="📢 긴급 지시사항을 입력하세요..." rows="2"></textarea>
-                            <button class="directive-send-btn" id="directiveSendBtn" onclick="sendDirective()">
-                                <i class="fa-solid fa-paper-plane"></i> 전송
-                            </button>
-                        </div>
-                        
                         <div class="directive-display" id="directiveDisplay">
                             <div class="directive-header">
                                 <div class="directive-title">
@@ -1255,6 +1248,13 @@
                             </div>
                             <div class="directive-content" id="directiveContent"></div>
                             <div class="directive-meta" id="directiveMeta"></div>
+                        </div>
+                        
+                        <div class="directive-input-wrapper">
+                            <textarea class="directive-input" id="directiveInput" placeholder="📢 긴급 지시사항을 입력하세요..." rows="2"></textarea>
+                            <button class="directive-send-btn" id="directiveSendBtn" onclick="sendDirective()">
+                                <i class="fa-solid fa-paper-plane"></i> 전송
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1276,6 +1276,10 @@
             <div class="form-group">
                 <label for="reportTitle">제목 *</label>
                 <input type="text" id="reportTitle" placeholder="보고서 제목 입력" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="reportDescription">내용</label>
+                <textarea id="reportDescription" placeholder="내용 입력 (선택사항)" autocomplete="off" style="width: 100%; padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 16px; background: var(--bg-dark-primary); color: var(--text-primary); resize: vertical; min-height: 80px; font-family: 'Noto Sans KR', sans-serif;"></textarea>
             </div>
             <div class="form-group">
                 <label>파일 선택 *</label>
@@ -1504,6 +1508,153 @@
                 }, 150);
             } catch (e) {
                 console.log('Sound generation failed:', e);
+            }
+        }
+
+        function playDirectiveAlert() {
+            if (!isAudioEnabled || !audioContext) return;
+            
+            try {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => playDirectiveSound());
+                } else {
+                    playDirectiveSound();
+                }
+            } catch (e) {
+                console.log('긴급 알림음 재생 실패:', e);
+            }
+        }
+
+        function playDirectiveSound() {
+            try {
+                if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+                    const utterance = new SpeechSynthesisUtterance('긴급');
+                    utterance.lang = 'ko-KR';
+                    utterance.rate = 1.2;
+                    utterance.pitch = 0.8;
+                    
+                    const voices = window.speechSynthesis.getVoices();
+                    const maleVoice = voices.find(v => v.lang.includes('ko') && v.name.toLowerCase().includes('male'));
+                    if (maleVoice) {
+                        utterance.voice = maleVoice;
+                    }
+                    
+                    utterance.onerror = function() {
+                        playUrgentBeep();
+                    };
+                    
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    playUrgentBeep();
+                }
+            } catch (e) {
+                console.log('TTS failed, using beep:', e);
+                playUrgentBeep();
+            }
+        }
+
+        function playUrgentBeep() {
+            try {
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(function() {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+
+                        oscillator.frequency.value = 1200;
+                        oscillator.type = 'square';
+
+                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
+
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.08);
+                    }, i * 120);
+                }
+            } catch (e) {
+                console.log('Urgent beep failed:', e);
+            }
+        }
+
+        function playUploadAlert() {
+            if (!isAudioEnabled || !audioContext) return;
+            
+            try {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => playUploadSound());
+                } else {
+                    playUploadSound();
+                }
+            } catch (e) {
+                console.log('업로드 알림음 재생 실패:', e);
+            }
+        }
+
+        function playUploadSound() {
+            try {
+                if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+                    const utterance = new SpeechSynthesisUtterance('보고');
+                    utterance.lang = 'ko-KR';
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.2;
+                    
+                    const voices = window.speechSynthesis.getVoices();
+                    const femaleVoice = voices.find(v => v.lang.includes('ko') && v.name.toLowerCase().includes('female'));
+                    if (femaleVoice) {
+                        utterance.voice = femaleVoice;
+                    }
+                    
+                    utterance.onerror = function() {
+                        playSoftBeep();
+                    };
+                    
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    playSoftBeep();
+                }
+            } catch (e) {
+                console.log('TTS failed, using beep:', e);
+                playSoftBeep();
+            }
+        }
+
+        function playSoftBeep() {
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 600;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+
+                setTimeout(function() {
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+
+                    oscillator2.frequency.value = 800;
+                    oscillator2.type = 'sine';
+
+                    gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                    oscillator2.start(audioContext.currentTime);
+                    oscillator2.stop(audioContext.currentTime + 0.3);
+                }, 200);
+            } catch (e) {
+                console.log('Soft beep failed:', e);
             }
         }
 
@@ -1807,7 +1958,7 @@
                         
                         if (newDirective && newDirective.timestamp) {
                             if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
-                                playNotificationSound();
+                                playDirectiveAlert();
                             }
                             lastDirectiveTime = newDirective.timestamp;
                         }
@@ -2259,7 +2410,7 @@
                                 '<div class="report-preview">' + preview + '</div>' +
                                 '<div class="report-info">' +
                                 '<div class="report-title">' + (report.title || 'Untitled') + (isRecent ? ' 🆕' : '') + '</div>' +
-                                '<div class="report-filename">' + (report.filename || 'Unknown file') + '</div>' +
+                                '<div class="report-filename">' + (report.description || '') + '</div>' +
                                 '<div class="report-meta">' +
                                 '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
                                 '<div>📅 ' + timeStr + '</div>' +
@@ -2342,12 +2493,16 @@
 
                 const existingReport = reports[slotIndex];
                 const reportTitleEl = document.getElementById('reportTitle');
+                const reportDescriptionEl = document.getElementById('reportDescription');
                 const fileInput = document.getElementById('fileInput');
                 const selectedFile = document.getElementById('selectedFile');
                 const uploadModal = document.getElementById('uploadModal');
                 
                 if (reportTitleEl) {
                     reportTitleEl.value = existingReport ? (existingReport.title || '') : '';
+                }
+                if (reportDescriptionEl) {
+                    reportDescriptionEl.value = existingReport ? (existingReport.description || '') : '';
                 }
                 if (fileInput) fileInput.value = '';
                 if (selectedFile) selectedFile.textContent = '선택된 파일 없음';
@@ -2420,6 +2575,7 @@
                 hideError('uploadError');
                 
                 const reportTitleEl = document.getElementById('reportTitle');
+                const reportDescriptionEl = document.getElementById('reportDescription');
                 const fileInput = document.getElementById('fileInput');
                 
                 if (!reportTitleEl || !fileInput) {
@@ -2428,6 +2584,7 @@
                 }
                 
                 const title = reportTitleEl.value.trim();
+                const description = reportDescriptionEl ? reportDescriptionEl.value.trim() : '';
                 const file = fileInput.files[0];
 
                 if (!title) {
@@ -2452,10 +2609,10 @@
                         
                         if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
                             compressImage(fileData, function(compressedData) {
-                                saveReport(title, file.name, file.type, compressedData);
+                                saveReport(title, description, file.name, file.type, compressedData);
                             });
                         } else {
-                            saveReport(title, file.name, file.type, fileData);
+                            saveReport(title, description, file.name, file.type, fileData);
                         }
                     } catch (e) {
                         console.error('파일 처리 오류:', e);
@@ -2517,10 +2674,11 @@
             }
         }
 
-        function saveReport(title, filename, type, data) {
+        function saveReport(title, description, filename, type, data) {
             try {
                 const report = {
                     title: title,
+                    description: description,
                     filename: filename,
                     type: type,
                     data: data,
@@ -2536,6 +2694,7 @@
                 updateStats();
                 closeUploadModal();
 
+                playUploadAlert();
                 alert('✅ 파일이 업로드되었습니다!');
             } catch (e) {
                 console.error('보고서 저장 오류:', e);
