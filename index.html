@@ -10,27 +10,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>긴급구조 e-리포트</title>
     
+    <!-- Preload critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Firebase SDK - Compatible version -->
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
+    <!-- External resources -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous">
 
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6ri06riJ6rWs7KGwIGUt66as7Y+s7Yq4IiwKInNob3J0X25hbWUiOiJlLeuniO2PrO2KuCIsCiJzdGFydF91cmwiOiIuLyIsCiJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsCiJiYWNrZ3JvdW5kX2NvbG9yIjoiIzEyMTIxMiIsCiJ0aGVtZV9jb2xvciI6IiMxMjEyMTIiLAoiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCw8c3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInPjxyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPScjRkY5OTAwJy8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkb21pbmFudC1iYXNlbGluZT0nY2VudHJhbCc+8J+amTwvdGV4dD48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
-
+    <!-- Polyfills for older browsers -->
     <script>
+        // Promise polyfill for IE11
         if (!window.Promise) {
             document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.2.3/dist/polyfill.min.js"><\/script>');
         }
+        
+        // Array.from polyfill
         if (!Array.from) {
             Array.from = function(arrayLike) {
                 return Array.prototype.slice.call(arrayLike);
             };
         }
+        
+        // Object.assign polyfill
         if (typeof Object.assign !== 'function') {
             Object.assign = function(target) {
                 for (var i = 1; i < arguments.length; i++) {
@@ -47,6 +55,7 @@
     </script>
 
     <style>
+        /* === RESET & MODERN DARK THEME === */
         :root {
             --bg-dark-primary: #121212;
             --bg-dark-secondary: #1E1E1E;
@@ -67,90 +76,100 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Cross-browser compatibility */
         body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg-dark-primary);
             color: var(--text-primary);
             min-height: 100vh;
             padding: 15px;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* iOS Safari fixes */
+        body {
             -webkit-text-size-adjust: 100%;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        input, textarea, button {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;
         }
 
+        /* === HEADER === */
         .header {
             position: relative;
             text-align: left;
             padding: 10px 0 15px 0;
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .header-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
+            background: none;
         }
 
         .header h1 {
             font-size: 1.8em;
             color: var(--text-primary);
-            margin: 0;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .header h1 i { 
-            color: var(--accent-red); 
-        }
+        .header h1 i { color: var(--accent-orange); }
+        .header p { color: var(--text-secondary); font-size: 0.9em; }
 
-        .header p { 
-            color: var(--text-secondary); 
-            font-size: 0.9em; 
-            margin-top: 5px;
-        }
-
-        .firebase-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .cloud-badge {
+            display: inline-block;
             background: var(--bg-dark-secondary);
-            padding: 6px 12px;
+            padding: 5px 15px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
+            margin-top: 15px;
             border: 1px solid var(--border-color);
-            white-space: nowrap;
         }
 
-        .firebase-status.online {
+        /* Connection status indicator */
+        .connection-status {
+            position: absolute;
+            top: 0;
+            right: 200px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: var(--bg-dark-tertiary);
+            border: 1px solid var(--border-color);
+        }
+
+        .connection-status.online {
             color: var(--accent-green);
             border-color: var(--accent-green);
         }
 
-        .firebase-status.offline {
+        .connection-status.offline {
             color: var(--accent-red);
             border-color: var(--accent-red);
         }
 
-        .firebase-status.connecting {
-            color: var(--accent-orange);
-            border-color: var(--accent-orange);
-        }
-
+        /* Header login status */
         .header-login-status {
             position: absolute;
             right: 0;
@@ -186,6 +205,7 @@
             font-size: 12px;
             font-weight: bold;
             transition: all 0.2s ease;
+            -webkit-transition: all 0.2s ease;
         }
         .header-logout-btn:hover { 
             background: var(--accent-red); 
@@ -193,6 +213,9 @@
             border-color: var(--accent-red); 
         }
 
+        .main-content { padding: 0; }
+
+        /* === LOGIN SCREEN === */
         .login-container {
             display: flex;
             align-items: center;
@@ -237,11 +260,20 @@
             font-size: 16px;
             background: var(--bg-dark-primary);
             color: var(--text-primary);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         .login-box input:focus {
             outline: none;
             border-color: var(--accent-orange);
+        }
+
+        /* iOS specific input fixes */
+        .login-box input[type="text"], 
+        .login-box input[type="password"] {
+            -webkit-border-radius: 8px;
         }
 
         .login-box button {
@@ -255,9 +287,14 @@
             font-size: 16px;
             font-weight: bold;
             margin-top: 10px;
+            transition: background-color 0.2s ease;
+            -webkit-transition: background-color 0.2s ease;
+            -webkit-appearance: none;
         }
         .login-box button:hover { background: #e68a00; }
+        .login-box button:active { transform: scale(0.98); }
 
+        /* === CONTENT AREA === */
         .content-area { display: none; }
         .content-area.active { display: block; }
 
@@ -280,6 +317,10 @@
         }
         .section-title i { color: var(--accent-blue); }
 
+        /* 기존 user-section을 숨김 처리 */
+        .user-section { display: none; }
+
+        /* === STATS === */
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -313,18 +354,15 @@
             font-size: 13px;
         }
 
+        /* DIRECTIVE SECTION */
         .directive-input-area {
             background: var(--bg-dark-tertiary);
             padding: 20px;
             border-radius: 12px;
-            margin-bottom: 15px;
+            box-shadow: none;
         }
 
-        .directive-input-wrapper { 
-            display: flex; 
-            gap: 10px; 
-            align-items: flex-start;
-        }
+        .directive-input-wrapper { display: flex; gap: 10px; }
 
         .directive-input {
             flex: 1;
@@ -335,7 +373,7 @@
             background: var(--bg-dark-primary);
             color: var(--text-primary);
             resize: vertical;
-            min-height: 45px;
+            -webkit-appearance: none;
         }
         .directive-input:focus { border-color: var(--accent-orange); outline: none;}
 
@@ -348,12 +386,14 @@
             cursor: pointer;
             font-size: 15px;
             font-weight: bold;
-            white-space: nowrap;
-            align-self: stretch;
+            transition: background-color 0.2s ease;
+            -webkit-appearance: none;
         }
         .directive-send-btn:hover { background: #e68a00; }
+        .directive-send-btn:active { transform: scale(0.98); }
 
         .directive-display {
+            margin-top: 20px;
             background: var(--bg-dark-tertiary);
             padding: 15px;
             border-radius: 10px;
@@ -361,8 +401,8 @@
             border: 3px solid transparent;
         }
 
-        .directive-display.active { display: block; }
-        .directive-display.recent { border-color: var(--accent-red); animation: pulse-directive 1.5s infinite; }
+        .directive-display.active { display: block; animation: fadeIn 0.3s ease-out; }
+        .directive-display.recent { border-color: var(--accent-red); animation: fadeIn 0.3s ease-out, pulse-directive 1.5s infinite; }
 
         @keyframes pulse-directive {
             0%, 100% { border-color: var(--accent-red); box-shadow: 0 0 15px rgba(229, 57, 53, 0.6); }
@@ -387,6 +427,12 @@
             align-items: center;
             gap: 8px;
         }
+        .directive-title.recent { animation: pulse-text 1.5s infinite; }
+
+        @keyframes pulse-text {
+            0%, 100% { color: var(--accent-red); text-shadow: 0 0 10px rgba(229, 57, 53, 0.5); }
+            50% { color: #ff0000; text-shadow: 0 0 20px rgba(229, 57, 53, 0.8); }
+        }
         
         .directive-delete-btn {
             background: var(--bg-dark-tertiary);
@@ -397,8 +443,10 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: bold;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
         }
-        .directive-delete-btn:hover { background: var(--accent-red); color: white; }
+        .directive-delete-btn:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
         .directive-content {
             font-size: 15px;
@@ -421,6 +469,8 @@
             gap: 15px;
         }
 
+        /* === RECENT UPLOADS === */
+        .recent-uploads-section { padding: 0; background: transparent; border: none; }
         .recent-uploads-title {
             font-size: 16px;
             font-weight: bold;
@@ -431,13 +481,49 @@
             gap: 8px;
         }
 
+        /* 스크롤 가능한 컨테이너 */
         .recent-uploads-container {
             max-height: 240px;
             overflow-y: auto;
+            overflow-x: hidden;
             border-radius: 8px;
             background: var(--bg-dark-primary);
             border: 1px solid var(--border-color);
             padding: 4px;
+            
+            /* Cross-browser scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-orange) var(--bg-dark-tertiary);
+            -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+        }
+
+        .recent-uploads-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .recent-uploads-container::-webkit-scrollbar-track {
+            background: var(--bg-dark-tertiary);
+            border-radius: 4px;
+        }
+
+        .recent-uploads-container::-webkit-scrollbar-thumb {
+            background: var(--accent-orange);
+            border-radius: 4px;
+        }
+
+        .recent-uploads-container::-webkit-scrollbar-thumb:hover {
+            background: #e68a00;
+        }
+
+        /* 모바일에서 스크롤바 숨김 */
+        @media (max-width: 768px) {
+            .recent-uploads-container {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .recent-uploads-container::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         .recent-upload-item {
@@ -447,16 +533,20 @@
             margin-bottom: 8px;
             cursor: pointer;
             border-left: 4px solid var(--accent-orange);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             gap: 12px;
+            -webkit-tap-highlight-color: rgba(255, 153, 0, 0.1);
         }
 
-        .recent-upload-item:hover { 
+        .recent-upload-item:hover, .recent-upload-item:active { 
             transform: translateX(5px); 
             background: #353539; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
         }
 
+        /* 동그란 번호 스타일 */
         .recent-upload-number {
             background: var(--accent-orange);
             color: white;
@@ -487,12 +577,15 @@
             flex-wrap: wrap;
         }
 
+        /* 몇분전 표시 스타일 */
         .time-ago {
+            font-family: 'Roboto', sans-serif;
             font-size: 12px;
             color: var(--accent-blue);
             background: rgba(3, 169, 244, 0.1);
             padding: 2px 8px;
             border-radius: 12px;
+            font-weight: 500;
         }
 
         .recent-upload-time { 
@@ -504,8 +597,10 @@
             text-align: center; 
             color: var(--text-secondary); 
             padding: 20px; 
+            font-size: 14px; 
         }
 
+        /* REPORTS GRID */
         .reports-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -522,21 +617,30 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: rgba(3, 169, 244, 0.1);
         }
 
         .report-slot.filled {
+            background: var(--bg-dark-secondary);
             border: 2px solid var(--accent-blue);
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .report-slot.filled:hover { 
+        .report-slot.filled:hover, .report-slot.filled:active { 
             transform: translateY(-5px); 
             box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
         }
         .report-slot.recent-upload { border-color: var(--accent-red); animation: pulse-border 1.5s infinite; }
+        .slot-number.recent { background: var(--accent-red); animation: pulse-number 1s infinite; }
 
         @keyframes pulse-border {
             0%, 100% { border-color: var(--accent-red); box-shadow: 0 0 15px rgba(229, 57, 53, 0.6); }
             50% { border-color: #ff0000; box-shadow: 0 0 25px rgba(229, 57, 53, 1); }
+        }
+        @keyframes pulse-number {
+            0%, 100% { background: var(--accent-red); transform: scale(1); box-shadow: 0 0 10px rgba(229, 57, 53, 0.7); }
+            50% { background: #ff0000; transform: scale(1.1); box-shadow: 0 0 20px rgba(229, 57, 53, 1); }
         }
 
         .slot-number {
@@ -554,16 +658,7 @@
             font-weight: bold;
             font-size: 13px;
             z-index: 1;
-        }
-
-        .slot-number.recent { 
-            background: var(--accent-red); 
-            animation: pulse-number 1s infinite; 
-        }
-
-        @keyframes pulse-number {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            border: 2px solid var(--bg-dark-secondary);
         }
 
         .report-preview {
@@ -583,6 +678,8 @@
             max-width: 100%; 
             max-height: 100%; 
             object-fit: contain;
+            -webkit-user-drag: none;
+            user-drag: none;
         }
         .pdf-icon { font-size: 50px; color: var(--text-secondary); }
 
@@ -599,14 +696,7 @@
             -webkit-box-orient: vertical;
         }
 
-        .report-filename { 
-            font-size: 11px; 
-            color: var(--accent-blue); 
-            margin-bottom: 8px; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            white-space: nowrap; 
-        }
+        .report-filename { font-size: 11px; color: var(--accent-blue); margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .report-meta { font-size: 10px; color: var(--text-secondary); margin-top: auto; }
 
         .upload-btn, .replace-btn {
@@ -617,9 +707,15 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 12px;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .upload-btn { background: var(--accent-green); width: 100%; margin-top: 10px;}
+        .upload-btn:hover { background: #218838; }
         .replace-btn { background: var(--accent-orange); }
+        .replace-btn:hover { background: #e68a00; }
+        .replace-btn:active, .upload-btn:active { transform: scale(0.95); }
 
         .delete-confirm { background: var(--accent-red) !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
@@ -631,27 +727,11 @@
             justify-content: center;
             color: var(--text-secondary);
             height: 100%;
+            padding: 10px;
         }
         .empty-icon { font-size: 40px; margin-bottom: 8px; }
 
-        .expand-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: rgba(0,0,0,0.6);
-            border: 2px solid rgba(255,255,255,0.8);
-            border-radius: 8px;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-
+        /* MODAL STYLES */
         .modal, .fullscreen-modal {
             display: none;
             position: fixed;
@@ -696,6 +776,7 @@
             font-size: 16px;
             background: var(--bg-dark-primary);
             color: var(--text-primary);
+            -webkit-appearance: none;
         }
         .form-group input[type="text"]:focus { border-color: var(--accent-orange); outline: none;}
 
@@ -709,7 +790,10 @@
             cursor: pointer;
             font-weight: bold;
             margin-bottom: 10px;
+            transition: background-color 0.2s ease;
+            -webkit-appearance: none;
         }
+        .file-select-btn:hover { background: #0288d1; }
         
         .selected-file {
             padding: 10px;
@@ -730,10 +814,14 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 15px;
+            transition: opacity 0.2s ease;
+            -webkit-appearance: none;
         }
+        .modal-buttons button:hover { opacity: 0.9; }
         .btn-confirm { background: var(--accent-green); color: white; }
         .btn-cancel { background: #6c757d; color: white; }
 
+        /* FULLSCREEN MODAL */
         .fullscreen-modal { background: rgba(0,0,0,0.95); z-index: 2000; }
         .fullscreen-modal.active { flex-direction: column; }
         .fullscreen-header {
@@ -744,6 +832,7 @@
             color: white;
             flex-wrap: wrap;
             gap: 10px;
+            background: rgba(0,0,0,0.3);
         }
         .back-btn {
             padding: 10px 20px;
@@ -753,6 +842,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
+            -webkit-appearance: none;
         }
         .fullscreen-content {
             flex: 1;
@@ -761,18 +851,43 @@
             justify-content: center;
             overflow: auto;
             padding: 15px;
+            touch-action: pan-x pan-y;
             position: relative;
         }
         .fullscreen-image { 
             max-width: 100%; 
             max-height: 100%; 
-            width: auto;
-            height: auto;
             object-fit: contain; 
+            transition: transform 0.1s ease-out; 
             cursor: grab;
+            -webkit-user-drag: none;
+            user-drag: none;
         }
         .fullscreen-image.dragging { cursor: grabbing; }
-        .fullscreen-info { color: white; text-align: center; padding: 15px; }
+        .fullscreen-info { color: white; text-align: center; padding: 15px; background: rgba(0,0,0,0.3); }
+        .fullscreen-info h2 { font-size: 1.3em; margin-bottom: 10px; }
+
+        .expand-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+        }
+        .expand-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
+        .expand-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.8); }
 
         .zoom-controls {
             position: fixed;
@@ -792,9 +907,18 @@
             border-radius: 50%;
             color: white;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.6);
         }
 
+        /* Error message styles */
         .error-message {
             background: rgba(229, 57, 53, 0.1);
             border: 1px solid var(--accent-red);
@@ -806,83 +930,368 @@
             display: none;
         }
 
-        .error-message.show { display: block; }
+        .error-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* ANIMATIONS & RESPONSIVE */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(10px); } 10%, 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(10px); } }
         
+        /* === ENHANCED RESPONSIVE DESIGN === */
+        
+        /* Large Desktop (1200px+) */
         @media (min-width: 1200px) {
+            .container { max-width: 1400px; }
             .reports-grid { grid-template-columns: repeat(5, 1fr); }
+            .stats { grid-template-columns: repeat(3, 1fr); }
         }
         
-        @media (max-width: 767px) {
+        /* Desktop (992px - 1199px) */
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .container { max-width: 1140px; }
+            .reports-grid { grid-template-columns: repeat(4, 1fr); }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        /* Tablet (768px - 991px) */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .container { max-width: 720px; }
+            body { padding: 12px; }
+            
+            .header h1 { font-size: 1.6em; }
+            .header-login-status { 
+                position: static; 
+                margin-top: 10px; 
+                justify-content: flex-end; 
+            }
+            .connection-status {
+                position: static;
+                margin-bottom: 10px;
+            }
+            
+            .reports-grid { 
+                grid-template-columns: repeat(3, 1fr); 
+                gap: 12px; 
+            }
+            .report-slot { min-height: 220px; }
+            .report-preview { height: 110px; }
+            
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .stat-number { font-size: 24px; }
+            .stat-item { padding: 12px 15px; }
+            
+            .directive-input-wrapper { gap: 8px; }
+            .recent-upload-number { width: 24px; height: 24px; font-size: 12px; }
+        }
+        
+        /* Mobile Large (576px - 767px) */
+        @media (min-width: 576px) and (max-width: 767px) {
             body { padding: 10px; }
-            .header h1 { font-size: 1.3em; }
+            
+            .header h1 { font-size: 1.4em; }
             .header-login-status { 
                 position: fixed;
                 top: 10px;
                 right: 10px;
                 z-index: 100;
+                margin-top: 0;
             }
-            .header-user-info { display: none; }
-            .reports-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .connection-status {
+                position: static;
+                margin-bottom: 8px;
+            }
+            
+            .reports-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 10px; 
+            }
             .report-slot { min-height: 200px; }
-            .stats { display: flex; gap: 0.8rem; }
-            .stat-item { padding: 10px; flex: 1; }
-            .stat-number { font-size: 20px; }
+            .report-preview { height: 100px; }
+            
+            /* 모바일에서 stats 1열 배치 및 크기 감소 */
+            .stats { 
+                display: flex;
+                gap: 0.8rem;
+                padding: 12px;
+                background: var(--bg-dark-secondary);
+                border-radius: 10px;
+                border: 1px solid var(--border-color);
+                margin-bottom: 20px;
+            }
+            .stat-item { 
+                padding: 8px 10px; 
+                flex: 1;
+                min-width: 0;
+                border-left-width: 3px;
+            }
+            .stat-number { font-size: 18px; }
             .stat-label { font-size: 11px; }
+            
+            .directive-input-wrapper { flex-direction: column; }
+            .card { padding: 15px; }
+            
+            /* 5분 이내 업로드 항목 모바일 최적화 */
+            .recent-upload-item { 
+                padding: 10px 12px;
+                gap: 8px;
+            }
+            .recent-upload-number { 
+                width: 22px; 
+                height: 22px; 
+                font-size: 11px; 
+            }
+            .recent-upload-title { font-size: 13px; }
+            .recent-upload-content {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .recent-upload-title {
+                display: inline;
+                margin-bottom: 0;
+            }
+            .time-ago {
+                font-size: 10px;
+                padding: 1px 6px;
+            }
+            .recent-upload-time { display: none; }
+            .recent-uploads-container { max-height: 150px; }
         }
         
+        /* Mobile Small (375px - 575px) */
         @media (max-width: 575px) {
-            .reports-grid { grid-template-columns: 1fr; }
+            body { padding: 8px; }
+            
+            .header { padding: 8px 0 12px 0; margin-bottom: 1.5rem; }
+            .header h1 { 
+                font-size: 1.2em; 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 5px; 
+            }
+            
+            /* 모바일에서 로그아웃 버튼 우측 상단 고정 */
+            .header-login-status { 
+                position: fixed;
+                top: 8px;
+                right: 8px;
+                z-index: 100;
+                margin-top: 0;
+                gap: 5px;
+            }
+            .header-user-info { 
+                font-size: 12px;
+                display: none; /* 모바일에서 사용자 이름 숨김 */
+            }
+            .header-logout-btn { 
+                font-size: 11px; 
+                padding: 5px 12px;
+            }
+            
+            .connection-status {
+                position: static;
+                margin-bottom: 8px;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .reports-grid { 
+                grid-template-columns: 1fr; 
+                gap: 8px; 
+            }
+            .report-slot { min-height: 180px; padding: 10px; }
+            .report-preview { height: 90px; }
+            
+            /* 모바일에서 stats 1열 배치 및 크기 감소 */
+            .stats { 
+                display: flex;
+                gap: 0.5rem; 
+                padding: 10px;
+                background: var(--bg-dark-secondary);
+                border-radius: 10px;
+                border: 1px solid var(--border-color);
+                margin-bottom: 20px;
+            }
+            .stat-item { 
+                padding: 8px;
+                flex: 1;
+                min-width: 0;
+                border-left-width: 3px;
+            }
+            .stat-number { font-size: 16px; }
+            .stat-label { font-size: 10px; }
+            
+            .card { padding: 12px; margin-bottom: 15px; }
+            .section-title { font-size: 1rem; margin-bottom: 1rem; }
+            
+            .directive-input-wrapper { flex-direction: column; }
+            .directive-input { font-size: 14px; }
+            .directive-send-btn { padding: 10px 16px; font-size: 14px; }
+            
+            /* 5분 이내 업로드 항목 모바일 최적화 */
+            .recent-upload-item { 
+                padding: 8px 10px; 
+                gap: 6px;
+            }
+            .recent-upload-number { 
+                width: 20px; 
+                height: 20px; 
+                font-size: 10px; 
+            }
+            .recent-upload-content {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .recent-upload-title { 
+                font-size: 12px;
+                display: inline;
+                margin-bottom: 0;
+            }
+            .time-ago { 
+                font-size: 10px;
+                padding: 1px 5px;
+            }
+            .recent-upload-time { display: none; }
+            .recent-uploads-container { max-height: 120px; }
+            
+            .fullscreen-header { 
+                flex-direction: column; 
+                align-items: stretch; 
+                gap: 8px; 
+                padding: 10px; 
+            }
+            
+            .login-box { 
+                padding: 25px; 
+                margin: 0 5px; 
+            }
+            .login-box h2 { font-size: 1.5em; }
+        }
+        
+        /* Extra Small Mobile (320px - 374px) */
+        @media (max-width: 374px) {
+            body { padding: 5px; }
+            
+            .header h1 { font-size: 1.1em; }
+            .reports-grid { gap: 6px; }
+            .report-slot { min-height: 160px; padding: 8px; }
+            .report-preview { height: 80px; }
+            
+            /* 초소형 모바일에서 stats 더 작게 */
+            .stat-number { font-size: 14px; }
+            .stat-label { font-size: 9px; }
+            .stat-item { padding: 6px; }
+            
+            .card { padding: 10px; }
+            .section-title { font-size: 0.9rem; }
+            
+            .recent-upload-item { padding: 6px 8px; }
+            .recent-upload-title { font-size: 11px; }
+            .recent-uploads-container { max-height: 100px; }
+            
+            .login-box { padding: 20px; }
+        }
+
+        /* iOS Safari specific fixes */
+        @supports (-webkit-appearance: none) {
+            .fullscreen-modal { 
+                height: -webkit-fill-available; 
+            }
+            
+            body {
+                min-height: -webkit-fill-available;
+            }
+        }
+
+        /* Android Chrome specific fixes */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            .zoom-controls { 
+                bottom: calc(30px + env(safe-area-inset-bottom)); 
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .report-preview img {
+                image-rendering: -webkit-optimize-contrast;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-top">
-                <div class="header-title">
-                    <h1><i class="fa-solid fa-truck-medical"></i>긴급구조 e-리포트</h1>
-                    <div class="firebase-status connecting" id="firebaseStatus">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중
-                    </div>
-                </div>
-                
-                <div class="header-login-status" id="headerLoginStatus">
-                    <div class="header-user-info">
-                        <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
-                    </div>
-                    <button class="header-logout-btn" onclick="logout()">
-                        <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
-                    </button>
-                </div>
-            </div>
+            <h1><i class="fa-solid fa-tower-broadcast"></i>긴급구조 e-리포트</h1>
             <p>누구나 실시간으로 자료 확인 가능</p>
+            <div class="cloud-badge">☁️ Firebase Realtime Database</div>
+            
+            <!-- Connection status -->
+            <div class="connection-status" id="connectionStatus">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중...
+            </div>
+            
+            <!-- 헤더 오른쪽 상단 로그인 현황 -->
+            <div class="header-login-status" id="headerLoginStatus">
+                <div class="header-user-info">
+                    <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
+                </div>
+                <button class="header-logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                </button>
+            </div>
         </div>
 
         <div class="main-content">
+            <!-- 로그인 화면 -->
             <div class="login-container" id="loginContainer">
                 <div class="login-box">
                     <h2><i class="fa-solid fa-lock"></i>로그인</h2>
+                    
+                    <!-- 카카오톡 브라우저 경고 -->
+                    <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.5;">
+                            <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
+                            더 나은 사용을 위해 외부 브라우저를 사용하세요
+                        </div>
+                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            <i class="fa-solid fa-globe"></i> Chrome/Safari에서 열기
+                        </button>
+                    </div>
+
+                    <!-- Error message -->
                     <div id="loginError" class="error-message"></div>
                     
                     <div class="form-group">
                         <label for="usernameInput">사용자 이름</label>
-                        <input type="text" id="usernameInput" placeholder="이름을 입력하세요">
+                        <input type="text" id="usernameInput" placeholder="이름을 입력하세요" autocomplete="off">
                     </div>
           
                     <div class="form-group">
                         <label for="passwordInput">비밀번호</label>
-                        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요">
+                        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요" autocomplete="off">
                     </div>
                 
                     <button onclick="login()">로그인</button>
                 </div>
             </div>
 
+            <!-- 메인 컨텐츠 -->
             <div class="content-area" id="contentArea">
+                <!-- 기존 user-section은 숨김 처리됨 -->
+                <div class="card user-section">
+                    <div class="current-user">
+                        <span><i class="fa-solid fa-user"></i> 현재 사용자: <span id="currentUser"></span></span>
+                        <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
+                    </div>
+                </div>
+
                 <div class="card stats">
                     <div class="stat-item">
-                        <div class="stat-number" id="recentFiveMin">0</div>
-                        <div class="stat-label">5분 업로드</div>
+                        <div class="stat-number" id="totalReports">0</div>
+                        <div class="stat-label">총 보고서</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="onlineUsers">0</div>
@@ -898,25 +1307,25 @@
                     <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i>실시간 지시사항</h2>
                     <div class="directive-input-area">
                         <div class="directive-input-wrapper">
-                            <textarea class="directive-input" id="directiveInput" placeholder="긴급 지시사항을 입력하세요..." rows="2"></textarea>
-                            <button class="directive-send-btn" onclick="sendDirective()">
+                            <textarea class="directive-input" id="directiveInput" placeholder="📢 긴급 지시사항을 입력하세요..." rows="2"></textarea>
+                            <button class="directive-send-btn" id="directiveSendBtn" onclick="sendDirective()">
                                 <i class="fa-solid fa-paper-plane"></i> 전송
                             </button>
                         </div>
-                    </div>
-                    
-                    <div class="directive-display" id="directiveDisplay">
-                        <div class="directive-header">
-                            <div class="directive-title">
-                                <span>📢</span>
-                                <span>긴급 지시사항</span>
+                        
+                        <div class="directive-display" id="directiveDisplay">
+                            <div class="directive-header">
+                                <div class="directive-title">
+                                    <span>📢</span>
+                                    <span>긴급 지시사항</span>
+                                </div>
+                                <button class="directive-delete-btn" id="directiveDeleteBtn" onclick="deleteDirective()">
+                                    <i class="fa-solid fa-trash-can"></i> 삭제
+                                </button>
                             </div>
-                            <button class="directive-delete-btn" onclick="deleteDirective()">
-                                <i class="fa-solid fa-trash-can"></i> 삭제
-                            </button>
+                            <div class="directive-content" id="directiveContent"></div>
+                            <div class="directive-meta" id="directiveMeta"></div>
                         </div>
-                        <div class="directive-content" id="directiveContent"></div>
-                        <div class="directive-meta" id="directiveMeta"></div>
                     </div>
                 </div>
 
@@ -930,16 +1339,17 @@
         </div>
     </div>
 
+    <!-- 업로드 모달 -->
     <div class="modal" id="uploadModal">
         <div class="modal-content">
             <h3><i class="fa-solid fa-arrow-up-from-bracket"></i> 파일 업로드</h3>
             <div id="uploadError" class="error-message"></div>
             <div class="form-group">
-                <label for="reportTitle">제목</label>
-                <input type="text" id="reportTitle" placeholder="보고서 제목 입력">
+                <label for="reportTitle">제목 *</label>
+                <input type="text" id="reportTitle" placeholder="보고서 제목 입력" autocomplete="off">
             </div>
             <div class="form-group">
-                <label>파일 선택</label>
+                <label>파일 선택 *</label>
                 <button class="file-select-btn" onclick="selectFile()"><i class="fa-solid fa-folder-open"></i> 파일 선택</button>
                 <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
                 <div class="selected-file" id="selectedFile">선택된 파일 없음</div>
@@ -951,16 +1361,17 @@
         </div>
     </div>
 
+    <!-- 전체화면 모달 -->
     <div class="fullscreen-modal" id="fullscreenModal">
         <div class="fullscreen-header">
             <button class="back-btn" onclick="closeFullscreen()"><i class="fa-solid fa-arrow-left"></i> 뒤로가기</button>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn-confirm" id="replaceBtn" style="display: none; padding: 10px 20px;" onclick="replaceFile()"><i class="fa-solid fa-retweet"></i> 교체</button>
                 <button class="btn-confirm" id="deleteBtn" style="display: none; padding: 10px 20px; background: #dc3545;" onclick="deleteFromFullscreen()"><i class="fa-solid fa-trash-can"></i> 삭제</button>
             </div>
         </div>
         <div class="zoom-controls" id="zoomControls">
-            <button class="zoom-btn" onclick="openNativeImageView(currentViewSlot)">🔍</button>
+            <button class="zoom-btn" onclick="openNativeImageView(currentViewSlot)" title="브라우저에서 열기">🔍</button>
             <button class="zoom-btn" onclick="zoomIn()">+</button>
             <button class="zoom-btn" onclick="zoomOut()">−</button>
             <button class="zoom-btn" onclick="resetZoom()">⟲</button>
@@ -970,9 +1381,90 @@
     </div>
 
     <script>
+        // Firebase initialization with error handling
         let firebase = null;
         let database = null;
         let isFirebaseEnabled = false;
+        let firebaseInitialized = false;
+
+        // Enhanced cross-browser initialization
+        function initializeFirebase() {
+            try {
+                // Check if Firebase is available
+                if (typeof window.firebase === 'undefined') {
+                    console.warn('Firebase SDK not loaded');
+                    updateConnectionStatus('offline', 'Firebase 연결 실패');
+                    return false;
+                }
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
+                    authDomain: "project-3907456119741146864.firebaseapp.com",
+                    databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
+                    projectId: "project-3907456119741146864",
+                    storageBucket: "project-3907456119741146864.firebasestorage.app",
+                    messagingSenderId: "690596721309",
+                    appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
+                };
+
+                // Initialize Firebase
+                if (!window.firebase.apps.length) {
+                    firebase = window.firebase.initializeApp(firebaseConfig);
+                } else {
+                    firebase = window.firebase.app();
+                }
+                
+                database = window.firebase.database();
+                isFirebaseEnabled = true;
+                firebaseInitialized = true;
+                
+                updateConnectionStatus('online', 'Firebase 연결됨');
+                console.log('Firebase initialized successfully');
+                return true;
+            } catch (error) {
+                console.error('Firebase initialization failed:', error);
+                updateConnectionStatus('offline', 'Firebase 연결 실패: ' + error.message);
+                isFirebaseEnabled = false;
+                return false;
+            }
+        }
+
+        // Connection status indicator
+        function updateConnectionStatus(status, message) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (!statusEl) return;
+
+            statusEl.className = 'connection-status ' + status;
+            
+            if (status === 'online') {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #28a745;"></i> ' + message;
+            } else if (status === 'offline') {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #E53935;"></i> ' + message;
+            } else {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ' + message;
+            }
+        }
+
+        // Enhanced error handling
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+                setTimeout(() => {
+                    errorEl.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        function hideError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.classList.remove('show');
+            }
+        }
+
+        // 전역 변수들
         let currentUser = null;
         let reports = Array(10).fill(null);
         let users = new Set();
@@ -985,782 +1477,1692 @@
         let isDragging = false;
         let startX = 0;
         let startY = 0;
+        let lastTouchDistance = 0;
         let deleteConfirmSlot = null;
         let deleteTimerId = null;
         let currentDirective = null;
+        let backPressTime = 0;
+        let backPressToast = null;
         let presenceRef = null;
         let heartbeatInterval = null;
-        const LOGIN_DURATION = 30 * 60 * 1000;
+        let lastReportCount = 0;
+        let audioContext = null;
+        let isAudioEnabled = false;
 
+        const LOGIN_DURATION = 30 * 60 * 1000; // 30분
+
+        // Enhanced localStorage with error handling
         function safeLocalStorage() {
             try {
-                localStorage.setItem('test', 'test');
-                localStorage.removeItem('test');
+                const test = 'test';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
                 return localStorage;
             } catch (e) {
-                const mem = {};
+                console.warn('localStorage not available, using memory storage');
+                // Fallback to memory storage
+                const memoryStorage = {};
                 return {
-                    getItem: k => mem[k] || null,
-                    setItem: (k, v) => mem[k] = v,
-                    removeItem: k => delete mem[k]
+                    getItem: function(key) { return memoryStorage[key] || null; },
+                    setItem: function(key, value) { memoryStorage[key] = value; },
+                    removeItem: function(key) { delete memoryStorage[key]; },
+                    clear: function() { for (let key in memoryStorage) delete memoryStorage[key]; }
                 };
             }
         }
+
         const storage = safeLocalStorage();
 
-        function updateFirebaseStatus(status, message) {
-            const el = document.getElementById('firebaseStatus');
-            if (el) {
-                el.className = 'firebase-status ' + status;
-                el.innerHTML = message;
+        // 시간 계산 함수 (몇분전 표시용)
+        function getTimeAgo(timestamp) {
+            try {
+                const now = Date.now();
+                const uploadTime = new Date(timestamp).getTime();
+                const diffMinutes = Math.floor((now - uploadTime) / (1000 * 60));
+                
+                if (diffMinutes < 1) return '방금 전';
+                else if (diffMinutes === 1) return '1분 전';
+                else return diffMinutes + '분 전';
+            } catch (e) {
+                return '시간 미상';
             }
         }
 
-        function initializeFirebase() {
-            return new Promise((resolve) => {
-                let attempts = 0;
-                const maxAttempts = 50;
-                
-                const checkFirebase = () => {
-                    attempts++;
-                    
-                    if (typeof window.firebase !== 'undefined') {
-                        try {
-                            const config = {
-                                apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
-                                authDomain: "project-3907456119741146864.firebaseapp.com",
-                                databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
-                                projectId: "project-3907456119741146864",
-                                storageBucket: "project-3907456119741146864.firebasestorage.app",
-                                messagingSenderId: "690596721309",
-                                appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
-                            };
-
-                            if (!window.firebase.apps.length) {
-                                firebase = window.firebase.initializeApp(config);
-                            } else {
-                                firebase = window.firebase.app();
-                            }
-                            
-                            database = window.firebase.database();
-                            isFirebaseEnabled = true;
-                            updateFirebaseStatus('online', '🔥 실시간 연동');
-                            console.log('Firebase initialized successfully');
-                            resolve(true);
-                        } catch (error) {
-                            console.error('Firebase init error:', error);
-                            updateFirebaseStatus('offline', '❌ 연결 실패');
-                            isFirebaseEnabled = false;
-                            resolve(false);
+        // Enhanced audio initialization with fallback
+        function initAudio() {
+            if (!audioContext) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        audioContext = new AudioContext();
+                        isAudioEnabled = true;
+                        
+                        // Handle iOS audio context restrictions
+                        if (audioContext.state === 'suspended') {
+                            document.addEventListener('touchstart', function resumeAudio() {
+                                audioContext.resume().then(() => {
+                                    document.removeEventListener('touchstart', resumeAudio);
+                                });
+                            }, { once: true });
                         }
-                    } else if (attempts >= maxAttempts) {
-                        console.warn('Firebase SDK not loaded after ' + maxAttempts + ' attempts');
-                        updateFirebaseStatus('offline', '❌ SDK 로드 실패');
-                        isFirebaseEnabled = false;
-                        resolve(false);
-                    } else {
-                        setTimeout(checkFirebase, 100);
                     }
-                };
-                
-                checkFirebase();
-            });
+                } catch (e) {
+                    console.log('오디오 지원 안됨:', e);
+                    isAudioEnabled = false;
+                }
+            }
         }
 
+        // Enhanced notification sound with fallback
+        function playNotificationSound() {
+            if (!isAudioEnabled || !audioContext) return;
+            
+            try {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => playSound());
+                } else {
+                    playSound();
+                }
+            } catch (e) {
+                console.log('알림음 재생 실패:', e);
+            }
+        }
+
+        function playSound() {
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+
+                setTimeout(function() {
+                    try {
+                        const oscillator2 = audioContext.createOscillator();
+                        const gainNode2 = audioContext.createGain();
+
+                        oscillator2.connect(gainNode2);
+                        gainNode2.connect(audioContext.destination);
+
+                        oscillator2.frequency.value = 1000;
+                        oscillator2.type = 'sine';
+
+                        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                        oscillator2.start(audioContext.currentTime);
+                        oscillator2.stop(audioContext.currentTime + 0.1);
+                    } catch (e) {
+                        console.log('Second sound failed:', e);
+                    }
+                }, 150);
+            } catch (e) {
+                console.log('Sound generation failed:', e);
+            }
+        }
+
+        // Enhanced browser detection
+        function getBrowserInfo() {
+            const ua = navigator.userAgent.toLowerCase();
+            return {
+                isKakaoTalk: ua.includes('kakaotalk'),
+                isMobile: /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua),
+                isIOS: /iphone|ipad|ipod/i.test(ua),
+                isAndroid: /android/i.test(ua),
+                isSafari: /safari/i.test(ua) && !/chrome/i.test(ua),
+                isChrome: /chrome/i.test(ua),
+                isFirefox: /firefox/i.test(ua)
+            };
+        }
+
+        // 카카오톡 브라우저 감지
+        function isKakaoTalkBrowser() {
+            return getBrowserInfo().isKakaoTalk;
+        }
+
+        // 모바일 기기 감지
+        function isMobileDevice() {
+            return getBrowserInfo().isMobile;
+        }
+
+        // Enhanced external browser opening
+        function openInExternalBrowser() {
+            const currentUrl = window.location.href;
+            const browserInfo = getBrowserInfo();
+            
+            try {
+                if (browserInfo.isIOS) {
+                    // iOS specific handling
+                    window.location.href = currentUrl;
+                    setTimeout(function() {
+                        alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
+                    }, 500);
+                } else if (browserInfo.isAndroid) {
+                    // Android specific handling
+                    const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                    window.location.href = intent;
+                    
+                    setTimeout(function() {
+                        window.open(currentUrl, '_blank');
+                    }, 500);
+                } else {
+                    window.open(currentUrl, '_blank');
+                }
+            } catch (e) {
+                console.error('Failed to open external browser:', e);
+                alert('외부 브라우저에서 열 수 없습니다. URL을 복사하여 Chrome 또는 Safari에서 열어주세요.\n\n' + currentUrl);
+            }
+        }
+
+        // Enhanced back press handling
+        function handleBackPress() {
+            const currentTime = Date.now();
+            if (currentTime - backPressTime < 2000) {
+                if (backPressToast) {
+                    document.body.removeChild(backPressToast);
+                    backPressToast = null;
+                }
+                
+                try {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.close();
+                    }
+                    
+                    setTimeout(function() {
+                        if (!window.closed) {
+                            alert('브라우저를 종료하려면 뒤로가기 버튼을 사용하세요.');
+                        }
+                    }, 100);
+                } catch (e) {
+                    console.error('Back press handling failed:', e);
+                }
+            } else {
+                backPressTime = currentTime;
+                if (backPressToast) {
+                    document.body.removeChild(backPressToast);
+                }
+                
+                try {
+                    backPressToast = document.createElement('div');
+                    backPressToast.textContent = '뒤로가기 버튼을 한 번 더 누르면 종료됩니다';
+                    backPressToast.style.cssText = 
+                        'position: fixed;' +
+                        'bottom: 80px;' +
+                        'left: 50%;' +
+                        'transform: translateX(-50%);' +
+                        'background: rgba(0,0,0,0.8);' +
+                        'color: white;' +
+                        'padding: 12px 24px;' +
+                        'border-radius: 25px;' +
+                        'font-size: 14px;' +
+                        'z-index: 10000;' +
+                        'animation: fadeInOut 2s ease-in-out;';
+                    document.body.appendChild(backPressToast);
+                    
+                    setTimeout(function() {
+                        if (backPressToast && document.body.contains(backPressToast)) {
+                            document.body.removeChild(backPressToast);
+                            backPressToast = null;
+                        }
+                    }, 2000);
+                } catch (e) {
+                    console.error('Toast creation failed:', e);
+                }
+            }
+        }
+
+        // Enhanced event listeners with error handling
+        function setupEventListeners() {
+            try {
+                window.addEventListener('popstate', function(event) {
+                    handleBackPress();
+                    window.history.pushState(null, '', window.location.href);
+                });
+                window.history.pushState(null, '', window.location.href);
+
+                window.addEventListener('beforeunload', function() {
+                    try {
+                        if (presenceRef) {
+                            presenceRef.remove();
+                        }
+                        if (heartbeatInterval) {
+                            clearInterval(heartbeatInterval);
+                        }
+                    } catch (e) {
+                        console.error('Cleanup failed:', e);
+                    }
+                });
+
+                // Enhanced window load event
+                window.addEventListener('load', function() {
+                    try {
+                        if (isKakaoTalkBrowser()) {
+                            const kakaoWarning = document.getElementById('kakaoWarning');
+                            if (kakaoWarning) {
+                                kakaoWarning.style.display = 'block';
+                            }
+                        }
+                        
+                        // Initialize Firebase first
+                        const firebaseReady = initializeFirebase();
+                        
+                        // Check auto login
+                        checkAutoLogin();
+                        
+                        // Setup sync based on Firebase availability
+                        if (firebaseReady && isFirebaseEnabled) {
+                            setupFirebaseSync();
+                        } else {
+                            // Fallback to local storage
+                            loadData();
+                            renderGrid();
+                            renderRecentUploads();
+                            updateStats();
+                            loadDirective();
+                        }
+                    } catch (e) {
+                        console.error('Window load handler failed:', e);
+                        showError('loginError', '애플리케이션 초기화에 실패했습니다: ' + e.message);
+                    }
+                });
+
+                // Network status monitoring
+                window.addEventListener('online', function() {
+                    updateConnectionStatus('online', 'Online');
+                    if (!firebaseInitialized) {
+                        initializeFirebase();
+                    }
+                });
+
+                window.addEventListener('offline', function() {
+                    updateConnectionStatus('offline', 'Offline');
+                });
+
+            } catch (e) {
+                console.error('Event listener setup failed:', e);
+            }
+        }
+
+        // Enhanced auto login with better error handling
+        function checkAutoLogin() {
+            try {
+                const loginData = JSON.parse(storage.getItem('loginSession') || 'null');
+                if (loginData && loginData.username && loginData.timestamp) {
+                    const now = Date.now();
+                    const elapsed = now - loginData.timestamp;
+                    
+                    if (elapsed < LOGIN_DURATION) {
+                        initAudio();
+                        currentUser = loginData.username;
+                        users.add(loginData.username);
+                        
+                        if (isFirebaseEnabled && firebaseInitialized) {
+                            try {
+                                const userId = loginData.username + '_' + Date.now();
+                                presenceRef = database.ref('onlineUsers/' + userId);
+                                
+                                const userData = {
+                                    username: loginData.username,
+                                    loginTime: Date.now(),
+                                    lastSeen: Date.now()
+                                };
+                                presenceRef.set(userData);
+                                presenceRef.onDisconnect().remove();
+                                
+                                heartbeatInterval = setInterval(function() {
+                                    if (presenceRef) {
+                                        presenceRef.update({ lastSeen: Date.now() });
+                                    }
+                                }, 30000);
+                            } catch (e) {
+                                console.error('Firebase presence setup failed:', e);
+                            }
+                        }
+                        
+                        const loginContainer = document.getElementById('loginContainer');
+                        const contentArea = document.getElementById('contentArea');
+                        const currentUserEl = document.getElementById('currentUser');
+                        const currentUserHeaderEl = document.getElementById('currentUserHeader');
+                        const headerLoginStatus = document.getElementById('headerLoginStatus');
+                        
+                        if (loginContainer) loginContainer.style.display = 'none';
+                        if (contentArea) contentArea.classList.add('active');
+                        if (currentUserEl) currentUserEl.textContent = currentUser;
+                        if (currentUserHeaderEl) currentUserHeaderEl.textContent = currentUser;
+                        if (headerLoginStatus) headerLoginStatus.classList.add('active');
+                        
+                        lastReportCount = reports.filter(function(r) { return r; }).length;
+                        
+                        console.log('자동 로그인 성공:', currentUser);
+                        return true;
+                    } else {
+                        storage.removeItem('loginSession');
+                        console.log('로그인 세션 만료');
+                    }
+                }
+            } catch (e) {
+                console.error('자동 로그인 체크 오류:', e);
+                storage.removeItem('loginSession');
+            }
+            return false;
+        }
+
+        // Enhanced login session management
+        function saveLoginSession(username) {
+            try {
+                const loginData = {
+                    username: username,
+                    timestamp: Date.now()
+                };
+                storage.setItem('loginSession', JSON.stringify(loginData));
+            } catch (e) {
+                console.error('Login session save failed:', e);
+            }
+        }
+
+        function clearLoginSession() {
+            try {
+                storage.removeItem('loginSession');
+            } catch (e) {
+                console.error('Login session clear failed:', e);
+            }
+        }
+
+        // Enhanced Firebase sync with error handling
         function setupFirebaseSync() {
-            if (!isFirebaseEnabled || !database) return;
+            if (!isFirebaseEnabled || !database) {
+                console.warn('Firebase not available for sync');
+                return;
+            }
 
-            database.ref('reports').on('value', snap => {
-                reports = snap.val() || Array(10).fill(null);
-                renderGrid();
-                renderRecentUploads();
-                updateStats();
-            });
+            try {
+                database.ref('reports').on('value', function(snapshot) {
+                    try {
+                        const data = snapshot.val();
+                        const newReports = data ? data : Array(10).fill(null);
+                        
+                        const newReportCount = newReports.filter(function(r) { return r; }).length;
+                        if (lastReportCount > 0 && newReportCount > lastReportCount) {
+                            playNotificationSound();
+                        }
+                        lastReportCount = newReportCount;
+                        
+                        reports = newReports;
+                        renderGrid();
+                        renderRecentUploads();
+                        updateStats();
+                    } catch (e) {
+                        console.error('Reports sync error:', e);
+                    }
+                }, function(error) {
+                    console.error('Reports listener error:', error);
+                    showError('loginError', 'Firebase 연결 오류: ' + error.message);
+                });
 
-            database.ref('directive').on('value', snap => {
-                currentDirective = snap.val();
-                displayDirective();
-            });
+                database.ref('users').on('value', function(snapshot) {
+                    try {
+                        const data = snapshot.val();
+                        users = data ? new Set(data) : new Set();
+                        updateStats();
+                    } catch (e) {
+                        console.error('Users sync error:', e);
+                    }
+                });
 
-            database.ref('onlineUsers').on('value', snap => {
-                onlineUsers = snap.val() || {};
-                updateStats();
-            });
+                let lastDirectiveTime = null;
+                database.ref('directive').on('value', function(snapshot) {
+                    try {
+                        const newDirective = snapshot.val();
+                        
+                        if (newDirective && newDirective.timestamp) {
+                            if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
+                                playNotificationSound();
+                            }
+                            lastDirectiveTime = newDirective.timestamp;
+                        }
+                        
+                        currentDirective = newDirective;
+                        displayDirective();
+                    } catch (e) {
+                        console.error('Directive sync error:', e);
+                    }
+                });
+
+                database.ref('onlineUsers').on('value', function(snapshot) {
+                    try {
+                        onlineUsers = snapshot.val() || {};
+                        
+                        const now = Date.now();
+                        const updates = {};
+                        let hasChanges = false;
+                        
+                        Object.keys(onlineUsers).forEach(function(userId) {
+                            const userData = onlineUsers[userId];
+                            if (now - userData.lastSeen > 60000) {
+                                updates[userId] = null;
+                                hasChanges = true;
+                            }
+                        });
+                        
+                        if (hasChanges) {
+                            database.ref('onlineUsers').update(updates);
+                        }
+                        
+                        updateStats();
+                    } catch (e) {
+                        console.error('Online users sync error:', e);
+                    }
+                });
+
+            } catch (e) {
+                console.error('Firebase sync setup failed:', e);
+                showError('loginError', 'Firebase 동기화 설정 실패: ' + e.message);
+            }
+        }
+
+        // Enhanced local data management
+        function loadData() {
+            try {
+                const savedReports = storage.getItem('reports');
+                const savedUsers = storage.getItem('users');
+
+                if (savedReports) {
+                    const loaded = JSON.parse(savedReports);
+                    if (Array.isArray(loaded) && loaded.length === 10) {
+                        reports = loaded;
+                    }
+                }
+
+                if (savedUsers) {
+                    users = new Set(JSON.parse(savedUsers));
+                }
+            } catch (e) {
+                console.error('데이터 로드 오류:', e);
+            }
         }
 
         function saveData() {
-            if (isFirebaseEnabled && database) {
-                database.ref('reports').set(reports);
-            } else {
-                storage.setItem('reports', JSON.stringify(reports));
+            try {
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    database.ref('reports').set(reports);
+                    database.ref('users').set(Array.from(users));
+                } else {
+                    storage.setItem('reports', JSON.stringify(reports));
+                    storage.setItem('users', JSON.stringify(Array.from(users)));
+                }
+            } catch (e) {
+                console.error('데이터 저장 오류:', e);
+                // Fallback to localStorage
+                try {
+                    storage.setItem('reports', JSON.stringify(reports));
+                    storage.setItem('users', JSON.stringify(Array.from(users)));
+                } catch (e2) {
+                    console.error('로컬 저장 실패:', e2);
+                }
+            }
+        }
+
+        // Enhanced directive management
+        function loadDirective() {
+            try {
+                const saved = storage.getItem('directive');
+                if (saved) {
+                    currentDirective = JSON.parse(saved);
+                    displayDirective();
+                }
+            } catch (e) {
+                console.error('지시사항 로드 오류:', e);
             }
         }
 
         function saveDirective() {
-            if (isFirebaseEnabled && database) {
-                database.ref('directive').set(currentDirective);
-            } else {
-                storage.setItem('directive', JSON.stringify(currentDirective));
+            try {
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    database.ref('directive').set(currentDirective);
+                } else {
+                    storage.setItem('directive', JSON.stringify(currentDirective));
+                }
+            } catch (e) {
+                console.error('지시사항 저장 오류:', e);
+                try {
+                    storage.setItem('directive', JSON.stringify(currentDirective));
+                } catch (e2) {
+                    console.error('로컬 지시사항 저장 실패:', e2);
+                }
             }
-        }
-
-        function getTimeAgo(timestamp) {
-            const mins = Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000);
-            return mins < 1 ? '방금 전' : mins === 1 ? '1분 전' : mins + '분 전';
         }
 
         function displayDirective() {
-            const display = document.getElementById('directiveDisplay');
-            const content = document.getElementById('directiveContent');
-            const meta = document.getElementById('directiveMeta');
-            
-            if (currentDirective && currentDirective.message) {
-                content.textContent = currentDirective.message;
-                const date = new Date(currentDirective.timestamp);
-                const isRecent = (Date.now() - date.getTime()) < 300000;
+            try {
+                const display = document.getElementById('directiveDisplay');
+                const content = document.getElementById('directiveContent');
+                const meta = document.getElementById('directiveMeta');
+                const deleteBtn = document.getElementById('directiveDeleteBtn');
+                const titleElement = display ? display.querySelector('.directive-title') : null;
                 
-                meta.innerHTML = 
-                    '<span>👤 ' + (currentDirective.sender || 'Unknown') + '</span>' +
-                    '<span>📅 ' + date.toLocaleString('ko-KR') + '</span>' +
-                    (isRecent ? '<span style="color: #ff4444;">🆕 긴급</span>' : '');
+                if (!display || !content || !meta) return;
                 
-                display.className = isRecent ? 'directive-display active recent' : 'directive-display active';
-            } else {
-                display.className = 'directive-display';
+                if (currentDirective && currentDirective.message) {
+                    content.textContent = currentDirective.message;
+                    const date = new Date(currentDirective.timestamp);
+                    
+                    const now = Date.now();
+                    const directiveTime = new Date(currentDirective.timestamp).getTime();
+                    const isRecent = (now - directiveTime) < (5 * 60 * 1000);
+                    
+                    meta.innerHTML = 
+                        '<span>👤 ' + (currentDirective.sender || 'Unknown') + '</span>' +
+                        '<span>📅 ' + date.toLocaleString('ko-KR') + '</span>' +
+                        (isRecent ? '<span style="color: #ff4444; font-weight: bold;">🆕 긴급</span>' : '');
+                    
+                    if (deleteBtn) {
+                        deleteBtn.style.display = currentUser ? 'block' : 'none';
+                    }
+                    
+                    if (isRecent) {
+                        display.classList.add('active', 'recent');
+                        if (titleElement) titleElement.classList.add('recent');
+                    } else {
+                        display.classList.add('active');
+                        display.classList.remove('recent');
+                        if (titleElement) titleElement.classList.remove('recent');
+                    }
+                } else {
+                    display.classList.remove('active', 'recent');
+                    if (titleElement) titleElement.classList.remove('recent');
+                }
+            } catch (e) {
+                console.error('지시사항 표시 오류:', e);
             }
         }
 
+        // Enhanced directive functions
         function sendDirective() {
-            const input = document.getElementById('directiveInput');
-            const message = input.value.trim();
-            
-            if (!message) {
-                alert('지시사항을 입력해주세요.');
-                return;
-            }
+            try {
+                const input = document.getElementById('directiveInput');
+                if (!input) return;
+                
+                const message = input.value.trim();
+                
+                if (!message) {
+                    alert('⚠️ 지시사항을 입력해주세요.');
+                    return;
+                }
 
-            currentDirective = {
-                message: message,
-                sender: currentUser,
-                timestamp: new Date().toISOString()
-            };
-            
-            saveDirective();
-            displayDirective();
-            input.value = '';
-            alert('지시사항이 전송되었습니다!');
+                currentDirective = {
+                    message: message,
+                    sender: currentUser,
+                    timestamp: new Date().toISOString()
+                };
+                
+                saveDirective();
+                displayDirective();
+                input.value = '';
+                alert('✅ 지시사항이 전송되었습니다!');
+            } catch (e) {
+                console.error('지시사항 전송 오류:', e);
+                alert('❌ 지시사항 전송에 실패했습니다.');
+            }
         }
 
         function deleteDirective() {
-            if (!currentUser) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-            if (confirm('지시사항을 삭제하시겠습니까?')) {
-                currentDirective = null;
-                saveDirective();
-                displayDirective();
+            try {
+                if (!currentUser) {
+                    alert('⚠️ 로그인이 필요합니다.');
+                    return;
+                }
+
+                if (confirm('지시사항을 삭제하시겠습니까?')) {
+                    currentDirective = null;
+                    saveDirective();
+                    displayDirective();
+                    alert('✅ 지시사항이 삭제되었습니다.');
+                }
+            } catch (e) {
+                console.error('지시사항 삭제 오류:', e);
+                alert('❌ 지시사항 삭제에 실패했습니다.');
             }
         }
 
-        function checkAutoLogin() {
+        // Enhanced login function
+        function login() {
             try {
-                const loginData = JSON.parse(storage.getItem('loginSession') || 'null');
-                if (loginData && loginData.username && Date.now() - loginData.timestamp < LOGIN_DURATION) {
-                    currentUser = loginData.username;
-                    
-                    if (isFirebaseEnabled && database) {
-                        const userId = currentUser + '_' + Date.now();
+                hideError('loginError');
+                
+                const usernameInput = document.getElementById('usernameInput');
+                const passwordInput = document.getElementById('passwordInput');
+                
+                if (!usernameInput || !passwordInput) {
+                    showError('loginError', '로그인 폼을 찾을 수 없습니다.');
+                    return;
+                }
+                
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!username) {
+                    showError('loginError', '사용자 이름을 입력하세요.');
+                    usernameInput.focus();
+                    return;
+                }
+
+                if (password !== '0119') {
+                    showError('loginError', '비밀번호가 올바르지 않습니다.');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    return;
+                }
+
+                initAudio();
+
+                currentUser = username;
+                users.add(username);
+                saveData();
+                saveLoginSession(username);
+
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    try {
+                        const userId = username + '_' + Date.now();
                         presenceRef = database.ref('onlineUsers/' + userId);
-                        presenceRef.set({
-                            username: currentUser,
+                        
+                        const userData = {
+                            username: username,
                             loginTime: Date.now(),
                             lastSeen: Date.now()
-                        });
+                        };
+                        presenceRef.set(userData);
                         presenceRef.onDisconnect().remove();
-                        heartbeatInterval = setInterval(() => {
-                            if (presenceRef) presenceRef.update({ lastSeen: Date.now() });
+                        
+                        heartbeatInterval = setInterval(function() {
+                            if (presenceRef) {
+                                presenceRef.update({ lastSeen: Date.now() });
+                            }
                         }, 30000);
+                    } catch (e) {
+                        console.error('Firebase presence setup failed:', e);
                     }
-                    
-                    document.getElementById('loginContainer').style.display = 'none';
-                    document.getElementById('contentArea').classList.add('active');
-                    document.getElementById('currentUserHeader').textContent = currentUser;
-                    document.getElementById('headerLoginStatus').classList.add('active');
-                    return true;
                 }
-            } catch (e) {}
-            return false;
+
+                const loginContainer = document.getElementById('loginContainer');
+                const contentArea = document.getElementById('contentArea');
+                const currentUserEl = document.getElementById('currentUser');
+                const currentUserHeaderEl = document.getElementById('currentUserHeader');
+                const headerLoginStatus = document.getElementById('headerLoginStatus');
+                
+                if (loginContainer) loginContainer.style.display = 'none';
+                if (contentArea) contentArea.classList.add('active');
+                if (currentUserEl) currentUserEl.textContent = username;
+                if (currentUserHeaderEl) currentUserHeaderEl.textContent = username;
+                if (headerLoginStatus) headerLoginStatus.classList.add('active');
+                if (passwordInput) passwordInput.value = '';
+
+                lastReportCount = reports.filter(function(r) { return r; }).length;
+
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                displayDirective();
+                
+            } catch (e) {
+                console.error('로그인 오류:', e);
+                showError('loginError', '로그인 처리 중 오류가 발생했습니다: ' + e.message);
+            }
         }
 
-        function login() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const password = document.getElementById('passwordInput').value.trim();
-            
-            if (!username) {
-                alert('사용자 이름을 입력하세요.');
-                return;
-            }
-            if (password !== '0119') {
-                alert('비밀번호가 올바르지 않습니다.');
-                document.getElementById('passwordInput').value = '';
-                return;
-            }
-
-            currentUser = username;
-            storage.setItem('loginSession', JSON.stringify({ username, timestamp: Date.now() }));
-
-            if (isFirebaseEnabled && database) {
-                const userId = username + '_' + Date.now();
-                presenceRef = database.ref('onlineUsers/' + userId);
-                presenceRef.set({
-                    username: username,
-                    loginTime: Date.now(),
-                    lastSeen: Date.now()
-                });
-                presenceRef.onDisconnect().remove();
-                heartbeatInterval = setInterval(() => {
-                    if (presenceRef) presenceRef.update({ lastSeen: Date.now() });
-                }, 30000);
-            }
-
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('contentArea').classList.add('active');
-            document.getElementById('currentUserHeader').textContent = username;
-            document.getElementById('headerLoginStatus').classList.add('active');
-            document.getElementById('passwordInput').value = '';
-
-            renderGrid();
-            renderRecentUploads();
-            updateStats();
-            displayDirective();
-        }
-
+        // Enhanced logout function
         function logout() {
-            if (presenceRef) {
-                presenceRef.remove();
-                presenceRef = null;
-            }
-            if (heartbeatInterval) {
-                clearInterval(heartbeatInterval);
-                heartbeatInterval = null;
-            }
-            
-            currentUser = null;
-            storage.removeItem('loginSession');
-            
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('contentArea').classList.remove('active');
-            document.getElementById('headerLoginStatus').classList.remove('active');
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('passwordInput').value = '';
-        }
-
-        function renderRecentUploads() {
-            const container = document.getElementById('recentUploadsList');
-            const now = Date.now();
-            const recentReports = reports
-                .map((r, i) => ({ report: r, index: i }))
-                .filter(item => item.report && (now - new Date(item.report.uploadTime).getTime()) < 300000)
-                .sort((a, b) => new Date(b.report.uploadTime) - new Date(a.report.uploadTime))
-                .slice(0, 10);
-
-            if (recentReports.length === 0) {
-                container.innerHTML = '<div class="empty-recent">최근 5분 이내 업로드된 보고서가 없습니다</div>';
-                return;
-            }
-
-            const isMobile = window.innerWidth < 768;
-            container.innerHTML = recentReports.map(item => {
-                const timeAgo = getTimeAgo(item.report.uploadTime);
-                const date = new Date(item.report.uploadTime).toLocaleString('ko-KR', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                if (isMobile) {
-                    return `<div class="recent-upload-item" onclick="scrollToReport(${item.index})">
-                        <div class="recent-upload-number">${item.index + 1}</div>
-                        <div class="recent-upload-content">
-                            <span class="recent-upload-title">${item.report.title || 'Untitled'}</span>
-                            <span class="time-ago">${timeAgo}</span>
-                        </div>
-                    </div>`;
-                } else {
-                    return `<div class="recent-upload-item" onclick="scrollToReport(${item.index})">
-                        <div class="recent-upload-number">${item.index + 1}</div>
-                        <div class="recent-upload-content">
-                            <div class="recent-upload-title">
-                                ${item.report.title || 'Untitled'}
-                                <span class="time-ago">${timeAgo}</span>
-                            </div>
-                            <div class="recent-upload-time">⏰ ${date}</div>
-                        </div>
-                    </div>`;
+            try {
+                if (presenceRef) {
+                    presenceRef.remove();
+                    presenceRef = null;
                 }
-            }).join('');
-        }
+                
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                    heartbeatInterval = null;
+                }
+                
+                currentUser = null;
+                clearLoginSession();
+                
+                const loginContainer = document.getElementById('loginContainer');
+                const contentArea = document.getElementById('contentArea');
+                const headerLoginStatus = document.getElementById('headerLoginStatus');
+                const usernameInput = document.getElementById('usernameInput');
+                const passwordInput = document.getElementById('passwordInput');
+                const directiveInput = document.getElementById('directiveInput');
+                
+                if (loginContainer) loginContainer.style.display = 'flex';
+                if (contentArea) contentArea.classList.remove('active');
+                if (headerLoginStatus) headerLoginStatus.classList.remove('active');
+                if (usernameInput) usernameInput.value = '';
+                if (passwordInput) passwordInput.value = '';
+                if (directiveInput) directiveInput.value = '';
 
-        function scrollToReport(index) {
-            const grid = document.getElementById('reportsGrid');
-            const slot = grid.children[index];
-            if (slot) {
-                slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                slot.style.transform = 'scale(1.05)';
-                setTimeout(() => slot.style.transform = 'scale(1)', 300);
+                hideError('loginError');
+                
+            } catch (e) {
+                console.error('로그아웃 오류:', e);
             }
         }
 
-        function renderGrid() {
-            const grid = document.getElementById('reportsGrid');
-            grid.innerHTML = '';
-            const now = Date.now();
-            
-            for (let i = 0; i < 10; i++) {
-                const slot = document.createElement('div');
-                const report = reports[i];
+        // Enhanced recent uploads rendering with mobile optimization
+        function renderRecentUploads() {
+            try {
+                const container = document.getElementById('recentUploadsList');
+                if (!container) return;
+                
+                const now = Date.now();
+                const fiveMinutes = 5 * 60 * 1000;
+                const recentReports = reports
+                    .map(function(report, index) { return { report: report, index: index }; })
+                    .filter(function(item) {
+                        if (!item.report || !item.report.uploadTime) return false;
+                        const uploadTime = new Date(item.report.uploadTime).getTime();
+                        return (now - uploadTime) < fiveMinutes;
+                    })
+                    .sort(function(a, b) {
+                        return new Date(b.report.uploadTime) - new Date(a.report.uploadTime);
+                    })
+                    .slice(0, 10); // 최대 10개까지만 표시
 
-                if (report) {
-                    const isRecent = (now - new Date(report.uploadTime).getTime()) < 300000;
-                    slot.className = isRecent ? 'report-slot filled recent-upload' : 'report-slot filled';
-                    slot.onclick = () => viewReport(i);
+                if (recentReports.length === 0) {
+                    container.innerHTML = '<div class="empty-recent">최근 5분 이내 업로드된 보고서가 없습니다</div>';
+                    return;
+                }
 
-                    const timeStr = new Date(report.uploadTime).toLocaleString('ko-KR', {
+                // 모바일 최적화: 번호 옆에 제목 표시
+                container.innerHTML = recentReports.map(function(item) {
+                    const report = item.report;
+                    const index = item.index;
+                    const date = new Date(report.uploadTime);
+                    const timeStr = date.toLocaleString('ko-KR', {
                         month: '2-digit',
                         day: '2-digit',
                         hour: '2-digit',
                         minute: '2-digit'
                     });
+                    const timeAgo = getTimeAgo(report.uploadTime);
+
+                    // 모바일에서 간결하게 표시
+                    const isMobile = window.innerWidth < 768;
                     
-                    let preview = '';
-                    if (report.type && report.type.startsWith('image/')) {
-                        preview = `<img src="${report.data}" alt="${report.title}">
-                            <button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(${i})">
-                                <i class="fa-solid fa-expand"></i></button>`;
-                    } else if (report.type === 'application/pdf') {
-                        preview = '<div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>';
+                    if (isMobile) {
+                        return '<div class="recent-upload-item" onclick="scrollToReport(' + index + ')">' +
+                               '<div class="recent-upload-number">' + (index + 1) + '</div>' +
+                               '<div class="recent-upload-content">' +
+                               '<span class="recent-upload-title">' + (report.title || 'Untitled') + '</span> ' +
+                               '<span class="time-ago">' + timeAgo + '</span>' +
+                               '</div>' +
+                               '</div>';
+                    } else {
+                        return '<div class="recent-upload-item" onclick="scrollToReport(' + index + ')">' +
+                               '<div class="recent-upload-number">' + (index + 1) + '</div>' +
+                               '<div class="recent-upload-content">' +
+                               '<div class="recent-upload-title">' +
+                               (report.title || 'Untitled') +
+                               '<span class="time-ago">' + timeAgo + '</span>' +
+                               '</div>' +
+                               '<div class="recent-upload-time">⏰ ' + timeStr + '</div>' +
+                               '</div>' +
+                               '</div>';
                     }
+                }).join('');
+                
+            } catch (e) {
+                console.error('최근 업로드 렌더링 오류:', e);
+            }
+        }
 
-                    const deleteClass = deleteConfirmSlot === i ? 'delete-confirm' : '';
-                    const deleteBg = deleteConfirmSlot === i ? '#ff4444' : '#dc3545';
-                    const deleteText = deleteConfirmSlot === i ? '⚠️ 다시 클릭' : '🗑️ 삭제';
-
-                    slot.innerHTML = `<div class="slot-number ${isRecent ? 'recent' : ''}">${i + 1}</div>
-                        <div class="report-preview">${preview}</div>
-                        <div class="report-info">
-                            <div class="report-title">${report.title || 'Untitled'}${isRecent ? ' 🆕' : ''}</div>
-                            <div class="report-filename">${report.filename || 'Unknown'}</div>
-                            <div class="report-meta">
-                                <div>👤 ${report.uploader || 'Unknown'}</div>
-                                <div>📅 ${timeStr}</div>
-                            </div>
-                            ${currentUser ? `<div style="display: flex; gap: 5px; margin-top: 8px;">
-                                <button class="replace-btn" style="flex: 1;" onclick="event.stopPropagation(); openUploadModal(${i})">
-                                    <i class="fa-solid fa-retweet"></i> 교체</button>
-                                <button class="replace-btn ${deleteClass}" style="flex: 1; background: ${deleteBg};" 
-                                    onclick="event.stopPropagation(); deleteReport(${i})">${deleteText}</button>
-                            </div>` : '<div style="margin-top: 10px; font-size: 11px; color: #999;">로그인 후 관리 가능</div>'}
-                        </div>`;
-                } else {
-                    slot.className = 'report-slot';
-                    slot.innerHTML = `<div class="slot-number">${i + 1}</div>
-                        <div class="empty-slot">
-                            <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
-                            <div style="font-size: 12px;">비어있는 슬롯</div>
-                            ${currentUser ? `<button class="upload-btn" onclick="openUploadModal(${i})">
-                                <i class="fa-solid fa-arrow-up-from-bracket"></i> 업로드</button>` : 
-                                '<div style="margin-top: 10px; font-size: 11px;">로그인 후 업로드 가능</div>'}
-                        </div>`;
+        // Enhanced scroll to report
+        function scrollToReport(index) {
+            try {
+                const grid = document.getElementById('reportsGrid');
+                if (!grid) return;
+                
+                const slots = grid.children;
+                if (slots[index]) {
+                    slots[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    slots[index].style.transition = 'transform 0.3s';
+                    slots[index].style.transform = 'scale(1.05)';
+                    setTimeout(function() {
+                        slots[index].style.transform = 'scale(1)';
+                    }, 300);
                 }
-                grid.appendChild(slot);
+            } catch (e) {
+                console.error('스크롤 오류:', e);
             }
         }
 
-        function deleteReport(index) {
-            if (!currentUser || !reports[index]) return;
+        // Enhanced grid rendering
+        function renderGrid() {
+            try {
+                const grid = document.getElementById('reportsGrid');
+                if (!grid) return;
+                
+                grid.innerHTML = '';
 
-            if (deleteConfirmSlot === index) {
-                if (deleteTimerId) clearTimeout(deleteTimerId);
-                reports[index] = null;
-                saveData();
-                deleteConfirmSlot = null;
-                renderGrid();
-                renderRecentUploads();
-                updateStats();
-                alert('파일이 삭제되었습니다.');
-            } else {
-                deleteConfirmSlot = index;
-                renderGrid();
-                alert(`"${reports[index].title || 'Untitled'}"\n\n삭제하려면 5초 이내에 🗑️ 삭제 버튼을 다시 클릭하세요.`);
-                if (deleteTimerId) clearTimeout(deleteTimerId);
-                deleteTimerId = setTimeout(() => {
-                    if (deleteConfirmSlot === index) {
-                        deleteConfirmSlot = null;
-                        renderGrid();
+                const now = Date.now();
+                const fiveMinutes = 5 * 60 * 1000;
+                
+                for (let i = 0; i < 10; i++) {
+                    const slot = document.createElement('div');
+                    const report = reports[i];
+
+                    if (report) {
+                        const uploadTime = new Date(report.uploadTime).getTime();
+                        const isRecent = (now - uploadTime) < fiveMinutes;
+                        
+                        slot.className = isRecent ? 'report-slot filled recent-upload' : 'report-slot filled';
+                        slot.onclick = function() { viewReport(i); };
+
+                        const date = new Date(report.uploadTime);
+                        const timeStr = date.toLocaleString('ko-KR', {
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        let preview = '';
+                        if (report.type && report.type.startsWith('image/')) {
+                            preview = '<img src="' + (report.data || '') + '" alt="' + (report.title || '') + '">' +
+                                    '<button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(' + i + ')" title="이미지 크게 보기">' +
+                                    '<i class="fa-solid fa-expand"></i></button>';
+                        } else if (report.type === 'application/pdf') {
+                            preview = '<div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>';
+                        }
+
+                        const deleteConfirmClass = deleteConfirmSlot === i ? 'delete-confirm' : '';
+                        const deleteConfirmBg = deleteConfirmSlot === i ? '#ff4444' : '#dc3545';
+                        const deleteConfirmText = deleteConfirmSlot === i ? '⚠️ 다시 클릭' : '🗑️ 삭제';
+
+                        slot.innerHTML = '<div class="slot-number ' + (isRecent ? 'recent' : '') + '">' + (i + 1) + '</div>' +
+                                '<div class="report-preview">' + preview + '</div>' +
+                                '<div class="report-info">' +
+                                '<div class="report-title">' + (report.title || 'Untitled') + (isRecent ? ' 🆕' : '') + '</div>' +
+                                '<div class="report-filename">' + (report.filename || 'Unknown file') + '</div>' +
+                                '<div class="report-meta">' +
+                                '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
+                                '<div>📅 ' + timeStr + '</div>' +
+                                '</div>' +
+                                (currentUser ?
+                                '<div style="display: flex; gap: 5px; margin-top: 8px;">' +
+                                '<button class="replace-btn" style="flex: 1;" onclick="event.stopPropagation(); openUploadModal(' + i + ')">' +
+                                '<i class="fa-solid fa-retweet"></i> 교체</button>' +
+                                '<button class="replace-btn ' + deleteConfirmClass + '" style="flex: 1; background: ' + deleteConfirmBg + ';" ' +
+                                'onclick="event.stopPropagation(); deleteReport(' + i + ')">' + deleteConfirmText + '</button>' +
+                                '</div>' :
+                                '<div style="margin-top: 10px; font-size: 11px; color: #999;">로그인 후 관리 가능</div>') +
+                                '</div>';
+                    } else {
+                        slot.className = 'report-slot';
+                        slot.innerHTML = '<div class="slot-number">' + (i + 1) + '</div>' +
+                                '<div class="empty-slot">' +
+                                '<div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>' +
+                                '<div style="font-size: 12px;">비어있는 슬롯</div>' +
+                                (currentUser ?
+                                '<button class="upload-btn" onclick="openUploadModal(' + i + ')">' +
+                                '<i class="fa-solid fa-arrow-up-from-bracket"></i> 업로드</button>' :
+                                '<div style="margin-top: 10px; font-size: 11px;">로그인 후 업로드 가능</div>') +
+                                '</div>';
                     }
-                }, 5000);
+
+                    grid.appendChild(slot);
+                }
+            } catch (e) {
+                console.error('그리드 렌더링 오류:', e);
             }
         }
 
-        function openUploadModal(slotIndex) {
-            if (!currentUser) {
-                alert('로그인 후 이용해 주세요');
-                return;
+        // Enhanced report deletion
+        function deleteReport(index) {
+            try {
+                const report = reports[index];
+                if (!report) return;
+
+                if (!currentUser) {
+                    alert('⚠️ 로그인이 필요합니다.');
+                    return;
+                }
+
+                if (deleteConfirmSlot === index) {
+                    if (deleteTimerId) clearTimeout(deleteTimerId);
+                    reports[index] = null;
+                    saveData();
+
+                    deleteConfirmSlot = null;
+                    renderGrid();
+                    renderRecentUploads();
+                    updateStats();
+                    alert('✅ 파일이 삭제되었습니다.');
+                } else {
+                    deleteConfirmSlot = index;
+                    renderGrid();
+                    alert('"' + (report.title || 'Untitled') + '"\n\n삭제하려면 5초 이내에 🗑️ 삭제 버튼을 다시 클릭하세요.');
+
+                    if (deleteTimerId) clearTimeout(deleteTimerId);
+                    deleteTimerId = setTimeout(function() {
+                        if (deleteConfirmSlot === index) {
+                            deleteConfirmSlot = null;
+                            renderGrid();
+                        }
+                    }, 5000);
+                }
+            } catch (e) {
+                console.error('파일 삭제 오류:', e);
+                alert('❌ 파일 삭제에 실패했습니다.');
             }
-            currentSlot = slotIndex;
-            const existing = reports[slotIndex];
-            document.getElementById('reportTitle').value = existing ? existing.title || '' : '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('selectedFile').textContent = '선택된 파일 없음';
-            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        // Enhanced modal functions
+        function openUploadModal(slotIndex) {
+            try {
+                if (!currentUser) {
+                    alert('로그인 후 이용해 주세요');
+                    return;
+                }
+                currentSlot = slotIndex;
+
+                const existingReport = reports[slotIndex];
+                const reportTitleEl = document.getElementById('reportTitle');
+                const fileInput = document.getElementById('fileInput');
+                const selectedFile = document.getElementById('selectedFile');
+                const uploadModal = document.getElementById('uploadModal');
+                
+                if (reportTitleEl) {
+                    reportTitleEl.value = existingReport ? (existingReport.title || '') : '';
+                }
+                if (fileInput) fileInput.value = '';
+                if (selectedFile) selectedFile.textContent = '선택된 파일 없음';
+                if (uploadModal) uploadModal.classList.add('active');
+                
+                hideError('uploadError');
+            } catch (e) {
+                console.error('업로드 모달 열기 오류:', e);
+            }
         }
 
         function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
+            try {
+                const uploadModal = document.getElementById('uploadModal');
+                if (uploadModal) {
+                    uploadModal.classList.remove('active');
+                }
+                hideError('uploadError');
+            } catch (e) {
+                console.error('업로드 모달 닫기 오류:', e);
+            }
         }
 
         function selectFile() {
-            document.getElementById('fileInput').click();
+            try {
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) {
+                    fileInput.click();
+                }
+            } catch (e) {
+                console.error('파일 선택 오류:', e);
+            }
         }
 
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const size = (file.size / 1024 / 1024).toFixed(2);
-                let msg = `✅ ${file.name} (${size}MB)`;
-                if (file.size > 5 * 1024 * 1024 && file.type.startsWith('image/')) {
-                    msg += ' - 자동 압축됩니다';
-                }
-                document.getElementById('selectedFile').textContent = msg;
+        // Enhanced file selection
+        function setupFileInput() {
+            try {
+                const fileInput = document.getElementById('fileInput');
+                if (!fileInput) return;
+                
+                fileInput.addEventListener('change', function(e) {
+                    try {
+                        const file = e.target.files[0];
+                        const selectedFileEl = document.getElementById('selectedFile');
+                        
+                        if (file && selectedFileEl) {
+                            const size = (file.size / 1024 / 1024).toFixed(2);
+                            let message = '✅ ' + file.name + ' (' + size + 'MB)';
+                            
+                            if (file.size > 5 * 1024 * 1024) {
+                                if (file.type.startsWith('image/')) {
+                                    message += ' - 자동 압축됩니다';
+                                } else if (file.type === 'application/pdf') {
+                                    message += ' - 용량이 큽니다';
+                                }
+                            }
+                            
+                            selectedFileEl.textContent = message;
+                        }
+                    } catch (e) {
+                        console.error('파일 선택 처리 오류:', e);
+                    }
+                });
+            } catch (e) {
+                console.error('파일 입력 설정 오류:', e);
             }
-        });
+        }
 
+        // Enhanced upload confirmation
         function confirmUpload() {
-            const title = document.getElementById('reportTitle').value.trim();
-            const file = document.getElementById('fileInput').files[0];
-
-            if (!title) {
-                alert('제목을 입력해 주세요.');
-                return;
-            }
-            if (!file) {
-                alert('파일을 선택해 주세요.');
-                return;
-            }
-            if (file.size > 10 * 1024 * 1024) {
-                alert('파일 크기가 너무 큽니다. (최대 10MB)');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
-                    compressImage(e.target.result, compressed => {
-                        saveReport(title, file.name, file.type, compressed);
-                    });
-                } else {
-                    saveReport(title, file.name, file.type, e.target.result);
+            try {
+                hideError('uploadError');
+                
+                const reportTitleEl = document.getElementById('reportTitle');
+                const fileInput = document.getElementById('fileInput');
+                
+                if (!reportTitleEl || !fileInput) {
+                    showError('uploadError', '업로드 폼을 찾을 수 없습니다.');
+                    return;
                 }
-            };
-            reader.readAsDataURL(file);
+                
+                const title = reportTitleEl.value.trim();
+                const file = fileInput.files[0];
+
+                if (!title) {
+                    showError('uploadError', '제목을 입력해 주세요.');
+                    reportTitleEl.focus();
+                    return;
+                }
+                if (!file) {
+                    showError('uploadError', '파일을 선택해 주세요.');
+                    return;
+                }
+
+                // File size check
+                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    showError('uploadError', '파일 크기가 너무 큽니다. (최대 10MB)');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        let fileData = e.target.result;
+                        
+                        // Enhanced image compression
+                        if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
+                            compressImage(fileData, function(compressedData) {
+                                saveReport(title, file.name, file.type, compressedData);
+                            });
+                        } else {
+                            saveReport(title, file.name, file.type, fileData);
+                        }
+                    } catch (e) {
+                        console.error('파일 처리 오류:', e);
+                        showError('uploadError', '파일 처리 중 오류가 발생했습니다.');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    showError('uploadError', '파일 읽기에 실패했습니다.');
+                };
+                
+                reader.readAsDataURL(file);
+            } catch (e) {
+                console.error('업로드 확인 오류:', e);
+                showError('uploadError', '업로드 처리 중 오류가 발생했습니다.');
+            }
         }
 
+        // Enhanced image compression
         function compressImage(dataUrl, callback) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            
-            img.onload = function() {
-                const maxWidth = 1920;
-                const maxHeight = 1080;
-                let width = img.width;
-                let height = img.height;
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
                 
-                if (width > maxWidth || height > maxHeight) {
-                    const ratio = Math.min(maxWidth / width, maxHeight / height);
-                    width *= ratio;
-                    height *= ratio;
+                img.onload = function() {
+                    try {
+                        const maxWidth = 1920;
+                        const maxHeight = 1080;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width *= ratio;
+                            height *= ratio;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const compressedData = canvas.toDataURL('image/jpeg', 0.8);
+                        callback(compressedData);
+                    } catch (e) {
+                        console.error('이미지 압축 오류:', e);
+                        callback(dataUrl); // Fallback to original
+                    }
+                };
+                
+                img.onerror = function() {
+                    console.error('이미지 로드 실패');
+                    callback(dataUrl); // Fallback to original
+                };
+                
+                img.src = dataUrl;
+            } catch (e) {
+                console.error('이미지 압축 설정 오류:', e);
+                callback(dataUrl); // Fallback to original
+            }
+        }
+
+        // Enhanced report saving
+        function saveReport(title, filename, type, data) {
+            try {
+                const report = {
+                    title: title,
+                    filename: filename,
+                    type: type,
+                    data: data,
+                    uploader: currentUser,
+                    uploadTime: new Date().toISOString()
+                };
+
+                reports[currentSlot] = report;
+                saveData();
+
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                closeUploadModal();
+
+                alert('✅ 파일이 업로드되었습니다!');
+            } catch (e) {
+                console.error('보고서 저장 오류:', e);
+                showError('uploadError', '파일 저장에 실패했습니다.');
+            }
+        }
+
+        // Enhanced stats update
+        function updateStats() {
+            try {
+                const totalReportsEl = document.getElementById('totalReports');
+                const onlineUsersEl = document.getElementById('onlineUsers');
+                const todayUploadsEl = document.getElementById('todayUploads');
+                
+                if (totalReportsEl) {
+                    totalReportsEl.textContent = reports.filter(function(r) { return r; }).length;
                 }
                 
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawImage(img, 0, 0, width, height);
-                callback(canvas.toDataURL('image/jpeg', 0.8));
-            };
-            img.src = dataUrl;
-        }
-
-        function saveReport(title, filename, type, data) {
-            reports[currentSlot] = {
-                title,
-                filename,
-                type,
-                data,
-                uploader: currentUser,
-                uploadTime: new Date().toISOString()
-            };
-
-            saveData();
-            renderGrid();
-            renderRecentUploads();
-            updateStats();
-            closeUploadModal();
-            alert('파일이 업로드되었습니다!');
-        }
-
-        function updateStats() {
-            const now = Date.now();
-            const recentCount = reports.filter(r => r && (now - new Date(r.uploadTime).getTime()) < 300000).length;
-            document.getElementById('recentFiveMin').textContent = recentCount;
-            document.getElementById('onlineUsers').textContent = Object.keys(onlineUsers).length;
-            
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const todayCount = reports.filter(r => {
-                if (!r) return false;
-                const d = new Date(r.uploadTime);
-                d.setHours(0, 0, 0, 0);
-                return d.getTime() === today.getTime();
-            }).length;
-            document.getElementById('todayUploads').textContent = todayCount;
-        }
-
-        function viewReport(index) {
-            const report = reports[index];
-            if (!report) return;
-
-            currentViewSlot = index;
-            const modal = document.getElementById('fullscreenModal');
-            const content = document.getElementById('fullscreenContent');
-            const info = document.getElementById('fullscreenInfo');
-
-            document.getElementById('replaceBtn').style.display = currentUser ? 'block' : 'none';
-            document.getElementById('deleteBtn').style.display = currentUser ? 'block' : 'none';
-
-            const date = new Date(report.uploadTime);
-            info.innerHTML = `<h2>${report.title || 'Untitled'}</h2>
-                <div>📄 ${report.filename || 'Unknown'}</div>
-                <div>👤 ${report.uploader || 'Unknown'}</div>
-                <div>📅 ${date.toLocaleString('ko-KR')}</div>`;
-
-            if (report.type && report.type.startsWith('image/')) {
-                content.innerHTML = `<img src="${report.data}" class="fullscreen-image" id="zoomImage" alt="${report.title}">`;
-                document.getElementById('zoomControls').style.display = 'flex';
-                setTimeout(setupZoom, 100);
-            } else if (report.type === 'application/pdf') {
-                content.innerHTML = `<div style="text-align: center; color: white; padding: 40px;">
-                    <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
-                    <h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>
-                    <button onclick="openPDFInNewWindow(${index})" 
-                        style="padding: 15px 30px; background: #667eea; color: white; border: none; 
-                        border-radius: 8px; font-weight: bold; cursor: pointer;">
-                        🌐 새 창에서 PDF 열기</button></div>`;
-                document.getElementById('zoomControls').style.display = 'none';
+                if (onlineUsersEl) {
+                    const onlineCount = Object.keys(onlineUsers).length;
+                    onlineUsersEl.textContent = onlineCount;
+                }
+                
+                if (todayUploadsEl) {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const todayTimestamp = today.getTime();
+                    const todayCount = reports.filter(function(r) {
+                        if (!r || !r.uploadTime) return false;
+                        const uploadDate = new Date(r.uploadTime);
+                        uploadDate.setHours(0, 0, 0, 0);
+                        return uploadDate.getTime() === todayTimestamp;
+                    }).length;
+                    todayUploadsEl.textContent = todayCount;
+                }
+            } catch (e) {
+                console.error('통계 업데이트 오류:', e);
             }
-
-            modal.classList.add('active');
         }
 
+        // Enhanced report viewing
+        function viewReport(index) {
+            try {
+                const report = reports[index];
+                if (!report) return;
+
+                currentViewSlot = index;
+                const modal = document.getElementById('fullscreenModal');
+                const content = document.getElementById('fullscreenContent');
+                const info = document.getElementById('fullscreenInfo');
+                const replaceBtn = document.getElementById('replaceBtn');
+                const deleteBtn = document.getElementById('deleteBtn');
+
+                if (!modal || !content || !info) return;
+
+                // 버튼 표시/숨기기
+                if (replaceBtn) {
+                    replaceBtn.style.display = currentUser ? 'block' : 'none';
+                }
+                if (deleteBtn) {
+                    deleteBtn.style.display = currentUser ? 'block' : 'none';
+                }
+
+                // 정보 표시
+                const date = new Date(report.uploadTime);
+                info.innerHTML = '<h2>' + (report.title || 'Untitled') + '</h2>' +
+                               '<div>📄 ' + (report.filename || 'Unknown file') + '</div>' +
+                               '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
+                               '<div>📅 ' + date.toLocaleString('ko-KR') + '</div>';
+
+                // 컨텐츠 표시
+                if (report.type && report.type.startsWith('image/')) {
+                    content.innerHTML = '<img src="' + (report.data || '') + '" class="fullscreen-image" id="zoomImage" alt="' + (report.title || '') + '">';
+                    const zoomControls = document.getElementById('zoomControls');
+                    if (zoomControls) zoomControls.style.display = 'flex';
+                    setTimeout(function() { setupZoom(); }, 100);
+                } else if (report.type === 'application/pdf') {
+                    const browserInfo = getBrowserInfo();
+                    
+                    if (browserInfo.isKakaoTalk) {
+                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
+                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
+                                          '<h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>' +
+                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
+                                          '카카오톡 브라우저에서는 PDF를 볼 수 없습니다.<br>' +
+                                          '아래 버튼을 눌러 외부 브라우저에서 열어주세요.' +
+                                          '</p>' +
+                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
+                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '🌐 새 창에서 PDF 열기' +
+                                          '</button>' +
+                                          '<p style="font-size: 13px; color: #999; margin-top: 20px;">' +
+                                          '* 버튼을 누른 후 \'다른 앱에서 열기\' 또는 \'브라우저에서 열기\'를 선택하세요' +
+                                          '</p>' +
+                                          '</div>';
+                    } else if (browserInfo.isMobile) {
+                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
+                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
+                                          '<h3 style="margin-bottom: 20px;">' + (report.title || 'PDF File') + '</h3>' +
+                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
+                                          'PDF를 보려면 아래 옵션 중 하나를 선택하세요' +
+                                          '</p>' +
+                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
+                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '🌐 새 창에서 열기' +
+                                          '</button>' +
+                                          '<button onclick="viewPDFInline(' + index + ')" ' +
+                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto; padding: 15px 30px; ' +
+                                          'background: #28a745; color: white; border: none; border-radius: 8px; ' +
+                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
+                                          '📱 현재 창에서 보기' +
+                                          '</button>' +
+                                          '</div>';
+                    } else {
+                        content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
+                    }
+                    
+                    const zoomControls = document.getElementById('zoomControls');
+                    if (zoomControls) zoomControls.style.display = 'none';
+                }
+
+                modal.classList.add('active');
+            } catch (e) {
+                console.error('보고서 보기 오류:', e);
+                alert('❌ 보고서를 열 수 없습니다.');
+            }
+        }
+
+        // Enhanced PDF functions
         function openPDFInNewWindow(index) {
-            const report = reports[index];
-            if (!report) return;
-            const w = window.open('', '_blank');
-            if (w) {
-                w.document.write(`<html><head><title>${report.title || 'PDF'}</title>
-                    <style>body{margin:0;}</style></head><body>
-                    <iframe src="${report.data}" width="100%" height="100%" frameborder="0"></iframe>
-                    </body></html>`);
-            } else {
-                alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+            try {
+                const report = reports[index];
+                if (!report || report.type !== 'application/pdf') return;
+                
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(
+                        '<html>' +
+                        '<head>' +
+                        '<title>' + (report.title || 'PDF Document') + '</title>' +
+                        '<style>body { margin: 0; }</style>' +
+                        '</head>' +
+                        '<body>' +
+                        '<iframe src="' + (report.data || '') + '" width="100%" height="100%" frameborder="0"></iframe>' +
+                        '</body>' +
+                        '</html>'
+                    );
+                } else {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                }
+            } catch (e) {
+                console.error('PDF 새 창 열기 오류:', e);
+                alert('❌ PDF를 열 수 없습니다.');
+            }
+        }
+
+        function viewPDFInline(index) {
+            try {
+                const report = reports[index];
+                if (!report || report.type !== 'application/pdf') return;
+                
+                const content = document.getElementById('fullscreenContent');
+                if (content) {
+                    content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
+                }
+            } catch (e) {
+                console.error('PDF 인라인 보기 오류:', e);
             }
         }
 
         function openNativeImageView(index) {
-            const report = reports[index];
-            if (!report || !report.type.startsWith('image/')) return;
-            const w = window.open('', '_blank');
-            if (w) {
-                w.document.write(`<html><head><title>${report.title || 'Image'}</title>
-                    <style>body{margin:0;padding:20px;background:#000;display:flex;
-                    align-items:center;justify-content:center;min-height:100vh;}
-                    img{max-width:100%;max-height:100vh;object-fit:contain;}</style></head>
-                    <body><img src="${report.data}"></body></html>`);
+            try {
+                const report = reports[index];
+                if (!report || !report.type || !report.type.startsWith('image/')) return;
+                
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(
+                        '<html>' +
+                        '<head>' +
+                        '<title>' + (report.title || 'Image') + '</title>' +
+                        '<style>' +
+                        'body { margin: 0; padding: 20px; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }' +
+                        'img { max-width: 100%; max-height: 100vh; object-fit: contain; }' +
+                        '</style>' +
+                        '</head>' +
+                        '<body>' +
+                        '<img src="' + (report.data || '') + '" alt="' + (report.title || 'Image') + '">' +
+                        '</body>' +
+                        '</html>'
+                    );
+                } else {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                }
+            } catch (e) {
+                console.error('이미지 새 창 열기 오류:', e);
             }
         }
 
+        // Enhanced fullscreen functions
         function closeFullscreen() {
-            document.getElementById('fullscreenModal').classList.remove('active');
-            document.getElementById('zoomControls').style.display = 'none';
-            resetZoom();
+            try {
+                const fullscreenModal = document.getElementById('fullscreenModal');
+                const zoomControls = document.getElementById('zoomControls');
+                
+                if (fullscreenModal) {
+                    fullscreenModal.classList.remove('active');
+                }
+                if (zoomControls) {
+                    zoomControls.style.display = 'none';
+                }
+                resetZoom();
+            } catch (e) {
+                console.error('전체화면 닫기 오류:', e);
+            }
         }
 
         function replaceFile() {
-            closeFullscreen();
-            openUploadModal(currentViewSlot);
-        }
-
-        function deleteFromFullscreen() {
-            if (confirm('이 파일을 삭제하시겠습니까?')) {
-                reports[currentViewSlot] = null;
-                saveData();
+            try {
                 closeFullscreen();
-                renderGrid();
-                renderRecentUploads();
-                updateStats();
-                alert('파일이 삭제되었습니다.');
+                openUploadModal(currentViewSlot);
+            } catch (e) {
+                console.error('파일 교체 오류:', e);
             }
         }
 
+        function deleteFromFullscreen() {
+            try {
+                if (confirm('이 파일을 삭제하시겠습니까?')) {
+                    reports[currentViewSlot] = null;
+                    saveData();
+                    closeFullscreen();
+                    renderGrid();
+                    renderRecentUploads();
+                    updateStats();
+                    alert('✅ 파일이 삭제되었습니다.');
+                }
+            } catch (e) {
+                console.error('전체화면에서 삭제 오류:', e);
+            }
+        }
+
+        // Enhanced zoom functionality
         function setupZoom() {
-            const img = document.getElementById('zoomImage');
-            if (!img) return;
+            try {
+                const img = document.getElementById('zoomImage');
+                if (!img) return;
 
-            let lastTap = 0;
-            img.addEventListener('click', () => {
-                const now = Date.now();
-                if (now - lastTap < 300) {
-                    scale === 1 ? zoomIn() : resetZoom();
-                }
-                lastTap = now;
-            });
+                let lastTap = 0;
+                img.addEventListener('click', function() {
+                    try {
+                        const now = Date.now();
+                        if (now - lastTap < 300) {
+                            scale === 1 ? zoomIn() : resetZoom();
+                        }
+                        lastTap = now;
+                    } catch (e) {
+                        console.error('클릭 줌 오류:', e);
+                    }
+                });
 
-            img.addEventListener('mousedown', e => {
-                if (scale > 1) {
-                    isDragging = true;
-                    startX = e.clientX - posX;
-                    startY = e.clientY - posY;
-                    img.classList.add('dragging');
-                    e.preventDefault();
-                }
-            });
+                // Mouse events
+                img.addEventListener('mousedown', function(e) {
+                    try {
+                        if (scale > 1) {
+                            isDragging = true;
+                            startX = e.clientX - posX;
+                            startY = e.clientY - posY;
+                            img.classList.add('dragging');
+                            e.preventDefault();
+                        }
+                    } catch (e) {
+                        console.error('마우스 다운 오류:', e);
+                    }
+                });
 
-            document.addEventListener('mousemove', e => {
-                if (isDragging && scale > 1) {
-                    posX = e.clientX - startX;
-                    posY = e.clientY - startY;
-                    updateTransform();
-                }
-            });
+                document.addEventListener('mousemove', function(e) {
+                    try {
+                        if (isDragging && scale > 1) {
+                            posX = e.clientX - startX;
+                            posY = e.clientY - startY;
+                            updateTransform();
+                        }
+                    } catch (e) {
+                        console.error('마우스 이동 오류:', e);
+                    }
+                });
 
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-                const zoomImg = document.getElementById('zoomImage');
-                if (zoomImg) zoomImg.classList.remove('dragging');
-            });
+                document.addEventListener('mouseup', function() {
+                    try {
+                        isDragging = false;
+                        const zoomImg = document.getElementById('zoomImage');
+                        if (zoomImg) zoomImg.classList.remove('dragging');
+                    } catch (e) {
+                        console.error('마우스 업 오류:', e);
+                    }
+                });
 
-            img.addEventListener('touchstart', e => {
-                if (e.touches.length === 1 && scale > 1) {
-                    isDragging = true;
-                    startX = e.touches[0].clientX - posX;
-                    startY = e.touches[0].clientY - posY;
-                }
-            });
+                // Touch events
+                img.addEventListener('touchstart', function(e) {
+                    try {
+                        if (e.touches.length === 1 && scale > 1) {
+                            isDragging = true;
+                            startX = e.touches[0].clientX - posX;
+                            startY = e.touches[0].clientY - posY;
+                        } else if (e.touches.length === 2) {
+                            isDragging = false;
+                            lastTouchDistance = getTouchDistance(e.touches);
+                        }
+                    } catch (e) {
+                        console.error('터치 시작 오류:', e);
+                    }
+                });
 
-            img.addEventListener('touchmove', e => {
-                if (e.touches.length === 1 && isDragging && scale > 1) {
-                    e.preventDefault();
-                    posX = e.touches[0].clientX - startX;
-                    posY = e.touches[0].clientY - startY;
-                    updateTransform();
-                }
-            });
+                img.addEventListener('touchmove', function(e) {
+                    try {
+                        if (e.touches.length === 1 && isDragging && scale > 1) {
+                            e.preventDefault();
+                            posX = e.touches[0].clientX - startX;
+                            posY = e.touches[0].clientY - startY;
+                            updateTransform();
+                        } else if (e.touches.length === 2) {
+                            e.preventDefault();
+                            const currentDistance = getTouchDistance(e.touches);
+                            scale += (currentDistance - lastTouchDistance) * 0.01;
+                            scale = Math.max(1, Math.min(4, scale));
+                            lastTouchDistance = currentDistance;
+                            updateTransform();
+                        }
+                    } catch (e) {
+                        console.error('터치 이동 오류:', e);
+                    }
+                });
 
-            img.addEventListener('touchend', () => {
-                isDragging = false;
-            });
+                img.addEventListener('touchend', function() {
+                    try {
+                        isDragging = false;
+                    } catch (e) {
+                        console.error('터치 종료 오류:', e);
+                    }
+                });
+
+            } catch (e) {
+                console.error('줌 설정 오류:', e);
+            }
+        }
+
+        // Helper functions for zoom
+        function getTouchDistance(touches) {
+            try {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            } catch (e) {
+                console.error('터치 거리 계산 오류:', e);
+                return 0;
+            }
         }
 
         function updateTransform() {
-            const img = document.getElementById('zoomImage');
-            if (img) {
-                img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            try {
+                const img = document.getElementById('zoomImage');
+                if (img) {
+                    img.style.transform = 'translate(' + posX + 'px, ' + posY + 'px) scale(' + scale + ')';
+                }
+            } catch (e) {
+                console.error('변형 업데이트 오류:', e);
             }
         }
 
         function zoomIn() {
-            scale = Math.min(scale + 0.5, 4);
-            updateTransform();
+            try {
+                scale = Math.min(scale + 0.5, 4);
+                updateTransform();
+            } catch (e) {
+                console.error('줌인 오류:', e);
+            }
         }
 
         function zoomOut() {
-            scale = Math.max(scale - 0.5, 1);
-            if (scale === 1) {
-                posX = 0;
-                posY = 0;
+            try {
+                scale = Math.max(scale - 0.5, 1);
+                if (scale === 1) {
+                    posX = 0;
+                    posY = 0;
+                }
+                updateTransform();
+            } catch (e) {
+                console.error('줌아웃 오류:', e);
             }
-            updateTransform();
         }
 
         function resetZoom() {
-            scale = 1;
-            posX = 0;
-            posY = 0;
-            updateTransform();
+            try {
+                scale = 1;
+                posX = 0;
+                posY = 0;
+                updateTransform();
+            } catch (e) {
+                console.error('줌 리셋 오류:', e);
+            }
         }
 
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                closeUploadModal();
-                closeFullscreen();
-            }
-        });
-
-        document.getElementById('uploadModal').addEventListener('click', e => {
-            if (e.target.id === 'uploadModal') closeUploadModal();
-        });
-
-        document.getElementById('usernameInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') document.getElementById('passwordInput').focus();
-        });
-
-        document.getElementById('passwordInput').addEventListener('keypress', e => {
-            if (e.key === 'Enter') login();
-        });
-
-        window.addEventListener('resize', renderRecentUploads);
-
-        window.addEventListener('beforeunload', () => {
-            if (presenceRef) presenceRef.remove();
-            if (heartbeatInterval) clearInterval(heartbeatInterval);
-        });
-
-        async function init() {
-            const firebaseReady = await initializeFirebase();
-            checkAutoLogin();
-            
-            if (firebaseReady && isFirebaseEnabled) {
-                setupFirebaseSync();
-            } else {
-                const saved = storage.getItem('reports');
-                if (saved) {
+        // Enhanced keyboard and modal event handlers
+        function setupEventHandlers() {
+            try {
+                document.addEventListener('keydown', function(e) {
                     try {
-                        const loaded = JSON.parse(saved);
-                        if (Array.isArray(loaded) && loaded.length === 10) {
-                            reports = loaded;
+                        if (e.key === 'Escape') {
+                            closeUploadModal();
+                            closeFullscreen();
                         }
-                    } catch (e) {}
+                    } catch (e) {
+                        console.error('키보드 이벤트 오류:', e);
+                    }
+                });
+
+                const uploadModal = document.getElementById('uploadModal');
+                if (uploadModal) {
+                    uploadModal.addEventListener('click', function(e) {
+                        try {
+                            if (e.target.id === 'uploadModal') {
+                                closeUploadModal();
+                            }
+                        } catch (e) {
+                            console.error('모달 클릭 오류:', e);
+                        }
+                    });
                 }
-                renderGrid();
-                renderRecentUploads();
-                updateStats();
-                
-                const savedDirective = storage.getItem('directive');
-                if (savedDirective) {
-                    try {
-                        currentDirective = JSON.parse(savedDirective);
-                        displayDirective();
-                    } catch (e) {}
+
+                const usernameInput = document.getElementById('usernameInput');
+                if (usernameInput) {
+                    usernameInput.addEventListener('keypress', function(e) {
+                        try {
+                            if (e.key === 'Enter') {
+                                const passwordInput = document.getElementById('passwordInput');
+                                if (passwordInput) passwordInput.focus();
+                            }
+                        } catch (e) {
+                            console.error('사용자명 입력 오류:', e);
+                        }
+                    });
                 }
+
+                const passwordInput = document.getElementById('passwordInput');
+                if (passwordInput) {
+                    passwordInput.addEventListener('keypress', function(e) {
+                        try {
+                            if (e.key === 'Enter') {
+                                login();
+                            }
+                        } catch (e) {
+                            console.error('비밀번호 입력 오류:', e);
+                        }
+                    });
+                }
+
+                // Setup file input
+                setupFileInput();
+
+                // Window resize handler for recent uploads
+                window.addEventListener('resize', function() {
+                    renderRecentUploads();
+                });
+
+            } catch (e) {
+                console.error('이벤트 핸들러 설정 오류:', e);
             }
         }
 
+        // Initialize everything when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
+            document.addEventListener('DOMContentLoaded', function() {
+                setupEventListeners();
+                setupEventHandlers();
+            });
         } else {
-            init();
+            setupEventListeners();
+            setupEventHandlers();
         }
+
     </script>
 </body>
 </html>
+
