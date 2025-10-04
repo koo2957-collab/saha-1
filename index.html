@@ -2,20 +2,64 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#dc3545">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>긴급구조 e-리포트</title>
     
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com">
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi6ri06riJ6rWs7KGwIGUt66as7Y+s7Yq4IiwKInNob3J0X25hbWUiOiJlLeuniO2PrO2KuCIsCiJzdGFydF91cmwiOiIuLyIsCiJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsCiJiYWNrZ3JvdW5kX2NvbG9yIjoiIzEyMTIxMiIsCiJ0aGVtZV9jb2xvciI6IiMxMjEyMTIiLAoiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCw8c3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInPjxyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyBmaWxsPScjRkY5OTAwJy8+PHRleHQgeD0nNTAlJyB5PSc1MCUnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBkb21pbmFudC1iYXNlbGluZT0nY2VudHJhbCc+8J+amTwvdGV4dD48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+
+    <script>
+        if (!window.Promise) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.2.3/dist/polyfill.min.js"><\/script>');
+        }
+        if (!Array.from) {
+            Array.from = function(arrayLike) {
+                return Array.prototype.slice.call(arrayLike);
+            };
+        }
+        if (typeof Object.assign !== 'function') {
+            Object.assign = function(target) {
+                for (var i = 1; i < arguments.length; i++) {
+                    var source = arguments[i];
+                    for (var key in source) {
+                        if (Object.prototype.hasOwnProperty.call(source, key)) {
+                            target[key] = source[key];
+                        }
+                    }
+                }
+                return target;
+            };
+        }
+    </script>
+
     <style>
+        :root {
+            --bg-dark-primary: #121212;
+            --bg-dark-secondary: #1E1E1E;
+            --bg-dark-tertiary: #2a2a2e;
+            --text-primary: #EAEAEA;
+            --text-secondary: #B3B3B3;
+            --accent-orange: #FF9900;
+            --accent-red: #E53935;
+            --accent-blue: #03A9F4;
+            --accent-green: #28a745;
+            --border-color: #333;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -24,1116 +68,1750 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 10px;
+            padding: 15px;
             -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
         }
 
-        /* 카카오톡 브라우저 경고 */
-        .kakao-warning {
-            display: none;
-            background: #fee500;
-            color: #000;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .kakao-warning button {
-            background: #fff;
-            color: #000;
-            border: 2px solid #000;
-            padding: 8px 20px;
-            margin-top: 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* 헤더 */
         .header {
-            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+            position: relative;
+            text-align: left;
+            padding: 10px 0 15px 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .header-title {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .header-title i {
-            font-size: 2em;
+            gap: 12px;
+            flex: 1;
         }
 
         .header h1 {
             font-size: 1.8em;
-            display: inline-block;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 i { 
+            color: var(--accent-red); 
+        }
+
+        .header p { 
+            color: var(--text-secondary); 
+            font-size: 0.9em; 
+            margin-top: 5px;
         }
 
         .firebase-status {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 5px 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-dark-secondary);
+            padding: 6px 12px;
             border-radius: 20px;
-            margin-top: 10px;
-            font-size: 0.9em;
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
         }
 
-        .firebase-status.connected {
-            background: rgba(76, 175, 80, 0.3);
+        .firebase-status.online {
+            color: var(--accent-green);
+            border-color: var(--accent-green);
         }
 
-        /* 메인 컨텐츠 */
-        .main-content {
-            padding: 20px;
+        .firebase-status.offline {
+            color: var(--accent-red);
+            border-color: var(--accent-red);
         }
 
-        /* 로그인 영역 */
-        .login-area {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+        .firebase-status.connecting {
+            color: var(--accent-orange);
+            border-color: var(--accent-orange);
         }
 
-        .login-form {
-            display: flex;
+        .header-login-status {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: none;
+            align-items: center;
             gap: 10px;
-            flex-wrap: wrap;
         }
 
-        .login-form input {
-            flex: 1;
-            min-width: 150px;
-            padding: 10px;
-            border: 2px solid #ddd;
+        .header-login-status.active { display: flex; }
+
+        .header-user-info {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-user-info #currentUserHeader { 
+            color: var(--accent-orange); 
+            font-weight: bold; 
+        }
+
+        .header-logout-btn {
+            padding: 6px 16px;
+            background: var(--bg-dark-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .header-logout-btn:hover { 
+            background: var(--accent-red); 
+            color: white; 
+            border-color: var(--accent-red); 
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+
+        .login-box {
+            background: var(--bg-dark-secondary);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-box h2 {
+            color: var(--accent-blue);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-box .form-group { margin-bottom: 20px; }
+        .login-box label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-secondary);
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 16px;
+            background: var(--bg-dark-primary);
+            color: var(--text-primary);
         }
 
-        .login-form button {
-            padding: 10px 30px;
-            background: #dc3545;
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-orange);
             color: white;
             border: none;
             border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
         }
+        .login-box button:hover { background: #e68a00; }
 
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-        }
+        .content-area { display: none; }
+        .content-area.active { display: block; }
 
-        /* 통계 카드 */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .card {
+            background-color: var(--bg-dark-secondary);
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
         }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+        .section-title i { color: var(--accent-blue); }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            padding: 0;
+            background: transparent;
+            border: none;
+        }
+
+        .stat-item {
+            background-color: var(--bg-dark-secondary);
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            flex: 1;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--accent-blue);
+        }
+        .stat-item:nth-child(2) { border-left-color: var(--accent-orange); }
+        .stat-item:nth-child(3) { border-left-color: var(--accent-red); }
 
         .stat-number {
-            font-size: 2.5em;
+            font-size: 28px;
             font-weight: bold;
-            margin: 10px 0;
+            color: var(--text-primary);
         }
 
         .stat-label {
-            font-size: 0.9em;
-            opacity: 0.9;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-size: 13px;
         }
 
-        /* 지시사항 영역 - 입력부를 위로, 표시부를 아래로 */
-        .directive-section {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .directive-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .directive-input-area {
+            background: var(--bg-dark-tertiary);
+            padding: 20px;
+            border-radius: 12px;
             margin-bottom: 15px;
-            font-weight: bold;
-            color: #856404;
         }
 
-        .directive-input-wrapper {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+        .directive-input-wrapper { 
+            display: flex; 
+            gap: 10px; 
+            align-items: flex-start;
         }
 
         .directive-input {
             flex: 1;
-            padding: 10px;
-            border: 2px solid #ffc107;
+            padding: 12px;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
+            background: var(--bg-dark-primary);
+            color: var(--text-primary);
+            resize: vertical;
+            min-height: 45px;
         }
+        .directive-input:focus { border-color: var(--accent-orange); outline: none;}
 
         .directive-send-btn {
-            padding: 10px 20px;
-            background: #ffc107;
-            color: #000;
+            padding: 12px 20px;
+            background: var(--accent-orange);
+            color: white;
             border: none;
             border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+            align-self: stretch;
         }
+        .directive-send-btn:hover { background: #e68a00; }
 
         .directive-display {
-            background: white;
+            background: var(--bg-dark-tertiary);
             padding: 15px;
-            border-radius: 8px;
-            min-height: 60px;
+            border-radius: 10px;
+            display: none;
+            border: 3px solid transparent;
         }
 
+        .directive-display.active { display: block; }
+        .directive-display.recent { border-color: var(--accent-red); animation: pulse-directive 1.5s infinite; }
+
+        @keyframes pulse-directive {
+            0%, 100% { border-color: var(--accent-red); box-shadow: 0 0 15px rgba(229, 57, 53, 0.6); }
+            50% { border-color: #ff0000; box-shadow: 0 0 25px rgba(229, 57, 53, 1); }
+        }
+
+        .directive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 10px;
+        }
+
+        .directive-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--accent-red);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .directive-delete-btn {
+            background: var(--bg-dark-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .directive-delete-btn:hover { background: var(--accent-red); color: white; }
+
         .directive-content {
-            font-size: 1.1em;
-            color: #856404;
-            font-weight: 500;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: var(--bg-dark-primary);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-red);
         }
 
         .directive-meta {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 10px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        /* 검색 영역 */
-        .search-container {
+        .recent-uploads-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 12px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-uploads-container {
+            max-height: 240px;
+            overflow-y: auto;
+            border-radius: 8px;
+            background: var(--bg-dark-primary);
+            border: 1px solid var(--border-color);
+            padding: 4px;
+        }
+
+        .recent-upload-item {
+            background: var(--bg-dark-tertiary);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-left: 4px solid var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recent-upload-item:hover { 
+            transform: translateX(5px); 
+            background: #353539; 
+        }
+
+        .recent-upload-number {
+            background: var(--accent-orange);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .recent-upload-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .recent-upload-title { 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: var(--text-primary); 
+            margin-bottom: 4px; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        .search-container input {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
+        .time-ago {
+            font-size: 12px;
+            color: var(--accent-blue);
+            background: rgba(3, 169, 244, 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
         }
 
-        .search-container select {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background: white;
+        .recent-upload-time { 
+            font-size: 12px; 
+            color: var(--text-secondary); 
+        }
+        
+        .empty-recent { 
+            text-align: center; 
+            color: var(--text-secondary); 
+            padding: 20px; 
         }
 
-        /* 보고서 그리드 */
         .reports-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
         }
 
         .report-slot {
-            background: #f8f9fa;
-            border: 3px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 20px;
+            background: var(--bg-dark-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
             min-height: 250px;
-            position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
+            position: relative;
         }
 
         .report-slot.filled {
-            background: white;
-            border: 3px solid #28a745;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--accent-blue);
+            cursor: pointer;
+        }
+        .report-slot.filled:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
+        }
+        .report-slot.recent-upload { border-color: var(--accent-red); animation: pulse-border 1.5s infinite; }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--accent-red); box-shadow: 0 0 15px rgba(229, 57, 53, 0.6); }
+            50% { border-color: #ff0000; box-shadow: 0 0 25px rgba(229, 57, 53, 1); }
         }
 
         .slot-number {
             position: absolute;
             top: 10px;
-            left: 15px;
-            background: #dc3545;
+            left: 10px;
+            background: var(--accent-blue);
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 13px;
+            z-index: 1;
         }
 
-        .empty-slot {
-            text-align: center;
-            color: #adb5bd;
+        .slot-number.recent { 
+            background: var(--accent-red); 
+            animation: pulse-number 1s infinite; 
         }
 
-        .empty-slot i {
-            font-size: 3em;
-            margin-bottom: 15px;
+        @keyframes pulse-number {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
-        .upload-btn {
-            padding: 10px 25px;
-            background: #28a745;
+        .report-preview {
+            width: 100%;
+            height: 130px;
+            background: var(--bg-dark-primary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .report-preview img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain;
+        }
+        .pdf-icon { font-size: 50px; color: var(--text-secondary); }
+
+        .report-info { text-align: center; flex: 1; display: flex; flex-direction: column; }
+        .report-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .report-filename { 
+            font-size: 11px; 
+            color: var(--accent-blue); 
+            margin-bottom: 8px; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+        }
+        .report-meta { font-size: 10px; color: var(--text-secondary); margin-top: auto; }
+
+        .upload-btn, .replace-btn {
+            padding: 8px;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
+            font-size: 12px;
         }
+        .upload-btn { background: var(--accent-green); width: 100%; margin-top: 10px;}
+        .replace-btn { background: var(--accent-orange); }
 
-        .report-content {
-            width: 100%;
-            text-align: center;
+        .delete-confirm { background: var(--accent-red) !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+        .empty-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            height: 100%;
         }
+        .empty-icon { font-size: 40px; margin-bottom: 8px; }
 
-        .report-content img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .report-info {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        .delete-btn {
+        .expand-btn {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #dc3545;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 8px;
             color: white;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            font-size: 20px;
             cursor: pointer;
-            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
         }
 
-        /* 전체화면 모달 */
-        .modal {
+        .modal, .fullscreen-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            z-index: 1000;
+        }
+        .modal { background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 20px; }
+        .modal.active, .fullscreen-modal.active { display: flex; }
+        
+        .modal-content {
+            background: var(--bg-dark-secondary);
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
         }
 
-        .modal img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-            background: rgba(0,0,0,0.5);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+        .modal-content h3 {
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 10px;
         }
 
-        .hidden {
-            display: none !important;
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: var(--text-secondary); }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            background: var(--bg-dark-primary);
+            color: var(--text-primary);
+        }
+        .form-group input[type="text"]:focus { border-color: var(--accent-orange); outline: none;}
+
+        .file-select-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .selected-file {
+            padding: 10px;
+            background: var(--bg-dark-primary);
+            border-radius: 5px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            word-break: break-all;
         }
 
-        /* 모바일 반응형 */
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
-            }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .btn-confirm { background: var(--accent-green); color: white; }
+        .btn-cancel { background: #6c757d; color: white; }
 
-            .header {
-                padding: 15px;
-            }
+        .fullscreen-modal { background: rgba(0,0,0,0.95); z-index: 2000; }
+        .fullscreen-modal.active { flex-direction: column; }
+        .fullscreen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .fullscreen-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            padding: 15px;
+            position: relative;
+        }
+        .fullscreen-image { 
+            max-width: 100%; 
+            max-height: 100%; 
+            width: auto;
+            height: auto;
+            object-fit: contain; 
+            cursor: grab;
+        }
+        .fullscreen-image.dragging { cursor: grabbing; }
+        .fullscreen-info { color: white; text-align: center; padding: 15px; }
 
-            .header-title {
-                flex-direction: row;
-                gap: 10px;
-            }
-
-            .header h1 {
-                font-size: 1.3em;
-            }
-
-            .header-title i {
-                font-size: 1.5em;
-            }
-
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-number {
-                font-size: 2em;
-            }
-
-            .reports-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 10px;
-            }
-
-            .report-slot {
-                min-height: 200px;
-                padding: 15px;
-            }
-
-            .directive-input-wrapper {
-                position: relative;
-            }
-
-            .directive-input {
-                padding-right: 70px;
-            }
-
-            .directive-send-btn {
-                position: absolute;
-                right: 5px;
-                top: 50%;
-                transform: translateY(-50%);
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-
-            .search-container {
-                flex-direction: column;
-            }
-
-            .search-container input,
-            .search-container select {
-                width: 100%;
-            }
-
-            .login-form {
-                flex-direction: column;
-            }
-
-            .login-form input,
-            .login-form button {
-                width: 100%;
-            }
+        .zoom-controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            z-index: 2001;
+        }
+        
+        .zoom-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
         }
 
-        @media (max-width: 480px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
+        .error-message {
+            background: rgba(229, 57, 53, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: none;
+        }
 
-            .reports-grid {
-                grid-template-columns: 1fr;
+        .error-message.show { display: block; }
+        
+        @media (min-width: 1200px) {
+            .reports-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+        
+        @media (max-width: 767px) {
+            body { padding: 10px; }
+            .header h1 { font-size: 1.3em; }
+            .header-login-status { 
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                z-index: 100;
             }
+            .header-user-info { display: none; }
+            .reports-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .report-slot { min-height: 200px; }
+            .stats { display: flex; gap: 0.8rem; }
+            .stat-item { padding: 10px; flex: 1; }
+            .stat-number { font-size: 20px; }
+            .stat-label { font-size: 11px; }
+        }
+        
+        @media (max-width: 575px) {
+            .reports-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- 카카오톡 브라우저 경고 -->
-    <div id="kakaoWarning" class="kakao-warning">
-        <div>⚠️ 카카오톡 브라우저가 감지되었습니다</div>
-        <div>더 나은 사용을 위해 Chrome이나 Safari를 사용해주세요</div>
-        <button onclick="openInExternalBrowser()">🌐 Chrome/Safari에서 열기</button>
-    </div>
-
     <div class="container">
-        <!-- 헤더 -->
         <div class="header">
-            <div class="header-title">
-                <i class="fas fa-fire-truck"></i>
-                <h1>긴급구조 e-리포트</h1>
+            <div class="header-top">
+                <div class="header-title">
+                    <h1><i class="fa-solid fa-clipboard-list"></i>긴급구조 e-리포트</h1>
+                    <div class="firebase-status connecting" id="firebaseStatus">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중
+                    </div>
+                </div>
+                
+                <div class="header-login-status" id="headerLoginStatus">
+                    <div class="header-user-info">
+                        <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
+                    </div>
+                    <button class="header-logout-btn" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+                    </button>
+                </div>
             </div>
-            <div class="firebase-status" id="firebaseStatus">
-                🔄 연결 중...
-            </div>
+            <p>누구나 실시간으로 자료 확인 가능</p>
         </div>
 
-        <!-- 메인 컨텐츠 -->
         <div class="main-content">
-            <!-- 로그인 영역 -->
-            <div class="login-area" id="loginArea">
-                <div class="login-form">
-                    <input type="text" id="usernameInput" placeholder="사용자 이름" autocomplete="off">
-                    <input type="password" id="passwordInput" placeholder="비밀번호 (0119)" autocomplete="off">
+            <div class="login-container" id="loginContainer">
+                <div class="login-box">
+                    <h2><i class="fa-solid fa-lock"></i>로그인</h2>
+                    
+                    <!-- 카카오톡 브라우저 경고 -->
+                    <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.5;">
+                            <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
+                            더 나은 사용을 위해 외부 브라우저를 사용하세요
+                        </div>
+                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            <i class="fa-solid fa-globe"></i> Chrome/Safari에서 열기
+                        </button>
+                    </div>
+                    
+                    <div id="loginError" class="error-message"></div>
+                    
+                    <div class="form-group">
+                        <label for="usernameInput">사용자 이름</label>
+                        <input type="text" id="usernameInput" placeholder="이름을 입력하세요">
+                    </div>
+          
+                    <div class="form-group">
+                        <label for="passwordInput">비밀번호</label>
+                        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요">
+                    </div>
+                
                     <button onclick="login()">로그인</button>
                 </div>
             </div>
 
-            <!-- 사용자 정보 (로그인 후 표시) -->
-            <div class="login-area hidden" id="userArea">
-                <div class="user-info">
-                    <span>👤 <strong id="currentUser"></strong>님 로그인 중</span>
-                    <button onclick="logout()" style="padding: 8px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        로그아웃
-                    </button>
-                </div>
-            </div>
-
-            <!-- 통계 카드 -->
-            <div class="stats-container">
-                <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                    <div class="stat-label">📊 총 보고서</div>
-                    <div class="stat-number" id="totalReports">0</div>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <div class="stat-label">⏱️ 5분 업로드</div>
-                    <div class="stat-number" id="recentUploads">0</div>
-                </div>
-                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <div class="stat-label">👥 현재 접속자</div>
-                    <div class="stat-number" id="onlineUsers">0</div>
-                </div>
-            </div>
-
-            <!-- 실시간 지시사항 (입력부가 위, 표시부가 아래) -->
-            <div class="directive-section">
-                <div class="directive-title">
-                    <i class="fas fa-bullhorn" style="font-size: 1.5em;"></i>
-                    <span>실시간 지시사항</span>
-                </div>
-                
-                <!-- 입력부 -->
-                <div class="directive-input-wrapper" id="directiveInputArea">
-                    <input type="text" class="directive-input" id="directiveInput" 
-                           placeholder="긴급 지시사항을 입력하세요" maxlength="200">
-                    <button class="directive-send-btn" onclick="sendDirective()">전송</button>
-                </div>
-                
-                <!-- 표시부 -->
-                <div class="directive-display">
-                    <div class="directive-content" id="directiveContent">
-                        현재 지시사항이 없습니다.
+            <div class="content-area" id="contentArea">
+                <div class="card stats">
+                    <div class="stat-item">
+                        <div class="stat-number" id="recentFiveMin">0</div>
+                        <div class="stat-label">5분 업로드</div>
                     </div>
-                    <div class="directive-meta" id="directiveMeta"></div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="onlineUsers">0</div>
+                        <div class="stat-label">동시접속자</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="todayUploads">0</div>
+                        <div class="stat-label">오늘 업로드</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 검색 영역 -->
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="제목, 파일, 업로드, 검색어 입력 (지시사항 입력 가능)" 
-                       onkeyup="handleSearch(event)">
-                <select id="filterType" onchange="filterReports()">
-                    <option value="all">전체보기</option>
-                    <option value="recent">최근순</option>
-                    <option value="oldest">오래된순</option>
-                </select>
-            </div>
+                <div class="card directive-section">
+                    <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i>실시간 지시사항</h2>
+                    <div class="directive-input-area">
+                        <div class="directive-input-wrapper">
+                            <textarea class="directive-input" id="directiveInput" placeholder="긴급 지시사항을 입력하세요..." rows="2"></textarea>
+                            <button class="directive-send-btn" onclick="sendDirective()">
+                                <i class="fa-solid fa-paper-plane"></i> 전송
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="directive-display" id="directiveDisplay">
+                        <div class="directive-header">
+                            <div class="directive-title">
+                                <span>📢</span>
+                                <span>긴급 지시사항</span>
+                            </div>
+                            <button class="directive-delete-btn" onclick="deleteDirective()">
+                                <i class="fa-solid fa-trash-can"></i> 삭제
+                            </button>
+                        </div>
+                        <div class="directive-content" id="directiveContent"></div>
+                        <div class="directive-meta" id="directiveMeta"></div>
+                    </div>
+                </div>
 
-            <!-- 보고서 그리드 -->
-            <div class="reports-grid" id="reportsGrid">
-                <!-- 12개 슬롯 생성 -->
+                <div class="card">
+                    <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i>최근 5분 이내 업로드</h2>
+                    <div class="recent-uploads-container" id="recentUploadsList"></div>
+                </div>
+
+                <div class="reports-grid" id="reportsGrid"></div>
             </div>
         </div>
     </div>
 
-    <!-- 전체화면 모달 -->
-    <div class="modal" id="imageModal" onclick="closeModal(event)">
-        <span class="modal-close" onclick="closeModal(event)">&times;</span>
-        <img id="modalImage" src="" alt="">
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-arrow-up-from-bracket"></i> 파일 업로드</h3>
+            <div id="uploadError" class="error-message"></div>
+            <div class="form-group">
+                <label for="reportTitle">제목</label>
+                <input type="text" id="reportTitle" placeholder="보고서 제목 입력">
+            </div>
+            <div class="form-group">
+                <label>파일 선택</label>
+                <button class="file-select-btn" onclick="selectFile()"><i class="fa-solid fa-folder-open"></i> 파일 선택</button>
+                <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+                <div class="selected-file" id="selectedFile">선택된 파일 없음</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeUploadModal()">취소</button>
+                <button class="btn-confirm" onclick="confirmUpload()">업로드</button>
+            </div>
+        </div>
     </div>
 
-    <!-- 숨겨진 파일 입력 -->
-    <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,.pdf,.doc,.docx" onchange="handleFileUpload(event)">
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="fullscreen-header">
+            <button class="back-btn" onclick="closeFullscreen()"><i class="fa-solid fa-arrow-left"></i> 뒤로가기</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-confirm" id="replaceBtn" style="display: none; padding: 10px 20px;" onclick="replaceFile()"><i class="fa-solid fa-retweet"></i> 교체</button>
+                <button class="btn-confirm" id="deleteBtn" style="display: none; padding: 10px 20px; background: #dc3545;" onclick="deleteFromFullscreen()"><i class="fa-solid fa-trash-can"></i> 삭제</button>
+            </div>
+        </div>
+        <div class="zoom-controls" id="zoomControls">
+            <button class="zoom-btn" onclick="openNativeImageView(currentViewSlot)">🔍</button>
+            <button class="zoom-btn" onclick="zoomIn()">+</button>
+            <button class="zoom-btn" onclick="zoomOut()">−</button>
+            <button class="zoom-btn" onclick="resetZoom()">⟲</button>
+        </div>
+        <div class="fullscreen-content" id="fullscreenContent"></div>
+        <div class="fullscreen-info" id="fullscreenInfo"></div>
+    </div>
 
     <script>
-        // Firebase 설정
-        const firebaseConfig = {
-            apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
-            authDomain: "project-3907456119741146864.firebaseapp.com",
-            databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "project-3907456119741146864",
-            storageBucket: "project-3907456119741146864.firebasestorage.app",
-            messagingSenderId: "690596721309",
-            appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
-        };
-
-        // Firebase 초기화
-        let database;
-        let isFirebaseConnected = false;
+        let firebase = null;
+        let database = null;
+        let isFirebaseEnabled = false;
         let currentUser = null;
+        let reports = Array(10).fill(null);
+        let users = new Set();
+        let onlineUsers = {};
         let currentSlot = null;
-        let reports = {};
-        let onlineUsersRef = null;
-        let userPresenceRef = null;
-        let autoLogoutTimer = null;
+        let currentViewSlot = null;
+        let scale = 1;
+        let posX = 0;
+        let posY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let deleteConfirmSlot = null;
+        let deleteTimerId = null;
+        let currentDirective = null;
+        let presenceRef = null;
+        let heartbeatInterval = null;
+        const LOGIN_DURATION = 30 * 60 * 1000;
 
-        // Firebase 초기화 함수
-        function initializeFirebase() {
+        function safeLocalStorage() {
             try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                database = firebase.database();
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                return localStorage;
+            } catch (e) {
+                const mem = {};
+                return {
+                    getItem: k => mem[k] || null,
+                    setItem: (k, v) => mem[k] = v,
+                    removeItem: k => delete mem[k]
+                };
+            }
+        }
+        const storage = safeLocalStorage();
+
+        function updateFirebaseStatus(status, message) {
+            const el = document.getElementById('firebaseStatus');
+            if (el) {
+                el.className = 'firebase-status ' + status;
+                el.innerHTML = message;
+            }
+        }
+
+        function initializeFirebase() {
+            return new Promise((resolve) => {
+                let attempts = 0;
+                const maxAttempts = 50;
                 
-                // 연결 상태 모니터링
-                database.ref('.info/connected').on('value', (snapshot) => {
-                    isFirebaseConnected = snapshot.val() === true;
-                    updateFirebaseStatus(isFirebaseConnected);
+                const checkFirebase = () => {
+                    attempts++;
                     
-                    if (isFirebaseConnected && currentUser) {
-                        setupPresence();
+                    if (typeof window.firebase !== 'undefined') {
+                        try {
+                            const config = {
+                                apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
+                                authDomain: "project-3907456119741146864.firebaseapp.com",
+                                databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
+                                projectId: "project-3907456119741146864",
+                                storageBucket: "project-3907456119741146864.firebasestorage.app",
+                                messagingSenderId: "690596721309",
+                                appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
+                            };
+
+                            if (!window.firebase.apps.length) {
+                                firebase = window.firebase.initializeApp(config);
+                            } else {
+                                firebase = window.firebase.app();
+                            }
+                            
+                            database = window.firebase.database();
+                            isFirebaseEnabled = true;
+                            updateFirebaseStatus('online', '🔥 실시간 연동');
+                            console.log('Firebase initialized successfully');
+                            resolve(true);
+                        } catch (error) {
+                            console.error('Firebase init error:', error);
+                            updateFirebaseStatus('offline', '❌ 연결 실패');
+                            isFirebaseEnabled = false;
+                            resolve(false);
+                        }
+                    } else if (attempts >= maxAttempts) {
+                        console.warn('Firebase SDK not loaded after ' + maxAttempts + ' attempts');
+                        updateFirebaseStatus('offline', '❌ SDK 로드 실패');
+                        isFirebaseEnabled = false;
+                        resolve(false);
+                    } else {
+                        setTimeout(checkFirebase, 100);
                     }
-                });
+                };
                 
-                // 데이터 리스너 설정
-                setupDataListeners();
-                
-                console.log('Firebase 초기화 성공');
-            } catch (error) {
-                console.error('Firebase 초기화 실패:', error);
-                updateFirebaseStatus(false);
-            }
+                checkFirebase();
+            });
         }
 
-        // Firebase 상태 업데이트
-        function updateFirebaseStatus(connected) {
-            const statusElement = document.getElementById('firebaseStatus');
-            if (connected) {
-                statusElement.textContent = '🔥 실시간 연동';
-                statusElement.style.background = 'rgba(76, 175, 80, 0.3)';
-                statusElement.classList.add('connected');
+        function setupFirebaseSync() {
+            if (!isFirebaseEnabled || !database) return;
+
+            database.ref('reports').on('value', snap => {
+                reports = snap.val() || Array(10).fill(null);
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+            });
+
+            database.ref('directive').on('value', snap => {
+                currentDirective = snap.val();
+                displayDirective();
+            });
+
+            database.ref('onlineUsers').on('value', snap => {
+                onlineUsers = snap.val() || {};
+                updateStats();
+            });
+        }
+
+        function saveData() {
+            if (isFirebaseEnabled && database) {
+                database.ref('reports').set(reports);
             } else {
-                statusElement.textContent = '❌ 연결 끊김';
-                statusElement.style.background = 'rgba(244, 67, 54, 0.3)';
-                statusElement.classList.remove('connected');
+                storage.setItem('reports', JSON.stringify(reports));
             }
         }
 
-        // 카카오톡 브라우저 감지
+        function saveDirective() {
+            if (isFirebaseEnabled && database) {
+                database.ref('directive').set(currentDirective);
+            } else {
+                storage.setItem('directive', JSON.stringify(currentDirective));
+            }
+        }
+
+        function getTimeAgo(timestamp) {
+            const mins = Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000);
+            return mins < 1 ? '방금 전' : mins === 1 ? '1분 전' : mins + '분 전';
+        }
+
         function isKakaoTalkBrowser() {
             const ua = navigator.userAgent.toLowerCase();
             return ua.includes('kakaotalk');
         }
 
-        // 외부 브라우저에서 열기
         function openInExternalBrowser() {
             const currentUrl = window.location.href;
+            const ua = navigator.userAgent.toLowerCase();
+            const isIOS = /iphone|ipad|ipod/i.test(ua);
+            const isAndroid = /android/i.test(ua);
             
-            if (navigator.userAgent.match(/android/i)) {
-                // Android - Chrome으로 열기
-                const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + 
-                              '#Intent;scheme=https;package=com.android.chrome;end';
-                window.location.href = intent;
-                
-                setTimeout(() => {
+            try {
+                if (isIOS) {
+                    window.location.href = currentUrl;
+                    setTimeout(() => {
+                        alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
+                    }, 500);
+                } else if (isAndroid) {
+                    const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                    window.location.href = intent;
+                    setTimeout(() => {
+                        window.open(currentUrl, '_blank');
+                    }, 500);
+                } else {
                     window.open(currentUrl, '_blank');
-                }, 500);
-            } else if (navigator.userAgent.match(/iphone|ipad|ipod/i)) {
-                // iOS - Safari로 열기 안내
-                window.location.href = currentUrl;
-                setTimeout(() => {
-                    alert('상단 메뉴에서 "Safari에서 열기"를 선택해주세요.');
-                }, 100);
-            } else {
-                // 기타 브라우저
-                window.open(currentUrl, '_blank');
+                }
+            } catch (e) {
+                alert('외부 브라우저에서 열 수 없습니다. URL을 복사하여 Chrome 또는 Safari에서 열어주세요.\n\n' + currentUrl);
             }
         }
 
-        // 로그인
+        function displayDirective() {
+            const display = document.getElementById('directiveDisplay');
+            const content = document.getElementById('directiveContent');
+            const meta = document.getElementById('directiveMeta');
+            
+            if (currentDirective && currentDirective.message) {
+                content.textContent = currentDirective.message;
+                const date = new Date(currentDirective.timestamp);
+                const isRecent = (Date.now() - date.getTime()) < 300000;
+                
+                meta.innerHTML = 
+                    '<span>👤 ' + (currentDirective.sender || 'Unknown') + '</span>' +
+                    '<span>📅 ' + date.toLocaleString('ko-KR') + '</span>' +
+                    (isRecent ? '<span style="color: #ff4444;">🆕 긴급</span>' : '');
+                
+                display.className = isRecent ? 'directive-display active recent' : 'directive-display active';
+            } else {
+                display.className = 'directive-display';
+            }
+        }
+
+        function sendDirective() {
+            const input = document.getElementById('directiveInput');
+            const message = input.value.trim();
+            
+            if (!message) {
+                alert('지시사항을 입력해주세요.');
+                return;
+            }
+
+            currentDirective = {
+                message: message,
+                sender: currentUser,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveDirective();
+            displayDirective();
+            input.value = '';
+            alert('지시사항이 전송되었습니다!');
+        }
+
+        function deleteDirective() {
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            if (confirm('지시사항을 삭제하시겠습니까?')) {
+                currentDirective = null;
+                saveDirective();
+                displayDirective();
+            }
+        }
+
+        function checkAutoLogin() {
+            try {
+                const loginData = JSON.parse(storage.getItem('loginSession') || 'null');
+                if (loginData && loginData.username && Date.now() - loginData.timestamp < LOGIN_DURATION) {
+                    currentUser = loginData.username;
+                    
+                    if (isFirebaseEnabled && database) {
+                        const userId = currentUser + '_' + Date.now();
+                        presenceRef = database.ref('onlineUsers/' + userId);
+                        presenceRef.set({
+                            username: currentUser,
+                            loginTime: Date.now(),
+                            lastSeen: Date.now()
+                        });
+                        presenceRef.onDisconnect().remove();
+                        heartbeatInterval = setInterval(() => {
+                            if (presenceRef) presenceRef.update({ lastSeen: Date.now() });
+                        }, 30000);
+                    }
+                    
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('contentArea').classList.add('active');
+                    document.getElementById('currentUserHeader').textContent = currentUser;
+                    document.getElementById('headerLoginStatus').classList.add('active');
+                    return true;
+                }
+            } catch (e) {}
+            return false;
+        }
+
         function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
             
             if (!username) {
-                alert('사용자 이름을 입력해주세요');
+                alert('사용자 이름을 입력하세요.');
                 return;
             }
-            
             if (password !== '0119') {
-                alert('비밀번호가 올바르지 않습니다');
+                alert('비밀번호가 올바르지 않습니다.');
+                document.getElementById('passwordInput').value = '';
                 return;
             }
-            
+
             currentUser = username;
-            
-            // 로컬 스토리지에 로그인 정보 저장
-            const loginData = {
-                username: username,
-                timestamp: Date.now()
-            };
-            localStorage.setItem('loginData', JSON.stringify(loginData));
-            
-            // UI 업데이트
-            document.getElementById('loginArea').classList.add('hidden');
-            document.getElementById('userArea').classList.remove('hidden');
-            document.getElementById('currentUser').textContent = username;
-            
-            // Firebase 연결 시 Presence 설정
-            if (isFirebaseConnected) {
-                setupPresence();
+            storage.setItem('loginSession', JSON.stringify({ username, timestamp: Date.now() }));
+
+            if (isFirebaseEnabled && database) {
+                const userId = username + '_' + Date.now();
+                presenceRef = database.ref('onlineUsers/' + userId);
+                presenceRef.set({
+                    username: username,
+                    loginTime: Date.now(),
+                    lastSeen: Date.now()
+                });
+                presenceRef.onDisconnect().remove();
+                heartbeatInterval = setInterval(() => {
+                    if (presenceRef) presenceRef.update({ lastSeen: Date.now() });
+                }, 30000);
             }
-            
-            // 자동 로그아웃 타이머 설정 (1분)
-            resetAutoLogoutTimer();
+
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('contentArea').classList.add('active');
+            document.getElementById('currentUserHeader').textContent = username;
+            document.getElementById('headerLoginStatus').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+
+            renderGrid();
+            renderRecentUploads();
+            updateStats();
+            displayDirective();
         }
 
-        // 로그아웃
         function logout() {
-            if (userPresenceRef) {
-                userPresenceRef.remove();
+            if (presenceRef) {
+                presenceRef.remove();
+                presenceRef = null;
+            }
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
             }
             
             currentUser = null;
-            localStorage.removeItem('loginData');
-            clearTimeout(autoLogoutTimer);
+            storage.removeItem('loginSession');
             
-            document.getElementById('loginArea').classList.remove('hidden');
-            document.getElementById('userArea').classList.add('hidden');
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('contentArea').classList.remove('active');
+            document.getElementById('headerLoginStatus').classList.remove('active');
             document.getElementById('usernameInput').value = '';
             document.getElementById('passwordInput').value = '';
         }
 
-        // 자동 로그아웃 타이머 리셋
-        function resetAutoLogoutTimer() {
-            clearTimeout(autoLogoutTimer);
-            autoLogoutTimer = setTimeout(() => {
-                logout();
-            }, 60000); // 1분
-        }
+        function renderRecentUploads() {
+            const container = document.getElementById('recentUploadsList');
+            const now = Date.now();
+            const recentReports = reports
+                .map((r, i) => ({ report: r, index: i }))
+                .filter(item => item.report && (now - new Date(item.report.uploadTime).getTime()) < 300000)
+                .sort((a, b) => new Date(b.report.uploadTime) - new Date(a.report.uploadTime))
+                .slice(0, 10);
 
-        // 자동 로그인 체크
-        function checkAutoLogin() {
-            const loginData = localStorage.getItem('loginData');
-            if (loginData) {
-                const data = JSON.parse(loginData);
-                const elapsed = Date.now() - data.timestamp;
-                
-                // 1분 이내면 자동 로그인
-                if (elapsed < 60000) {
-                    currentUser = data.username;
-                    document.getElementById('loginArea').classList.add('hidden');
-                    document.getElementById('userArea').classList.remove('hidden');
-                    document.getElementById('currentUser').textContent = data.username;
-                    
-                    if (isFirebaseConnected) {
-                        setupPresence();
-                    }
-                    
-                    // 남은 시간만큼 타이머 설정
-                    const remaining = 60000 - elapsed;
-                    autoLogoutTimer = setTimeout(() => {
-                        logout();
-                    }, remaining);
-                } else {
-                    // 1분이 지났으면 로그인 정보 삭제
-                    localStorage.removeItem('loginData');
-                }
-            }
-        }
-
-        // Presence 설정
-        function setupPresence() {
-            if (!currentUser || !database) return;
-            
-            const userId = currentUser.replace(/[.#$[\]]/g, '_');
-            userPresenceRef = database.ref('onlineUsers/' + userId);
-            
-            userPresenceRef.set({
-                username: currentUser,
-                lastSeen: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            userPresenceRef.onDisconnect().remove();
-        }
-
-        // 데이터 리스너 설정
-        function setupDataListeners() {
-            if (!database) return;
-            
-            // 보고서 데이터 리스너
-            database.ref('reports').on('value', (snapshot) => {
-                reports = snapshot.val() || {};
-                updateReportsDisplay();
-                updateStats();
-            });
-            
-            // 지시사항 리스너
-            database.ref('directive').on('value', (snapshot) => {
-                const directive = snapshot.val();
-                if (directive) {
-                    document.getElementById('directiveContent').textContent = directive.message;
-                    document.getElementById('directiveMeta').textContent = 
-                        `작성자: ${directive.author} | ${new Date(directive.timestamp).toLocaleString()}`;
-                } else {
-                    document.getElementById('directiveContent').textContent = '현재 지시사항이 없습니다.';
-                    document.getElementById('directiveMeta').textContent = '';
-                }
-            });
-            
-            // 온라인 사용자 리스너
-            database.ref('onlineUsers').on('value', (snapshot) => {
-                const users = snapshot.val() || {};
-                document.getElementById('onlineUsers').textContent = Object.keys(users).length;
-            });
-        }
-
-        // 지시사항 전송
-        function sendDirective() {
-            if (!currentUser) {
-                alert('로그인이 필요합니다');
+            if (recentReports.length === 0) {
+                container.innerHTML = '<div class="empty-recent">최근 5분 이내 업로드된 보고서가 없습니다</div>';
                 return;
             }
-            
-            const input = document.getElementById('directiveInput');
-            const message = input.value.trim();
-            
-            if (!message) {
-                alert('지시사항을 입력해주세요');
-                return;
-            }
-            
-            if (database) {
-                database.ref('directive').set({
-                    message: message,
-                    author: currentUser,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                }).then(() => {
-                    input.value = '';
-                }).catch((error) => {
-                    alert('지시사항 전송 실패: ' + error.message);
+
+            const isMobile = window.innerWidth < 768;
+            container.innerHTML = recentReports.map(item => {
+                const timeAgo = getTimeAgo(item.report.uploadTime);
+                const date = new Date(item.report.uploadTime).toLocaleString('ko-KR', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
                 });
-            } else {
-                // 오프라인 모드
-                document.getElementById('directiveContent').textContent = message;
-                document.getElementById('directiveMeta').textContent = 
-                    `작성자: ${currentUser} | ${new Date().toLocaleString()} (오프라인)`;
-                input.value = '';
-            }
-        }
 
-        // 검색 처리
-        function handleSearch(event) {
-            const searchValue = event.target.value.toLowerCase();
-            
-            // "지시사항" 입력 감지
-            if (searchValue === '지시사항') {
-                event.target.value = '';
-                const directiveInput = document.getElementById('directiveInput');
-                directiveInput.focus();
-                directiveInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
-        // 보고서 필터링
-        function filterReports() {
-            updateReportsDisplay();
-        }
-
-        // 파일 업로드 트리거
-        function triggerFileUpload(slotNumber) {
-            if (!currentUser) {
-                alert('로그인이 필요합니다');
-                return;
-            }
-            
-            currentSlot = slotNumber;
-            document.getElementById('fileInput').click();
-        }
-
-        // 파일 업로드 처리
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file || !currentSlot) return;
-            
-            // 이미지 압축 (1920px, 70% 품질)
-            if (file.type.startsWith('image/')) {
-                compressImage(file, (compressedFile) => {
-                    uploadFile(compressedFile);
-                });
-            } else {
-                uploadFile(file);
-            }
-            
-            event.target.value = ''; // 입력 초기화
-        }
-
-        // 이미지 압축
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    
-                    const maxWidth = 1920;
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    if (width > maxWidth) {
-                        height = (maxWidth / width) * height;
-                        width = maxWidth;
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    canvas.toBlob((blob) => {
-                        callback(new File([blob], file.name, { type: 'image/jpeg' }));
-                    }, 'image/jpeg', 0.7);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // 파일 업로드
-        function uploadFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileData = {
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    data: e.target.result,
-                    uploadedBy: currentUser,
-                    timestamp: Date.now()
-                };
-                
-                if (database) {
-                    // 기존 파일 삭제 후 새 파일 업로드
-                    const slotRef = database.ref('reports/slot' + currentSlot);
-                    slotRef.remove().then(() => {
-                        return slotRef.set(fileData);
-                    }).then(() => {
-                        console.log('파일 업로드 성공');
-                    }).catch((error) => {
-                        alert('파일 업로드 실패: ' + error.message);
-                    });
-                } else {
-                    // 오프라인 모드
-                    reports['slot' + currentSlot] = fileData;
-                    updateReportsDisplay();
-                    updateStats();
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // 보고서 삭제
-        function deleteReport(slotNumber) {
-            if (!currentUser) {
-                alert('로그인이 필요합니다');
-                return;
-            }
-            
-            if (confirm('이 보고서를 삭제하시겠습니까?')) {
-                if (database) {
-                    database.ref('reports/slot' + slotNumber).remove();
-                } else {
-                    delete reports['slot' + slotNumber];
-                    updateReportsDisplay();
-                    updateStats();
-                }
-            }
-        }
-
-        // 이미지 전체화면
-        function showFullImage(imageUrl) {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modalImg.src = imageUrl;
-            modal.style.display = 'flex';
-        }
-
-        // 모달 닫기
-        function closeModal(event) {
-            if (event.target.id === 'imageModal' || event.target.classList.contains('modal-close')) {
-                document.getElementById('imageModal').style.display = 'none';
-            }
-        }
-
-        // 보고서 표시 업데이트
-        function updateReportsDisplay() {
-            const grid = document.getElementById('reportsGrid');
-            const filterType = document.getElementById('filterType').value;
-            
-            // 슬롯 정렬
-            let sortedSlots = [];
-            for (let i = 1; i <= 12; i++) {
-                sortedSlots.push({
-                    number: i,
-                    data: reports['slot' + i] || null
-                });
-            }
-            
-            if (filterType === 'recent' || filterType === 'oldest') {
-                sortedSlots = sortedSlots.filter(slot => slot.data).sort((a, b) => {
-                    if (filterType === 'recent') {
-                        return b.data.timestamp - a.data.timestamp;
-                    } else {
-                        return a.data.timestamp - b.data.timestamp;
-                    }
-                });
-                
-                // 빈 슬롯 추가
-                for (let i = sortedSlots.length + 1; i <= 12; i++) {
-                    sortedSlots.push({ number: i, data: null });
-                }
-            }
-            
-            // HTML 생성
-            grid.innerHTML = sortedSlots.map(slot => {
-                if (slot.data) {
-                    const isImage = slot.data.type.startsWith('image/');
-                    const uploadTime = new Date(slot.data.timestamp).toLocaleString();
-                    
-                    return `
-                        <div class="report-slot filled">
-                            <div class="slot-number">${slot.number}</div>
-                            <button class="delete-btn" onclick="deleteReport(${slot.number})">×</button>
-                            <div class="report-content">
-                                ${isImage ? 
-                                    `<img src="${slot.data.data}" alt="${slot.data.name}" 
-                                         onclick="showFullImage('${slot.data.data}')">`
-                                    : 
-                                    `<div style="padding: 20px;">
-                                        <i class="fas fa-file" style="font-size: 3em; color: #6c757d;"></i>
-                                        <p style="margin-top: 10px;">${slot.data.name}</p>
-                                    </div>`
-                                }
-                                <div class="report-info">
-                                    <div>📤 ${slot.data.uploadedBy}</div>
-                                    <div>🕐 ${uploadTime}</div>
-                                </div>
-                            </div>
+                if (isMobile) {
+                    return `<div class="recent-upload-item" onclick="scrollToReport(${item.index})">
+                        <div class="recent-upload-number">${item.index + 1}</div>
+                        <div class="recent-upload-content">
+                            <span class="recent-upload-title">${item.report.title || 'Untitled'}</span>
+                            <span class="time-ago">${timeAgo}</span>
                         </div>
-                    `;
+                    </div>`;
                 } else {
-                    return `
-                        <div class="report-slot">
-                            <div class="slot-number">${slot.number}</div>
-                            <div class="empty-slot">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <div>보고서 업로드</div>
-                                <button class="upload-btn" onclick="triggerFileUpload(${slot.number})">
-                                    파일 선택
-                                </button>
+                    return `<div class="recent-upload-item" onclick="scrollToReport(${item.index})">
+                        <div class="recent-upload-number">${item.index + 1}</div>
+                        <div class="recent-upload-content">
+                            <div class="recent-upload-title">
+                                ${item.report.title || 'Untitled'}
+                                <span class="time-ago">${timeAgo}</span>
                             </div>
+                            <div class="recent-upload-time">⏰ ${date}</div>
                         </div>
-                    `;
+                    </div>`;
                 }
             }).join('');
         }
 
-        // 통계 업데이트
-        function updateStats() {
-            // 총 보고서 수
-            const totalReports = Object.keys(reports).length;
-            document.getElementById('totalReports').textContent = totalReports;
-            
-            // 최근 5분 이내 업로드 수
-            const fiveMinutesAgo = Date.now() - (5 * 60 * 1000);
-            const recentCount = Object.values(reports).filter(report => 
-                report.timestamp > fiveMinutesAgo
-            ).length;
-            document.getElementById('recentUploads').textContent = recentCount;
+        function scrollToReport(index) {
+            const grid = document.getElementById('reportsGrid');
+            const slot = grid.children[index];
+            if (slot) {
+                slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                slot.style.transform = 'scale(1.05)';
+                setTimeout(() => slot.style.transform = 'scale(1)', 300);
+            }
         }
 
-        // 초기화
-        window.addEventListener('DOMContentLoaded', function() {
-            // 카카오톡 브라우저 체크
-            if (isKakaoTalkBrowser()) {
-                document.getElementById('kakaoWarning').style.display = 'block';
+        function renderGrid() {
+            const grid = document.getElementById('reportsGrid');
+            grid.innerHTML = '';
+            const now = Date.now();
+            
+            for (let i = 0; i < 10; i++) {
+                const slot = document.createElement('div');
+                const report = reports[i];
+
+                if (report) {
+                    const isRecent = (now - new Date(report.uploadTime).getTime()) < 300000;
+                    slot.className = isRecent ? 'report-slot filled recent-upload' : 'report-slot filled';
+                    slot.onclick = () => viewReport(i);
+
+                    const timeStr = new Date(report.uploadTime).toLocaleString('ko-KR', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    let preview = '';
+                    if (report.type && report.type.startsWith('image/')) {
+                        preview = `<img src="${report.data}" alt="${report.title}">
+                            <button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(${i})">
+                                <i class="fa-solid fa-expand"></i></button>`;
+                    } else if (report.type === 'application/pdf') {
+                        preview = '<div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>';
+                    }
+
+                    const deleteClass = deleteConfirmSlot === i ? 'delete-confirm' : '';
+                    const deleteBg = deleteConfirmSlot === i ? '#ff4444' : '#dc3545';
+                    const deleteText = deleteConfirmSlot === i ? '⚠️ 다시 클릭' : '🗑️ 삭제';
+
+                    slot.innerHTML = `<div class="slot-number ${isRecent ? 'recent' : ''}">${i + 1}</div>
+                        <div class="report-preview">${preview}</div>
+                        <div class="report-info">
+                            <div class="report-title">${report.title || 'Untitled'}${isRecent ? ' 🆕' : ''}</div>
+                            <div class="report-filename">${report.filename || 'Unknown'}</div>
+                            <div class="report-meta">
+                                <div>👤 ${report.uploader || 'Unknown'}</div>
+                                <div>📅 ${timeStr}</div>
+                            </div>
+                            ${currentUser ? `<div style="display: flex; gap: 5px; margin-top: 8px;">
+                                <button class="replace-btn" style="flex: 1;" onclick="event.stopPropagation(); openUploadModal(${i})">
+                                    <i class="fa-solid fa-retweet"></i> 교체</button>
+                                <button class="replace-btn ${deleteClass}" style="flex: 1; background: ${deleteBg};" 
+                                    onclick="event.stopPropagation(); deleteReport(${i})">${deleteText}</button>
+                            </div>` : '<div style="margin-top: 10px; font-size: 11px; color: #999;">로그인 후 관리 가능</div>'}
+                        </div>`;
+                } else {
+                    slot.className = 'report-slot';
+                    slot.innerHTML = `<div class="slot-number">${i + 1}</div>
+                        <div class="empty-slot">
+                            <div class="empty-icon"><i class="fa-regular fa-folder-open"></i></div>
+                            <div style="font-size: 12px;">비어있는 슬롯</div>
+                            ${currentUser ? `<button class="upload-btn" onclick="openUploadModal(${i})">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> 업로드</button>` : 
+                                '<div style="margin-top: 10px; font-size: 11px;">로그인 후 업로드 가능</div>'}
+                        </div>`;
+                }
+                grid.appendChild(slot);
             }
-            
-            // Firebase 초기화
-            initializeFirebase();
-            
-            // 자동 로그인 체크
-            checkAutoLogin();
-            
-            // 초기 그리드 생성
-            updateReportsDisplay();
-            
-            // Enter 키로 로그인
-            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    login();
+        }
+
+        function deleteReport(index) {
+            if (!currentUser || !reports[index]) return;
+
+            if (deleteConfirmSlot === index) {
+                if (deleteTimerId) clearTimeout(deleteTimerId);
+                reports[index] = null;
+                saveData();
+                deleteConfirmSlot = null;
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                alert('파일이 삭제되었습니다.');
+            } else {
+                deleteConfirmSlot = index;
+                renderGrid();
+                alert(`"${reports[index].title || 'Untitled'}"\n\n삭제하려면 5초 이내에 🗑️ 삭제 버튼을 다시 클릭하세요.`);
+                if (deleteTimerId) clearTimeout(deleteTimerId);
+                deleteTimerId = setTimeout(() => {
+                    if (deleteConfirmSlot === index) {
+                        deleteConfirmSlot = null;
+                        renderGrid();
+                    }
+                }, 5000);
+            }
+        }
+
+        function openUploadModal(slotIndex) {
+            if (!currentUser) {
+                alert('로그인 후 이용해 주세요');
+                return;
+            }
+            currentSlot = slotIndex;
+            const existing = reports[slotIndex];
+            document.getElementById('reportTitle').value = existing ? existing.title || '' : '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('selectedFile').textContent = '선택된 파일 없음';
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+        }
+
+        function selectFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const size = (file.size / 1024 / 1024).toFixed(2);
+                let msg = `✅ ${file.name} (${size}MB)`;
+                if (file.size > 5 * 1024 * 1024 && file.type.startsWith('image/')) {
+                    msg += ' - 자동 압축됩니다';
                 }
-            });
-            
-            // Enter 키로 지시사항 전송
-            document.getElementById('directiveInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendDirective();
-                }
-            });
+                document.getElementById('selectedFile').textContent = msg;
+            }
         });
 
-        // 페이지 활성화 시 자동 로그아웃 타이머 리셋
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden && currentUser) {
-                resetAutoLogoutTimer();
+        function confirmUpload() {
+            const title = document.getElementById('reportTitle').value.trim();
+            const file = document.getElementById('fileInput').files[0];
+
+            if (!title) {
+                alert('제목을 입력해 주세요.');
+                return;
+            }
+            if (!file) {
+                alert('파일을 선택해 주세요.');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                alert('파일 크기가 너무 큽니다. (최대 10MB)');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
+                    compressImage(e.target.result, compressed => {
+                        saveReport(title, file.name, file.type, compressed);
+                    });
+                } else {
+                    saveReport(title, file.name, file.type, e.target.result);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function compressImage(dataUrl, callback) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                const maxWidth = 1920;
+                const maxHeight = 1080;
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width *= ratio;
+                    height *= ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                callback(canvas.toDataURL('image/jpeg', 0.8));
+            };
+            img.src = dataUrl;
+        }
+
+        function saveReport(title, filename, type, data) {
+            reports[currentSlot] = {
+                title,
+                filename,
+                type,
+                data,
+                uploader: currentUser,
+                uploadTime: new Date().toISOString()
+            };
+
+            saveData();
+            renderGrid();
+            renderRecentUploads();
+            updateStats();
+            closeUploadModal();
+            alert('파일이 업로드되었습니다!');
+        }
+
+        function updateStats() {
+            const now = Date.now();
+            const recentCount = reports.filter(r => r && (now - new Date(r.uploadTime).getTime()) < 300000).length;
+            document.getElementById('recentFiveMin').textContent = recentCount;
+            document.getElementById('onlineUsers').textContent = Object.keys(onlineUsers).length;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayCount = reports.filter(r => {
+                if (!r) return false;
+                const d = new Date(r.uploadTime);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime() === today.getTime();
+            }).length;
+            document.getElementById('todayUploads').textContent = todayCount;
+        }
+
+        function viewReport(index) {
+            const report = reports[index];
+            if (!report) return;
+
+            currentViewSlot = index;
+            const modal = document.getElementById('fullscreenModal');
+            const content = document.getElementById('fullscreenContent');
+            const info = document.getElementById('fullscreenInfo');
+
+            document.getElementById('replaceBtn').style.display = currentUser ? 'block' : 'none';
+            document.getElementById('deleteBtn').style.display = currentUser ? 'block' : 'none';
+
+            const date = new Date(report.uploadTime);
+            info.innerHTML = `<h2>${report.title || 'Untitled'}</h2>
+                <div>📄 ${report.filename || 'Unknown'}</div>
+                <div>👤 ${report.uploader || 'Unknown'}</div>
+                <div>📅 ${date.toLocaleString('ko-KR')}</div>`;
+
+            if (report.type && report.type.startsWith('image/')) {
+                content.innerHTML = `<img src="${report.data}" class="fullscreen-image" id="zoomImage" alt="${report.title}">`;
+                document.getElementById('zoomControls').style.display = 'flex';
+                setTimeout(setupZoom, 100);
+            } else if (report.type === 'application/pdf') {
+                content.innerHTML = `<div style="text-align: center; color: white; padding: 40px;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
+                    <h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>
+                    <button onclick="openPDFInNewWindow(${index})" 
+                        style="padding: 15px 30px; background: #667eea; color: white; border: none; 
+                        border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        🌐 새 창에서 PDF 열기</button></div>`;
+                document.getElementById('zoomControls').style.display = 'none';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function openPDFInNewWindow(index) {
+            const report = reports[index];
+            if (!report) return;
+            const w = window.open('', '_blank');
+            if (w) {
+                w.document.write(`<html><head><title>${report.title || 'PDF'}</title>
+                    <style>body{margin:0;}</style></head><body>
+                    <iframe src="${report.data}" width="100%" height="100%" frameborder="0"></iframe>
+                    </body></html>`);
+            } else {
+                alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+            }
+        }
+
+        function openNativeImageView(index) {
+            const report = reports[index];
+            if (!report || !report.type.startsWith('image/')) return;
+            const w = window.open('', '_blank');
+            if (w) {
+                w.document.write(`<html><head><title>${report.title || 'Image'}</title>
+                    <style>body{margin:0;padding:20px;background:#000;display:flex;
+                    align-items:center;justify-content:center;min-height:100vh;}
+                    img{max-width:100%;max-height:100vh;object-fit:contain;}</style></head>
+                    <body><img src="${report.data}"></body></html>`);
+            }
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').classList.remove('active');
+            document.getElementById('zoomControls').style.display = 'none';
+            resetZoom();
+        }
+
+        function replaceFile() {
+            closeFullscreen();
+            openUploadModal(currentViewSlot);
+        }
+
+        function deleteFromFullscreen() {
+            if (confirm('이 파일을 삭제하시겠습니까?')) {
+                reports[currentViewSlot] = null;
+                saveData();
+                closeFullscreen();
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                alert('파일이 삭제되었습니다.');
+            }
+        }
+
+        function setupZoom() {
+            const img = document.getElementById('zoomImage');
+            if (!img) return;
+
+            let lastTap = 0;
+            img.addEventListener('click', () => {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    scale === 1 ? zoomIn() : resetZoom();
+                }
+                lastTap = now;
+            });
+
+            img.addEventListener('mousedown', e => {
+                if (scale > 1) {
+                    isDragging = true;
+                    startX = e.clientX - posX;
+                    startY = e.clientY - posY;
+                    img.classList.add('dragging');
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mousemove', e => {
+                if (isDragging && scale > 1) {
+                    posX = e.clientX - startX;
+                    posY = e.clientY - startY;
+                    updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                const zoomImg = document.getElementById('zoomImage');
+                if (zoomImg) zoomImg.classList.remove('dragging');
+            });
+
+            img.addEventListener('touchstart', e => {
+                if (e.touches.length === 1 && scale > 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX - posX;
+                    startY = e.touches[0].clientY - posY;
+                }
+            });
+
+            img.addEventListener('touchmove', e => {
+                if (e.touches.length === 1 && isDragging && scale > 1) {
+                    e.preventDefault();
+                    posX = e.touches[0].clientX - startX;
+                    posY = e.touches[0].clientY - startY;
+                    updateTransform();
+                }
+            });
+
+            img.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
+
+        function updateTransform() {
+            const img = document.getElementById('zoomImage');
+            if (img) {
+                img.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+            }
+        }
+
+        function zoomIn() {
+            scale = Math.min(scale + 0.5, 4);
+            updateTransform();
+        }
+
+        function zoomOut() {
+            scale = Math.max(scale - 0.5, 1);
+            if (scale === 1) {
+                posX = 0;
+                posY = 0;
+            }
+            updateTransform();
+        }
+
+        function resetZoom() {
+            scale = 1;
+            posX = 0;
+            posY = 0;
+            updateTransform();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeUploadModal();
+                closeFullscreen();
             }
         });
+
+        document.getElementById('uploadModal').addEventListener('click', e => {
+            if (e.target.id === 'uploadModal') closeUploadModal();
+        });
+
+        document.getElementById('usernameInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') document.getElementById('passwordInput').focus();
+        });
+
+        document.getElementById('passwordInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') login();
+        });
+
+        window.addEventListener('resize', renderRecentUploads);
+
+        window.addEventListener('beforeunload', () => {
+            if (presenceRef) presenceRef.remove();
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+        });
+
+        async function init() {
+            // 카카오톡 브라우저 감지
+            if (isKakaoTalkBrowser()) {
+                const kakaoWarning = document.getElementById('kakaoWarning');
+                if (kakaoWarning) {
+                    kakaoWarning.style.display = 'block';
+                }
+            }
+            
+            const firebaseReady = await initializeFirebase();
+            checkAutoLogin();
+            
+            if (firebaseReady && isFirebaseEnabled) {
+                setupFirebaseSync();
+            } else {
+                const saved = storage.getItem('reports');
+                if (saved) {
+                    try {
+                        const loaded = JSON.parse(saved);
+                        if (Array.isArray(loaded) && loaded.length === 10) {
+                            reports = loaded;
+                        }
+                    } catch (e) {}
+                }
+                renderGrid();
+                renderRecentUploads();
+                updateStats();
+                
+                const savedDirective = storage.getItem('directive');
+                if (savedDirective) {
+                    try {
+                        currentDirective = JSON.parse(savedDirective);
+                        displayDirective();
+                    } catch (e) {}
+                }
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
