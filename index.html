@@ -840,7 +840,7 @@
         <div class="header">
             <div class="header-top">
                 <div class="header-title">
-                    <h1><i class="fa-solid fa-truck-medical"></i>긴급구조 e-리포트</h1>
+                    <h1><i class="fa-solid fa-clipboard-list"></i>긴급구조 e-리포트</h1>
                     <div class="firebase-status connecting" id="firebaseStatus">
                         <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중
                     </div>
@@ -862,6 +862,18 @@
             <div class="login-container" id="loginContainer">
                 <div class="login-box">
                     <h2><i class="fa-solid fa-lock"></i>로그인</h2>
+                    
+                    <!-- 카카오톡 브라우저 경고 -->
+                    <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.5;">
+                            <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
+                            더 나은 사용을 위해 외부 브라우저를 사용하세요
+                        </div>
+                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            <i class="fa-solid fa-globe"></i> Chrome/Safari에서 열기
+                        </button>
+                    </div>
+                    
                     <div id="loginError" class="error-message"></div>
                     
                     <div class="form-group">
@@ -1107,6 +1119,37 @@
         function getTimeAgo(timestamp) {
             const mins = Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000);
             return mins < 1 ? '방금 전' : mins === 1 ? '1분 전' : mins + '분 전';
+        }
+
+        function isKakaoTalkBrowser() {
+            const ua = navigator.userAgent.toLowerCase();
+            return ua.includes('kakaotalk');
+        }
+
+        function openInExternalBrowser() {
+            const currentUrl = window.location.href;
+            const ua = navigator.userAgent.toLowerCase();
+            const isIOS = /iphone|ipad|ipod/i.test(ua);
+            const isAndroid = /android/i.test(ua);
+            
+            try {
+                if (isIOS) {
+                    window.location.href = currentUrl;
+                    setTimeout(() => {
+                        alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
+                    }, 500);
+                } else if (isAndroid) {
+                    const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+                    window.location.href = intent;
+                    setTimeout(() => {
+                        window.open(currentUrl, '_blank');
+                    }, 500);
+                } else {
+                    window.open(currentUrl, '_blank');
+                }
+            } catch (e) {
+                alert('외부 브라우저에서 열 수 없습니다. URL을 복사하여 Chrome 또는 Safari에서 열어주세요.\n\n' + currentUrl);
+            }
         }
 
         function displayDirective() {
@@ -1727,6 +1770,14 @@
         });
 
         async function init() {
+            // 카카오톡 브라우저 감지
+            if (isKakaoTalkBrowser()) {
+                const kakaoWarning = document.getElementById('kakaoWarning');
+                if (kakaoWarning) {
+                    kakaoWarning.style.display = 'block';
+                }
+            }
+            
             const firebaseReady = await initializeFirebase();
             checkAutoLogin();
             
