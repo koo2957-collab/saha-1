@@ -1918,17 +1918,44 @@
             }
 
             try {
+                let isFirstReportsLoad = true;
+                let lastReportsSnapshot = null;
+                
                 database.ref('reports').on('value', function(snapshot) {
                     try {
                         const data = snapshot.val();
                         const newReports = data ? data : Array(10).fill(null);
                         
-                        const newReportCount = newReports.filter(function(r) { return r; }).length;
-                        if (lastReportCount > 0 && newReportCount > lastReportCount) {
-                            playUploadAlert();
+                        if (!isFirstReportsLoad && lastReportsSnapshot) {
+                            let hasNewUpload = false;
+                            
+                            for (let i = 0; i < 10; i++) {
+                                const oldReport = lastReportsSnapshot[i];
+                                const newReport = newReports[i];
+                                
+                                if (!oldReport && newReport) {
+                                    hasNewUpload = true;
+                                    console.log('New upload detected at slot ' + i);
+                                    break;
+                                } else if (oldReport && newReport && oldReport.uploadTime !== newReport.uploadTime) {
+                                    hasNewUpload = true;
+                                    console.log('Upload replaced at slot ' + i);
+                                    break;
+                                }
+                            }
+                            
+                            if (hasNewUpload) {
+                                console.log('Playing upload alert...');
+                                setTimeout(function() {
+                                    playUploadAlert();
+                                }, 100);
+                            }
+                        } else {
+                            console.log('First reports load, skipping alert');
                         }
-                        lastReportCount = newReportCount;
                         
+                        isFirstReportsLoad = false;
+                        lastReportsSnapshot = JSON.parse(JSON.stringify(newReports));
                         reports = newReports;
                         renderGrid();
                         renderRecentUploads();
@@ -2694,7 +2721,6 @@
                 updateStats();
                 closeUploadModal();
 
-                playUploadAlert();
                 alert('✅ 파일이 업로드되었습니다!');
             } catch (e) {
                 console.error('보고서 저장 오류:', e);
