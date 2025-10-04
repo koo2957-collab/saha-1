@@ -26,19 +26,16 @@
 
     <!-- Polyfills for older browsers -->
     <script>
-        // Promise polyfill for IE11
         if (!window.Promise) {
             document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8.2.3/dist/polyfill.min.js"><\/script>');
         }
         
-        // Array.from polyfill
         if (!Array.from) {
             Array.from = function(arrayLike) {
                 return Array.prototype.slice.call(arrayLike);
             };
         }
         
-        // Object.assign polyfill
         if (typeof Object.assign !== 'function') {
             Object.assign = function(target) {
                 for (var i = 1; i < arguments.length; i++) {
@@ -270,7 +267,6 @@
             border-color: var(--accent-orange);
         }
 
-        /* iOS specific input fixes */
         .login-box input[type="text"], 
         .login-box input[type="password"] {
             -webkit-border-radius: 8px;
@@ -317,7 +313,6 @@
         }
         .section-title i { color: var(--accent-blue); }
 
-        /* 기존 user-section을 숨김 처리 */
         .user-section { display: none; }
 
         /* === STATS === */
@@ -481,7 +476,6 @@
             gap: 8px;
         }
 
-        /* 스크롤 가능한 컨테이너 */
         .recent-uploads-container {
             max-height: 240px;
             overflow-y: auto;
@@ -491,10 +485,9 @@
             border: 1px solid var(--border-color);
             padding: 4px;
             
-            /* Cross-browser scrollbar */
             scrollbar-width: thin;
             scrollbar-color: var(--accent-orange) var(--bg-dark-tertiary);
-            -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+            -webkit-overflow-scrolling: touch;
         }
 
         .recent-uploads-container::-webkit-scrollbar {
@@ -515,7 +508,6 @@
             background: #e68a00;
         }
 
-        /* 모바일에서 스크롤바 숨김 */
         @media (max-width: 768px) {
             .recent-uploads-container {
                 scrollbar-width: none;
@@ -546,7 +538,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
         }
 
-        /* 동그란 번호 스타일 */
         .recent-upload-number {
             background: var(--accent-orange);
             color: white;
@@ -577,7 +568,6 @@
             flex-wrap: wrap;
         }
 
-        /* 몇분전 표시 스타일 */
         .time-ago {
             font-family: 'Roboto', sans-serif;
             font-size: 12px;
@@ -821,104 +811,71 @@
         .btn-confirm { background: var(--accent-green); color: white; }
         .btn-cancel { background: #6c757d; color: white; }
 
-        /* FULLSCREEN MODAL */
-        .fullscreen-modal { background: rgba(0,0,0,0.95); z-index: 2000; }
-        .fullscreen-modal.active { flex-direction: column; }
-        .fullscreen-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            color: white;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: rgba(0,0,0,0.3);
-        }
-        .back-btn {
-            padding: 10px 20px;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            -webkit-appearance: none;
-        }
-        .fullscreen-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
+        /* FULLSCREEN MODAL - 카카오톡 스타일 */
+        .fullscreen-modal { 
+            background: rgba(0,0,0,1); 
+            z-index: 2000; 
+            flex-direction: column;
             justify-content: center;
-            overflow: auto;
-            padding: 15px;
-            touch-action: pan-x pan-y;
-            position: relative;
-        }
-        .fullscreen-image { 
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
-            transition: transform 0.1s ease-out; 
-            cursor: grab;
-            -webkit-user-drag: none;
-            user-drag: none;
-        }
-        .fullscreen-image.dragging { cursor: grabbing; }
-        .fullscreen-info { color: white; text-align: center; padding: 15px; background: rgba(0,0,0,0.3); }
-        .fullscreen-info h2 { font-size: 1.3em; margin-bottom: 10px; }
-
-        .expand-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: rgba(0,0,0,0.6);
-            border: 2px solid rgba(255,255,255,0.8);
-            border-radius: 8px;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 2;
-            transition: all 0.2s ease;
-            -webkit-appearance: none;
-        }
-        .expand-btn:hover { background: rgba(0,0,0,0.8); transform: scale(1.1); }
-        .expand-btn:active { transform: scale(0.9); background: rgba(0,0,0,0.8); }
-
-        .zoom-controls {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            gap: 10px;
-            z-index: 2001;
         }
         
-        .zoom-btn {
+        .fullscreen-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
             width: 50px;
             height: 50px;
-            background: rgba(0,0,0,0.8);
-            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.6);
+            border: none;
             border-radius: 50%;
             color: white;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 24px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
             transition: all 0.2s ease;
             -webkit-appearance: none;
         }
+        .fullscreen-back-btn:hover { background: rgba(0,0,0,0.8); }
+        .fullscreen-back-btn:active { transform: scale(0.9); }
         
-        .zoom-btn:hover {
-            background: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,0.6);
+        .fullscreen-content {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .fullscreen-image { 
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain;
+            -webkit-user-drag: none;
+            user-drag: none;
+            background-color: black;
+        }
+        
+        .fullscreen-pdf-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: black;
+        }
+        
+        .fullscreen-pdf-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
-        /* Error message styles */
         .error-message {
             background: rgba(229, 57, 53, 0.1);
             border: 1px solid var(--accent-red);
@@ -941,21 +898,18 @@
         
         /* === ENHANCED RESPONSIVE DESIGN === */
         
-        /* Large Desktop (1200px+) */
         @media (min-width: 1200px) {
             .container { max-width: 1400px; }
             .reports-grid { grid-template-columns: repeat(5, 1fr); }
             .stats { grid-template-columns: repeat(3, 1fr); }
         }
         
-        /* Desktop (992px - 1199px) */
         @media (min-width: 992px) and (max-width: 1199px) {
             .container { max-width: 1140px; }
             .reports-grid { grid-template-columns: repeat(4, 1fr); }
             .stats { grid-template-columns: repeat(3, 1fr); }
         }
         
-        /* Tablet (768px - 991px) */
         @media (min-width: 768px) and (max-width: 991px) {
             .container { max-width: 720px; }
             body { padding: 12px; }
@@ -986,11 +940,16 @@
             .recent-upload-number { width: 24px; height: 24px; font-size: 12px; }
         }
         
-        /* Mobile Large (576px - 767px) */
         @media (min-width: 576px) and (max-width: 767px) {
             body { padding: 10px; }
             
-            .header h1 { font-size: 1.4em; }
+            .header h1 { 
+                font-size: 1.3em;
+                flex-wrap: nowrap;
+            }
+            .header h1 i {
+                flex-shrink: 0;
+            }
             .header-login-status { 
                 position: fixed;
                 top: 10px;
@@ -1010,7 +969,6 @@
             .report-slot { min-height: 200px; }
             .report-preview { height: 100px; }
             
-            /* 모바일에서 stats 1열 배치 및 크기 감소 */
             .stats { 
                 display: flex;
                 gap: 0.8rem;
@@ -1032,7 +990,6 @@
             .directive-input-wrapper { flex-direction: column; }
             .card { padding: 15px; }
             
-            /* 5분 이내 업로드 항목 모바일 최적화 */
             .recent-upload-item { 
                 padding: 10px 12px;
                 gap: 8px;
@@ -1060,19 +1017,19 @@
             .recent-uploads-container { max-height: 150px; }
         }
         
-        /* Mobile Small (375px - 575px) */
         @media (max-width: 575px) {
             body { padding: 8px; }
             
             .header { padding: 8px 0 12px 0; margin-bottom: 1.5rem; }
             .header h1 { 
-                font-size: 1.2em; 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 5px; 
+                font-size: 1.2em;
+                flex-wrap: nowrap;
+                gap: 8px;
+            }
+            .header h1 i {
+                flex-shrink: 0;
             }
             
-            /* 모바일에서 로그아웃 버튼 우측 상단 고정 */
             .header-login-status { 
                 position: fixed;
                 top: 8px;
@@ -1083,7 +1040,7 @@
             }
             .header-user-info { 
                 font-size: 12px;
-                display: none; /* 모바일에서 사용자 이름 숨김 */
+                display: none;
             }
             .header-logout-btn { 
                 font-size: 11px; 
@@ -1104,7 +1061,6 @@
             .report-slot { min-height: 180px; padding: 10px; }
             .report-preview { height: 90px; }
             
-            /* 모바일에서 stats 1열 배치 및 크기 감소 */
             .stats { 
                 display: flex;
                 gap: 0.5rem; 
@@ -1130,7 +1086,6 @@
             .directive-input { font-size: 14px; }
             .directive-send-btn { padding: 10px 16px; font-size: 14px; }
             
-            /* 5분 이내 업로드 항목 모바일 최적화 */
             .recent-upload-item { 
                 padding: 8px 10px; 
                 gap: 6px;
@@ -1157,13 +1112,6 @@
             .recent-upload-time { display: none; }
             .recent-uploads-container { max-height: 120px; }
             
-            .fullscreen-header { 
-                flex-direction: column; 
-                align-items: stretch; 
-                gap: 8px; 
-                padding: 10px; 
-            }
-            
             .login-box { 
                 padding: 25px; 
                 margin: 0 5px; 
@@ -1171,7 +1119,6 @@
             .login-box h2 { font-size: 1.5em; }
         }
         
-        /* Extra Small Mobile (320px - 374px) */
         @media (max-width: 374px) {
             body { padding: 5px; }
             
@@ -1180,7 +1127,6 @@
             .report-slot { min-height: 160px; padding: 8px; }
             .report-preview { height: 80px; }
             
-            /* 초소형 모바일에서 stats 더 작게 */
             .stat-number { font-size: 14px; }
             .stat-label { font-size: 9px; }
             .stat-item { padding: 6px; }
@@ -1195,7 +1141,6 @@
             .login-box { padding: 20px; }
         }
 
-        /* iOS Safari specific fixes */
         @supports (-webkit-appearance: none) {
             .fullscreen-modal { 
                 height: -webkit-fill-available; 
@@ -1206,14 +1151,6 @@
             }
         }
 
-        /* Android Chrome specific fixes */
-        @media screen and (-webkit-min-device-pixel-ratio: 0) {
-            .zoom-controls { 
-                bottom: calc(30px + env(safe-area-inset-bottom)); 
-            }
-        }
-
-        /* High DPI displays */
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
             .report-preview img {
                 image-rendering: -webkit-optimize-contrast;
@@ -1226,13 +1163,12 @@
         <div class="header">
             <h1><i class="fa-solid fa-clipboard-list"></i>긴급구조 e-리포트</h1>
             <div class="cloud-badge">
-  ☁️ Firebase Realtime Database
-  <span class="connection-status" id="connectionStatus">
-    <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중...
-  </span>
-</div>
+                ☁️ Firebase Realtime Database
+                <span class="connection-status" id="connectionStatus">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> 연결 중...
+                </span>
+            </div>
             
-            <!-- 헤더 오른쪽 상단 로그인 현황 -->
             <div class="header-login-status" id="headerLoginStatus">
                 <div class="header-user-info">
                     <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
@@ -1244,12 +1180,10 @@
         </div>
 
         <div class="main-content">
-            <!-- 로그인 화면 -->
             <div class="login-container" id="loginContainer">
                 <div class="login-box">
                     <h2><i class="fa-solid fa-lock"></i>로그인</h2>
                     
-                    <!-- 카카오톡 브라우저 경고 -->
                     <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                         <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.5;">
                             <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
@@ -1260,7 +1194,6 @@
                         </button>
                     </div>
 
-                    <!-- Error message -->
                     <div id="loginError" class="error-message"></div>
                     
                     <div class="form-group">
@@ -1277,9 +1210,7 @@
                 </div>
             </div>
 
-            <!-- 메인 컨텐츠 -->
             <div class="content-area" id="contentArea">
-                <!-- 기존 user-section은 숨김 처리됨 -->
                 <div class="card user-section">
                     <div class="current-user">
                         <span><i class="fa-solid fa-user"></i> 현재 사용자: <span id="currentUser"></span></span>
@@ -1289,8 +1220,8 @@
 
                 <div class="card stats">
                     <div class="stat-item">
-                        <div class="stat-number" id="totalReports">0</div>
-                        <div class="stat-label">총 보고서</div>
+                        <div class="stat-number" id="fiveMinUploads">0</div>
+                        <div class="stat-label">5분 업로드</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-number" id="onlineUsers">0</div>
@@ -1338,7 +1269,6 @@
         </div>
     </div>
 
-    <!-- 업로드 모달 -->
     <div class="modal" id="uploadModal">
         <div class="modal-content">
             <h3><i class="fa-solid fa-arrow-up-from-bracket"></i> 파일 업로드</h3>
@@ -1360,36 +1290,21 @@
         </div>
     </div>
 
-    <!-- 전체화면 모달 -->
     <div class="fullscreen-modal" id="fullscreenModal">
-        <div class="fullscreen-header">
-            <button class="back-btn" onclick="closeFullscreen()"><i class="fa-solid fa-arrow-left"></i> 뒤로가기</button>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-confirm" id="replaceBtn" style="display: none; padding: 10px 20px;" onclick="replaceFile()"><i class="fa-solid fa-retweet"></i> 교체</button>
-                <button class="btn-confirm" id="deleteBtn" style="display: none; padding: 10px 20px; background: #dc3545;" onclick="deleteFromFullscreen()"><i class="fa-solid fa-trash-can"></i> 삭제</button>
-            </div>
-        </div>
-        <div class="zoom-controls" id="zoomControls">
-            <button class="zoom-btn" onclick="openNativeImageView(currentViewSlot)" title="브라우저에서 열기">🔍</button>
-            <button class="zoom-btn" onclick="zoomIn()">+</button>
-            <button class="zoom-btn" onclick="zoomOut()">−</button>
-            <button class="zoom-btn" onclick="resetZoom()">⟲</button>
-        </div>
+        <button class="fullscreen-back-btn" onclick="closeFullscreen()">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
         <div class="fullscreen-content" id="fullscreenContent"></div>
-        <div class="fullscreen-info" id="fullscreenInfo"></div>
     </div>
 
     <script>
-        // Firebase initialization with error handling
         let firebase = null;
         let database = null;
         let isFirebaseEnabled = false;
         let firebaseInitialized = false;
 
-        // Enhanced cross-browser initialization
         function initializeFirebase() {
             try {
-                // Check if Firebase is available
                 if (typeof window.firebase === 'undefined') {
                     console.warn('Firebase SDK not loaded');
                     updateConnectionStatus('offline', 'Firebase 연결 실패');
@@ -1406,7 +1321,6 @@
                     appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
                 };
 
-                // Initialize Firebase
                 if (!window.firebase.apps.length) {
                     firebase = window.firebase.initializeApp(firebaseConfig);
                 } else {
@@ -1428,7 +1342,6 @@
             }
         }
 
-        // Connection status indicator
         function updateConnectionStatus(status, message) {
             const statusEl = document.getElementById('connectionStatus');
             if (!statusEl) return;
@@ -1444,7 +1357,6 @@
             }
         }
 
-        // Enhanced error handling
         function showError(elementId, message) {
             const errorEl = document.getElementById(elementId);
             if (errorEl) {
@@ -1463,20 +1375,12 @@
             }
         }
 
-        // 전역 변수들
         let currentUser = null;
         let reports = Array(10).fill(null);
         let users = new Set();
         let onlineUsers = {};
         let currentSlot = null;
         let currentViewSlot = null;
-        let scale = 1;
-        let posX = 0;
-        let posY = 0;
-        let isDragging = false;
-        let startX = 0;
-        let startY = 0;
-        let lastTouchDistance = 0;
         let deleteConfirmSlot = null;
         let deleteTimerId = null;
         let currentDirective = null;
@@ -1488,9 +1392,8 @@
         let audioContext = null;
         let isAudioEnabled = false;
 
-        const LOGIN_DURATION = 30 * 60 * 1000; // 30분
+        const LOGIN_DURATION = 30 * 60 * 1000;
 
-        // Enhanced localStorage with error handling
         function safeLocalStorage() {
             try {
                 const test = 'test';
@@ -1499,7 +1402,6 @@
                 return localStorage;
             } catch (e) {
                 console.warn('localStorage not available, using memory storage');
-                // Fallback to memory storage
                 const memoryStorage = {};
                 return {
                     getItem: function(key) { return memoryStorage[key] || null; },
@@ -1512,7 +1414,6 @@
 
         const storage = safeLocalStorage();
 
-        // 시간 계산 함수 (몇분전 표시용)
         function getTimeAgo(timestamp) {
             try {
                 const now = Date.now();
@@ -1527,7 +1428,6 @@
             }
         }
 
-        // Enhanced audio initialization with fallback
         function initAudio() {
             if (!audioContext) {
                 try {
@@ -1536,7 +1436,6 @@
                         audioContext = new AudioContext();
                         isAudioEnabled = true;
                         
-                        // Handle iOS audio context restrictions
                         if (audioContext.state === 'suspended') {
                             document.addEventListener('touchstart', function resumeAudio() {
                                 audioContext.resume().then(() => {
@@ -1552,7 +1451,6 @@
             }
         }
 
-        // Enhanced notification sound with fallback
         function playNotificationSound() {
             if (!isAudioEnabled || !audioContext) return;
             
@@ -1609,7 +1507,6 @@
             }
         }
 
-        // Enhanced browser detection
         function getBrowserInfo() {
             const ua = navigator.userAgent.toLowerCase();
             return {
@@ -1623,30 +1520,25 @@
             };
         }
 
-        // 카카오톡 브라우저 감지
         function isKakaoTalkBrowser() {
             return getBrowserInfo().isKakaoTalk;
         }
 
-        // 모바일 기기 감지
         function isMobileDevice() {
             return getBrowserInfo().isMobile;
         }
 
-        // Enhanced external browser opening
         function openInExternalBrowser() {
             const currentUrl = window.location.href;
             const browserInfo = getBrowserInfo();
             
             try {
                 if (browserInfo.isIOS) {
-                    // iOS specific handling
                     window.location.href = currentUrl;
                     setTimeout(function() {
                         alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
                     }, 500);
                 } else if (browserInfo.isAndroid) {
-                    // Android specific handling
                     const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
                     window.location.href = intent;
                     
@@ -1662,7 +1554,6 @@
             }
         }
 
-        // Enhanced back press handling
         function handleBackPress() {
             const currentTime = Date.now();
             if (currentTime - backPressTime < 2000) {
@@ -1721,7 +1612,6 @@
             }
         }
 
-        // Enhanced event listeners with error handling
         function setupEventListeners() {
             try {
                 window.addEventListener('popstate', function(event) {
@@ -1743,7 +1633,6 @@
                     }
                 });
 
-                // Enhanced window load event
                 window.addEventListener('load', function() {
                     try {
                         if (isKakaoTalkBrowser()) {
@@ -1753,17 +1642,13 @@
                             }
                         }
                         
-                        // Initialize Firebase first
                         const firebaseReady = initializeFirebase();
                         
-                        // Check auto login
                         checkAutoLogin();
                         
-                        // Setup sync based on Firebase availability
                         if (firebaseReady && isFirebaseEnabled) {
                             setupFirebaseSync();
                         } else {
-                            // Fallback to local storage
                             loadData();
                             renderGrid();
                             renderRecentUploads();
@@ -1776,7 +1661,6 @@
                     }
                 });
 
-                // Network status monitoring
                 window.addEventListener('online', function() {
                     updateConnectionStatus('online', 'Online');
                     if (!firebaseInitialized) {
@@ -1793,7 +1677,6 @@
             }
         }
 
-        // Enhanced auto login with better error handling
         function checkAutoLogin() {
             try {
                 const loginData = JSON.parse(storage.getItem('loginSession') || 'null');
@@ -1857,7 +1740,6 @@
             return false;
         }
 
-        // Enhanced login session management
         function saveLoginSession(username) {
             try {
                 const loginData = {
@@ -1878,7 +1760,6 @@
             }
         }
 
-        // Enhanced Firebase sync with error handling
         function setupFirebaseSync() {
             if (!isFirebaseEnabled || !database) {
                 console.warn('Firebase not available for sync');
@@ -1970,7 +1851,6 @@
             }
         }
 
-        // Enhanced local data management
         function loadData() {
             try {
                 const savedReports = storage.getItem('reports');
@@ -2002,7 +1882,6 @@
                 }
             } catch (e) {
                 console.error('데이터 저장 오류:', e);
-                // Fallback to localStorage
                 try {
                     storage.setItem('reports', JSON.stringify(reports));
                     storage.setItem('users', JSON.stringify(Array.from(users)));
@@ -2012,7 +1891,6 @@
             }
         }
 
-        // Enhanced directive management
         function loadDirective() {
             try {
                 const saved = storage.getItem('directive');
@@ -2086,7 +1964,6 @@
             }
         }
 
-        // Enhanced directive functions
         function sendDirective() {
             try {
                 const input = document.getElementById('directiveInput');
@@ -2134,7 +2011,6 @@
             }
         }
 
-        // Enhanced login function
         function login() {
             try {
                 hideError('loginError');
@@ -2219,7 +2095,6 @@
             }
         }
 
-        // Enhanced logout function
         function logout() {
             try {
                 if (presenceRef) {
@@ -2256,7 +2131,6 @@
             }
         }
 
-        // Enhanced recent uploads rendering with mobile optimization
         function renderRecentUploads() {
             try {
                 const container = document.getElementById('recentUploadsList');
@@ -2274,14 +2148,15 @@
                     .sort(function(a, b) {
                         return new Date(b.report.uploadTime) - new Date(a.report.uploadTime);
                     })
-                    .slice(0, 10); // 최대 10개까지만 표시
+                    .slice(0, 10);
 
                 if (recentReports.length === 0) {
                     container.innerHTML = '<div class="empty-recent">최근 5분 이내 업로드된 보고서가 없습니다</div>';
                     return;
                 }
 
-                // 모바일 최적화: 번호 옆에 제목 표시
+                const isMobile = window.innerWidth < 768;
+                
                 container.innerHTML = recentReports.map(function(item) {
                     const report = item.report;
                     const index = item.index;
@@ -2294,9 +2169,6 @@
                     });
                     const timeAgo = getTimeAgo(report.uploadTime);
 
-                    // 모바일에서 간결하게 표시
-                    const isMobile = window.innerWidth < 768;
-                    
                     if (isMobile) {
                         return '<div class="recent-upload-item" onclick="scrollToReport(' + index + ')">' +
                                '<div class="recent-upload-number">' + (index + 1) + '</div>' +
@@ -2324,7 +2196,6 @@
             }
         }
 
-        // Enhanced scroll to report
         function scrollToReport(index) {
             try {
                 const grid = document.getElementById('reportsGrid');
@@ -2344,7 +2215,6 @@
             }
         }
 
-        // Enhanced grid rendering
         function renderGrid() {
             try {
                 const grid = document.getElementById('reportsGrid');
@@ -2376,9 +2246,7 @@
                         
                         let preview = '';
                         if (report.type && report.type.startsWith('image/')) {
-                            preview = '<img src="' + (report.data || '') + '" alt="' + (report.title || '') + '">' +
-                                    '<button class="expand-btn" onclick="event.stopPropagation(); openNativeImageView(' + i + ')" title="이미지 크게 보기">' +
-                                    '<i class="fa-solid fa-expand"></i></button>';
+                            preview = '<img src="' + (report.data || '') + '" alt="' + (report.title || '') + '">';
                         } else if (report.type === 'application/pdf') {
                             preview = '<div class="pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>';
                         }
@@ -2425,7 +2293,6 @@
             }
         }
 
-        // Enhanced report deletion
         function deleteReport(index) {
             try {
                 const report = reports[index];
@@ -2465,7 +2332,6 @@
             }
         }
 
-        // Enhanced modal functions
         function openUploadModal(slotIndex) {
             try {
                 if (!currentUser) {
@@ -2516,7 +2382,6 @@
             }
         }
 
-        // Enhanced file selection
         function setupFileInput() {
             try {
                 const fileInput = document.getElementById('fileInput');
@@ -2550,7 +2415,6 @@
             }
         }
 
-        // Enhanced upload confirmation
         function confirmUpload() {
             try {
                 hideError('uploadError');
@@ -2576,8 +2440,7 @@
                     return;
                 }
 
-                // File size check
-                if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                if (file.size > 10 * 1024 * 1024) {
                     showError('uploadError', '파일 크기가 너무 큽니다. (최대 10MB)');
                     return;
                 }
@@ -2587,7 +2450,6 @@
                     try {
                         let fileData = e.target.result;
                         
-                        // Enhanced image compression
                         if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
                             compressImage(fileData, function(compressedData) {
                                 saveReport(title, file.name, file.type, compressedData);
@@ -2612,7 +2474,6 @@
             }
         }
 
-        // Enhanced image compression
         function compressImage(dataUrl, callback) {
             try {
                 const canvas = document.createElement('canvas');
@@ -2640,23 +2501,22 @@
                         callback(compressedData);
                     } catch (e) {
                         console.error('이미지 압축 오류:', e);
-                        callback(dataUrl); // Fallback to original
+                        callback(dataUrl);
                     }
                 };
                 
                 img.onerror = function() {
                     console.error('이미지 로드 실패');
-                    callback(dataUrl); // Fallback to original
+                    callback(dataUrl);
                 };
                 
                 img.src = dataUrl;
             } catch (e) {
                 console.error('이미지 압축 설정 오류:', e);
-                callback(dataUrl); // Fallback to original
+                callback(dataUrl);
             }
         }
 
-        // Enhanced report saving
         function saveReport(title, filename, type, data) {
             try {
                 const report = {
@@ -2683,15 +2543,21 @@
             }
         }
 
-        // Enhanced stats update
         function updateStats() {
             try {
-                const totalReportsEl = document.getElementById('totalReports');
+                const fiveMinUploadsEl = document.getElementById('fiveMinUploads');
                 const onlineUsersEl = document.getElementById('onlineUsers');
                 const todayUploadsEl = document.getElementById('todayUploads');
                 
-                if (totalReportsEl) {
-                    totalReportsEl.textContent = reports.filter(function(r) { return r; }).length;
+                if (fiveMinUploadsEl) {
+                    const now = Date.now();
+                    const fiveMinutes = 5 * 60 * 1000;
+                    const fiveMinCount = reports.filter(function(r) {
+                        if (!r || !r.uploadTime) return false;
+                        const uploadTime = new Date(r.uploadTime).getTime();
+                        return (now - uploadTime) < fiveMinutes;
+                    }).length;
+                    fiveMinUploadsEl.textContent = fiveMinCount;
                 }
                 
                 if (onlineUsersEl) {
@@ -2716,7 +2582,6 @@
             }
         }
 
-        // Enhanced report viewing
         function viewReport(index) {
             try {
                 const report = reports[index];
@@ -2725,80 +2590,15 @@
                 currentViewSlot = index;
                 const modal = document.getElementById('fullscreenModal');
                 const content = document.getElementById('fullscreenContent');
-                const info = document.getElementById('fullscreenInfo');
-                const replaceBtn = document.getElementById('replaceBtn');
-                const deleteBtn = document.getElementById('deleteBtn');
 
-                if (!modal || !content || !info) return;
+                if (!modal || !content) return;
 
-                // 버튼 표시/숨기기
-                if (replaceBtn) {
-                    replaceBtn.style.display = currentUser ? 'block' : 'none';
-                }
-                if (deleteBtn) {
-                    deleteBtn.style.display = currentUser ? 'block' : 'none';
-                }
-
-                // 정보 표시
-                const date = new Date(report.uploadTime);
-                info.innerHTML = '<h2>' + (report.title || 'Untitled') + '</h2>' +
-                               '<div>📄 ' + (report.filename || 'Unknown file') + '</div>' +
-                               '<div>👤 ' + (report.uploader || 'Unknown') + '</div>' +
-                               '<div>📅 ' + date.toLocaleString('ko-KR') + '</div>';
-
-                // 컨텐츠 표시
                 if (report.type && report.type.startsWith('image/')) {
-                    content.innerHTML = '<img src="' + (report.data || '') + '" class="fullscreen-image" id="zoomImage" alt="' + (report.title || '') + '">';
-                    const zoomControls = document.getElementById('zoomControls');
-                    if (zoomControls) zoomControls.style.display = 'flex';
-                    setTimeout(function() { setupZoom(); }, 100);
+                    content.innerHTML = '<img src="' + (report.data || '') + '" class="fullscreen-image" alt="' + (report.title || '') + '">';
                 } else if (report.type === 'application/pdf') {
-                    const browserInfo = getBrowserInfo();
-                    
-                    if (browserInfo.isKakaoTalk) {
-                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
-                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
-                                          '<h3 style="margin-bottom: 20px;">PDF 파일 보기</h3>' +
-                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
-                                          '카카오톡 브라우저에서는 PDF를 볼 수 없습니다.<br>' +
-                                          '아래 버튼을 눌러 외부 브라우저에서 열어주세요.' +
-                                          '</p>' +
-                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
-                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
-                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
-                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
-                                          '🌐 새 창에서 PDF 열기' +
-                                          '</button>' +
-                                          '<p style="font-size: 13px; color: #999; margin-top: 20px;">' +
-                                          '* 버튼을 누른 후 \'다른 앱에서 열기\' 또는 \'브라우저에서 열기\'를 선택하세요' +
-                                          '</p>' +
-                                          '</div>';
-                    } else if (browserInfo.isMobile) {
-                        content.innerHTML = '<div style="text-align: center; color: white; padding: 40px 20px;">' +
-                                          '<div style="font-size: 60px; margin-bottom: 20px;">📄</div>' +
-                                          '<h3 style="margin-bottom: 20px;">' + (report.title || 'PDF File') + '</h3>' +
-                                          '<p style="margin-bottom: 30px; line-height: 1.6;">' +
-                                          'PDF를 보려면 아래 옵션 중 하나를 선택하세요' +
-                                          '</p>' +
-                                          '<button onclick="openPDFInNewWindow(' + index + ')" ' +
-                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto 15px; padding: 15px 30px; ' +
-                                          'background: #667eea; color: white; border: none; border-radius: 8px; ' +
-                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
-                                          '🌐 새 창에서 열기' +
-                                          '</button>' +
-                                          '<button onclick="viewPDFInline(' + index + ')" ' +
-                                          'style="display: block; width: 100%; max-width: 300px; margin: 0 auto; padding: 15px 30px; ' +
-                                          'background: #28a745; color: white; border: none; border-radius: 8px; ' +
-                                          'font-weight: bold; font-size: 16px; cursor: pointer;">' +
-                                          '📱 현재 창에서 보기' +
-                                          '</button>' +
-                                          '</div>';
-                    } else {
-                        content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
-                    }
-                    
-                    const zoomControls = document.getElementById('zoomControls');
-                    if (zoomControls) zoomControls.style.display = 'none';
+                    content.innerHTML = '<div class="fullscreen-pdf-container">' +
+                                      '<iframe src="' + (report.data || '') + '"></iframe>' +
+                                      '</div>';
                 }
 
                 modal.classList.add('active');
@@ -2808,282 +2608,18 @@
             }
         }
 
-        // Enhanced PDF functions
-        function openPDFInNewWindow(index) {
-            try {
-                const report = reports[index];
-                if (!report || report.type !== 'application/pdf') return;
-                
-                const newWindow = window.open('', '_blank');
-                if (newWindow) {
-                    newWindow.document.write(
-                        '<html>' +
-                        '<head>' +
-                        '<title>' + (report.title || 'PDF Document') + '</title>' +
-                        '<style>body { margin: 0; }</style>' +
-                        '</head>' +
-                        '<body>' +
-                        '<iframe src="' + (report.data || '') + '" width="100%" height="100%" frameborder="0"></iframe>' +
-                        '</body>' +
-                        '</html>'
-                    );
-                } else {
-                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
-                }
-            } catch (e) {
-                console.error('PDF 새 창 열기 오류:', e);
-                alert('❌ PDF를 열 수 없습니다.');
-            }
-        }
-
-        function viewPDFInline(index) {
-            try {
-                const report = reports[index];
-                if (!report || report.type !== 'application/pdf') return;
-                
-                const content = document.getElementById('fullscreenContent');
-                if (content) {
-                    content.innerHTML = '<iframe src="' + (report.data || '') + '" style="width: 90vw; height: 80vh; border: none;"></iframe>';
-                }
-            } catch (e) {
-                console.error('PDF 인라인 보기 오류:', e);
-            }
-        }
-
-        function openNativeImageView(index) {
-            try {
-                const report = reports[index];
-                if (!report || !report.type || !report.type.startsWith('image/')) return;
-                
-                const newWindow = window.open('', '_blank');
-                if (newWindow) {
-                    newWindow.document.write(
-                        '<html>' +
-                        '<head>' +
-                        '<title>' + (report.title || 'Image') + '</title>' +
-                        '<style>' +
-                        'body { margin: 0; padding: 20px; background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }' +
-                        'img { max-width: 100%; max-height: 100vh; object-fit: contain; }' +
-                        '</style>' +
-                        '</head>' +
-                        '<body>' +
-                        '<img src="' + (report.data || '') + '" alt="' + (report.title || 'Image') + '">' +
-                        '</body>' +
-                        '</html>'
-                    );
-                } else {
-                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
-                }
-            } catch (e) {
-                console.error('이미지 새 창 열기 오류:', e);
-            }
-        }
-
-        // Enhanced fullscreen functions
         function closeFullscreen() {
             try {
                 const fullscreenModal = document.getElementById('fullscreenModal');
-                const zoomControls = document.getElementById('zoomControls');
                 
                 if (fullscreenModal) {
                     fullscreenModal.classList.remove('active');
                 }
-                if (zoomControls) {
-                    zoomControls.style.display = 'none';
-                }
-                resetZoom();
             } catch (e) {
                 console.error('전체화면 닫기 오류:', e);
             }
         }
 
-        function replaceFile() {
-            try {
-                closeFullscreen();
-                openUploadModal(currentViewSlot);
-            } catch (e) {
-                console.error('파일 교체 오류:', e);
-            }
-        }
-
-        function deleteFromFullscreen() {
-            try {
-                if (confirm('이 파일을 삭제하시겠습니까?')) {
-                    reports[currentViewSlot] = null;
-                    saveData();
-                    closeFullscreen();
-                    renderGrid();
-                    renderRecentUploads();
-                    updateStats();
-                    alert('✅ 파일이 삭제되었습니다.');
-                }
-            } catch (e) {
-                console.error('전체화면에서 삭제 오류:', e);
-            }
-        }
-
-        // Enhanced zoom functionality
-        function setupZoom() {
-            try {
-                const img = document.getElementById('zoomImage');
-                if (!img) return;
-
-                let lastTap = 0;
-                img.addEventListener('click', function() {
-                    try {
-                        const now = Date.now();
-                        if (now - lastTap < 300) {
-                            scale === 1 ? zoomIn() : resetZoom();
-                        }
-                        lastTap = now;
-                    } catch (e) {
-                        console.error('클릭 줌 오류:', e);
-                    }
-                });
-
-                // Mouse events
-                img.addEventListener('mousedown', function(e) {
-                    try {
-                        if (scale > 1) {
-                            isDragging = true;
-                            startX = e.clientX - posX;
-                            startY = e.clientY - posY;
-                            img.classList.add('dragging');
-                            e.preventDefault();
-                        }
-                    } catch (e) {
-                        console.error('마우스 다운 오류:', e);
-                    }
-                });
-
-                document.addEventListener('mousemove', function(e) {
-                    try {
-                        if (isDragging && scale > 1) {
-                            posX = e.clientX - startX;
-                            posY = e.clientY - startY;
-                            updateTransform();
-                        }
-                    } catch (e) {
-                        console.error('마우스 이동 오류:', e);
-                    }
-                });
-
-                document.addEventListener('mouseup', function() {
-                    try {
-                        isDragging = false;
-                        const zoomImg = document.getElementById('zoomImage');
-                        if (zoomImg) zoomImg.classList.remove('dragging');
-                    } catch (e) {
-                        console.error('마우스 업 오류:', e);
-                    }
-                });
-
-                // Touch events
-                img.addEventListener('touchstart', function(e) {
-                    try {
-                        if (e.touches.length === 1 && scale > 1) {
-                            isDragging = true;
-                            startX = e.touches[0].clientX - posX;
-                            startY = e.touches[0].clientY - posY;
-                        } else if (e.touches.length === 2) {
-                            isDragging = false;
-                            lastTouchDistance = getTouchDistance(e.touches);
-                        }
-                    } catch (e) {
-                        console.error('터치 시작 오류:', e);
-                    }
-                });
-
-                img.addEventListener('touchmove', function(e) {
-                    try {
-                        if (e.touches.length === 1 && isDragging && scale > 1) {
-                            e.preventDefault();
-                            posX = e.touches[0].clientX - startX;
-                            posY = e.touches[0].clientY - startY;
-                            updateTransform();
-                        } else if (e.touches.length === 2) {
-                            e.preventDefault();
-                            const currentDistance = getTouchDistance(e.touches);
-                            scale += (currentDistance - lastTouchDistance) * 0.01;
-                            scale = Math.max(1, Math.min(4, scale));
-                            lastTouchDistance = currentDistance;
-                            updateTransform();
-                        }
-                    } catch (e) {
-                        console.error('터치 이동 오류:', e);
-                    }
-                });
-
-                img.addEventListener('touchend', function() {
-                    try {
-                        isDragging = false;
-                    } catch (e) {
-                        console.error('터치 종료 오류:', e);
-                    }
-                });
-
-            } catch (e) {
-                console.error('줌 설정 오류:', e);
-            }
-        }
-
-        // Helper functions for zoom
-        function getTouchDistance(touches) {
-            try {
-                const dx = touches[0].clientX - touches[1].clientX;
-                const dy = touches[0].clientY - touches[1].clientY;
-                return Math.sqrt(dx * dx + dy * dy);
-            } catch (e) {
-                console.error('터치 거리 계산 오류:', e);
-                return 0;
-            }
-        }
-
-        function updateTransform() {
-            try {
-                const img = document.getElementById('zoomImage');
-                if (img) {
-                    img.style.transform = 'translate(' + posX + 'px, ' + posY + 'px) scale(' + scale + ')';
-                }
-            } catch (e) {
-                console.error('변형 업데이트 오류:', e);
-            }
-        }
-
-        function zoomIn() {
-            try {
-                scale = Math.min(scale + 0.5, 4);
-                updateTransform();
-            } catch (e) {
-                console.error('줌인 오류:', e);
-            }
-        }
-
-        function zoomOut() {
-            try {
-                scale = Math.max(scale - 0.5, 1);
-                if (scale === 1) {
-                    posX = 0;
-                    posY = 0;
-                }
-                updateTransform();
-            } catch (e) {
-                console.error('줌아웃 오류:', e);
-            }
-        }
-
-        function resetZoom() {
-            try {
-                scale = 1;
-                posX = 0;
-                posY = 0;
-                updateTransform();
-            } catch (e) {
-                console.error('줌 리셋 오류:', e);
-            }
-        }
-
-        // Enhanced keyboard and modal event handlers
         function setupEventHandlers() {
             try {
                 document.addEventListener('keydown', function(e) {
@@ -3137,10 +2673,8 @@
                     });
                 }
 
-                // Setup file input
                 setupFileInput();
 
-                // Window resize handler for recent uploads
                 window.addEventListener('resize', function() {
                     renderRecentUploads();
                 });
@@ -3150,7 +2684,6 @@
             }
         }
 
-        // Initialize everything when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
                 setupEventListeners();
@@ -3164,4 +2697,3 @@
     </script>
 </body>
 </html>
-
