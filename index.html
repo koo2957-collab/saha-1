@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#1a1a1a">
+    <meta name="theme-color" content="#dc3545">
     <title>긴급구조 e-리포트</title>
     
     <!-- Font Awesome for Icons -->
@@ -25,103 +25,91 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #0a0a0a;
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
             min-height: 100vh;
-            color: #ffffff;
+            padding: 10px;
             -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
 
         /* 카카오톡 브라우저 경고 */
         .kakao-warning {
             display: none;
-            background: linear-gradient(135deg, #fee500 0%, #ffd700 100%);
+            background: #fee500;
             color: #000;
-            padding: 12px;
+            padding: 15px;
             text-align: center;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+            font-weight: bold;
         }
 
         .kakao-warning button {
-            background: #000;
-            color: #fee500;
-            border: none;
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
             padding: 8px 20px;
-            margin-top: 8px;
-            border-radius: 20px;
+            margin-top: 10px;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .kakao-warning button:hover {
-            transform: scale(1.05);
         }
 
         /* 헤더 */
         .header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 15px 20px;
-            border-bottom: 2px solid #ff6b6b;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.5);
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
         }
 
         .header-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
         .header-title i {
-            color: #ff6b6b;
-            font-size: 1.8em;
+            font-size: 2em;
         }
 
         .header h1 {
-            font-size: 1.5em;
-            color: #ffffff;
-            font-weight: 700;
+            font-size: 1.8em;
+            display: inline-block;
         }
 
         .firebase-status {
-            background: rgba(255,255,255,0.1);
-            padding: 8px 20px;
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
             border-radius: 20px;
+            margin-top: 10px;
             font-size: 0.9em;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s;
         }
 
         .firebase-status.connected {
-            background: rgba(76, 175, 80, 0.2);
-            border-color: #4caf50;
-            color: #4caf50;
+            background: rgba(76, 175, 80, 0.3);
         }
 
-        /* 메인 대시보드 */
-        .dashboard {
-            max-width: 1400px;
-            margin: 0 auto;
+        /* 메인 컨텐츠 */
+        .main-content {
             padding: 20px;
         }
 
-        /* 로그인 섹션 */
-        .login-section {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border-radius: 15px;
-            padding: 20px;
+        /* 로그인 영역 */
+        .login-area {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .login-form {
@@ -133,32 +121,21 @@
         .login-form input {
             flex: 1;
             min-width: 150px;
-            padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-        }
-
-        .login-form input::placeholder {
-            color: rgba(255,255,255,0.5);
         }
 
         .login-form button {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            padding: 10px 30px;
+            background: #dc3545;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             font-size: 16px;
-            transition: transform 0.2s;
-        }
-
-        .login-form button:hover {
-            transform: scale(1.05);
         }
 
         .user-info {
@@ -166,221 +143,137 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            color: #fff;
-        }
-
-        .logout-btn {
-            padding: 8px 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.2);
         }
 
         /* 통계 카드 */
-        .stats-grid {
+        .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
             margin-bottom: 25px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border-radius: 20px;
-            padding: 25px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255,107,107,0.3);
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcf7f);
-        }
-
-        .stat-icon {
-            font-size: 2em;
-            margin-bottom: 10px;
-            color: #ff6b6b;
-        }
-
-        .stat-label {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9em;
-            margin-bottom: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .stat-number {
             font-size: 2.5em;
             font-weight: bold;
-            color: #ffffff;
+            margin: 10px 0;
         }
 
-        /* 긴급 지시사항 */
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* 지시사항 영역 - 입력부를 위로, 표시부를 아래로 */
         .directive-section {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(255,107,107,0.3);
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
         }
 
-        .directive-header {
+        .directive-title {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
-            font-size: 1.2em;
             font-weight: bold;
+            color: #856404;
         }
 
         .directive-input-wrapper {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
-            position: relative;
         }
 
         .directive-input {
             flex: 1;
-            padding: 12px;
-            background: rgba(255,255,255,0.9);
-            border: none;
-            border-radius: 10px;
+            padding: 10px;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
             font-size: 16px;
-            color: #333;
         }
 
         .directive-send-btn {
-            padding: 12px 25px;
-            background: #000;
-            color: #fff;
+            padding: 10px 20px;
+            background: #ffc107;
+            color: #000;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             font-size: 16px;
-            transition: transform 0.2s;
-        }
-
-        .directive-send-btn:hover {
-            transform: scale(1.05);
         }
 
         .directive-display {
-            background: rgba(255,255,255,0.1);
+            background: white;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             min-height: 60px;
-            backdrop-filter: blur(10px);
         }
 
         .directive-content {
             font-size: 1.1em;
-            color: #ffffff;
+            color: #856404;
             font-weight: 500;
         }
 
         .directive-meta {
             font-size: 0.85em;
-            color: rgba(255,255,255,0.7);
+            color: #666;
             margin-top: 10px;
         }
 
-        /* 검색 바 */
-        .search-bar {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* 검색 영역 */
+        .search-container {
             display: flex;
             gap: 10px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
-        .search-input {
+        .search-container input {
             flex: 1;
             min-width: 200px;
             padding: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
         }
 
-        .search-input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .filter-select {
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
+        .search-container select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
-            cursor: pointer;
-        }
-
-        .filter-select option {
-            background: #1e1e1e;
+            background: white;
         }
 
         /* 보고서 그리드 */
-        .reports-container {
-            background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .reports-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .reports-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #fff;
-        }
-
         .reports-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .report-slot {
-            background: rgba(255,255,255,0.05);
-            border: 2px dashed rgba(255,255,255,0.2);
+            background: #f8f9fa;
+            border: 3px dashed #dee2e6;
             border-radius: 15px;
             padding: 20px;
-            min-height: 200px;
+            min-height: 250px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -389,57 +282,47 @@
             transition: all 0.3s;
         }
 
-        .report-slot:hover {
-            border-color: #ff6b6b;
-            background: rgba(255,107,107,0.05);
-        }
-
         .report-slot.filled {
-            background: rgba(255,255,255,0.08);
-            border: 2px solid #4caf50;
+            background: white;
+            border: 3px solid #28a745;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .slot-number {
             position: absolute;
             top: 10px;
-            left: 10px;
-            background: #ff6b6b;
+            left: 15px;
+            background: #dc3545;
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 0.9em;
+            font-size: 1.1em;
         }
 
         .empty-slot {
             text-align: center;
-            color: rgba(255,255,255,0.5);
+            color: #adb5bd;
         }
 
         .empty-slot i {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            color: rgba(255,255,255,0.3);
+            font-size: 3em;
+            margin-bottom: 15px;
         }
 
         .upload-btn {
-            padding: 8px 20px;
-            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            padding: 10px 25px;
+            background: #28a745;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             margin-top: 10px;
-            transition: transform 0.2s;
-        }
-
-        .upload-btn:hover {
-            transform: scale(1.05);
         }
 
         .report-content {
@@ -449,45 +332,34 @@
 
         .report-content img {
             width: 100%;
-            height: 120px;
+            height: 180px;
             object-fit: cover;
             border-radius: 10px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .report-content img:hover {
-            transform: scale(1.05);
         }
 
         .report-info {
-            font-size: 0.8em;
-            color: rgba(255,255,255,0.6);
-            margin-top: 8px;
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
         }
 
         .delete-btn {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: #ff4444;
+            background: #dc3545;
             color: white;
             border: none;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 35px;
+            height: 35px;
             cursor: pointer;
-            font-size: 1.1em;
-            opacity: 0.8;
-            transition: opacity 0.3s;
+            font-size: 1.2em;
         }
 
-        .delete-btn:hover {
-            opacity: 1;
-        }
-
-        /* 모달 */
+        /* 전체화면 모달 */
         .modal {
             display: none;
             position: fixed;
@@ -515,18 +387,13 @@
             color: white;
             font-size: 40px;
             cursor: pointer;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.5);
             width: 50px;
             height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s;
-        }
-
-        .modal-close:hover {
-            background: rgba(255,255,255,0.2);
         }
 
         .hidden {
@@ -535,35 +402,47 @@
 
         /* 모바일 반응형 */
         @media (max-width: 768px) {
-            .dashboard {
-                padding: 10px;
+            body {
+                padding: 5px;
             }
 
-            .header-content {
-                justify-content: center;
-                text-align: center;
+            .header {
+                padding: 15px;
             }
 
             .header-title {
                 flex-direction: row;
+                gap: 10px;
             }
 
             .header h1 {
-                font-size: 1.2em;
+                font-size: 1.3em;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 15px;
+            .header-title i {
+                font-size: 1.5em;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 2em;
             }
 
             .reports-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 10px;
             }
 
             .report-slot {
-                min-height: 160px;
+                min-height: 200px;
                 padding: 15px;
             }
 
@@ -584,12 +463,12 @@
                 font-size: 14px;
             }
 
-            .search-bar {
+            .search-container {
                 flex-direction: column;
             }
 
-            .search-input,
-            .filter-select {
+            .search-container input,
+            .search-container select {
                 width: 100%;
             }
 
@@ -604,8 +483,12 @@
         }
 
         @media (max-width: 480px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
             .reports-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -618,9 +501,9 @@
         <button onclick="openInExternalBrowser()">🌐 Chrome/Safari에서 열기</button>
     </div>
 
-    <!-- 헤더 -->
-    <div class="header">
-        <div class="header-content">
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
             <div class="header-title">
                 <i class="fas fa-fire-truck"></i>
                 <h1>긴급구조 e-리포트</h1>
@@ -629,91 +512,81 @@
                 🔄 연결 중...
             </div>
         </div>
-    </div>
 
-    <!-- 대시보드 -->
-    <div class="dashboard">
-        <!-- 로그인 섹션 -->
-        <div class="login-section" id="loginArea">
-            <div class="login-form">
-                <input type="text" id="usernameInput" placeholder="사용자 이름" autocomplete="off">
-                <input type="password" id="passwordInput" placeholder="비밀번호 (0119)" autocomplete="off">
-                <button onclick="login()">로그인</button>
-            </div>
-        </div>
-
-        <!-- 사용자 정보 (로그인 후) -->
-        <div class="login-section hidden" id="userArea">
-            <div class="user-info">
-                <span>👤 <strong id="currentUser"></strong>님 접속 중</span>
-                <button class="logout-btn" onclick="logout()">로그아웃</button>
-            </div>
-        </div>
-
-        <!-- 통계 카드 -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-label">총 보고서</div>
-                <div class="stat-number" id="totalReports">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⏱️</div>
-                <div class="stat-label">5분 업로드</div>
-                <div class="stat-number" id="recentUploads">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-label">현재 접속자</div>
-                <div class="stat-number" id="onlineUsers">0</div>
-            </div>
-        </div>
-
-        <!-- 긴급 지시사항 -->
-        <div class="directive-section">
-            <div class="directive-header">
-                <i class="fas fa-bullhorn"></i>
-                <span>🚨 긴급 지시사항</span>
-            </div>
-            
-            <!-- 입력부 (위) -->
-            <div class="directive-input-wrapper" id="directiveInputArea">
-                <input type="text" class="directive-input" id="directiveInput" 
-                       placeholder="긴급 지시사항을 입력하세요" maxlength="200">
-                <button class="directive-send-btn" onclick="sendDirective()">전송</button>
-            </div>
-            
-            <!-- 표시부 (아래) -->
-            <div class="directive-display">
-                <div class="directive-content" id="directiveContent">
-                    현재 지시사항이 없습니다.
-                </div>
-                <div class="directive-meta" id="directiveMeta"></div>
-            </div>
-        </div>
-
-        <!-- 검색 바 -->
-        <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput" 
-                   placeholder="제목, 파일, 업로드, 검색어 입력 (지시사항 입력 가능)" 
-                   onkeyup="handleSearch(event)">
-            <select class="filter-select" id="filterType" onchange="filterReports()">
-                <option value="all">전체보기</option>
-                <option value="recent">최근순</option>
-                <option value="oldest">오래된순</option>
-            </select>
-        </div>
-
-        <!-- 보고서 그리드 -->
-        <div class="reports-container">
-            <div class="reports-header">
-                <div class="reports-title">📁 실시간 보고서</div>
-                <div style="color: rgba(255,255,255,0.6); font-size: 0.9em;">
-                    <i class="fas fa-sync-alt"></i> 자동 동기화
+        <!-- 메인 컨텐츠 -->
+        <div class="main-content">
+            <!-- 로그인 영역 -->
+            <div class="login-area" id="loginArea">
+                <div class="login-form">
+                    <input type="text" id="usernameInput" placeholder="사용자 이름" autocomplete="off">
+                    <input type="password" id="passwordInput" placeholder="비밀번호 (0119)" autocomplete="off">
+                    <button onclick="login()">로그인</button>
                 </div>
             </div>
+
+            <!-- 사용자 정보 (로그인 후 표시) -->
+            <div class="login-area hidden" id="userArea">
+                <div class="user-info">
+                    <span>👤 <strong id="currentUser"></strong>님 로그인 중</span>
+                    <button onclick="logout()" style="padding: 8px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        로그아웃
+                    </button>
+                </div>
+            </div>
+
+            <!-- 통계 카드 -->
+            <div class="stats-container">
+                <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="stat-label">📊 총 보고서</div>
+                    <div class="stat-number" id="totalReports">0</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stat-label">⏱️ 5분 업로드</div>
+                    <div class="stat-number" id="recentUploads">0</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="stat-label">👥 현재 접속자</div>
+                    <div class="stat-number" id="onlineUsers">0</div>
+                </div>
+            </div>
+
+            <!-- 실시간 지시사항 (입력부가 위, 표시부가 아래) -->
+            <div class="directive-section">
+                <div class="directive-title">
+                    <i class="fas fa-bullhorn" style="font-size: 1.5em;"></i>
+                    <span>실시간 지시사항</span>
+                </div>
+                
+                <!-- 입력부 -->
+                <div class="directive-input-wrapper" id="directiveInputArea">
+                    <input type="text" class="directive-input" id="directiveInput" 
+                           placeholder="긴급 지시사항을 입력하세요" maxlength="200">
+                    <button class="directive-send-btn" onclick="sendDirective()">전송</button>
+                </div>
+                
+                <!-- 표시부 -->
+                <div class="directive-display">
+                    <div class="directive-content" id="directiveContent">
+                        현재 지시사항이 없습니다.
+                    </div>
+                    <div class="directive-meta" id="directiveMeta"></div>
+                </div>
+            </div>
+
+            <!-- 검색 영역 -->
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="제목, 파일, 업로드, 검색어 입력 (지시사항 입력 가능)" 
+                       onkeyup="handleSearch(event)">
+                <select id="filterType" onchange="filterReports()">
+                    <option value="all">전체보기</option>
+                    <option value="recent">최근순</option>
+                    <option value="oldest">오래된순</option>
+                </select>
+            </div>
+
+            <!-- 보고서 그리드 -->
             <div class="reports-grid" id="reportsGrid">
-                <!-- 12개 슬롯 자동 생성 -->
+                <!-- 12개 슬롯 생성 -->
             </div>
         </div>
     </div>
@@ -782,9 +655,11 @@
             const statusElement = document.getElementById('firebaseStatus');
             if (connected) {
                 statusElement.textContent = '🔥 실시간 연동';
+                statusElement.style.background = 'rgba(76, 175, 80, 0.3)';
                 statusElement.classList.add('connected');
             } else {
                 statusElement.textContent = '❌ 연결 끊김';
+                statusElement.style.background = 'rgba(244, 67, 54, 0.3)';
                 statusElement.classList.remove('connected');
             }
         }
@@ -1179,9 +1054,9 @@
                                     `<img src="${slot.data.data}" alt="${slot.data.name}" 
                                          onclick="showFullImage('${slot.data.data}')">`
                                     : 
-                                    `<div style="padding: 15px;">
-                                        <i class="fas fa-file" style="font-size: 2.5em; color: rgba(255,255,255,0.5);"></i>
-                                        <p style="margin-top: 10px; font-size: 0.85em;">${slot.data.name}</p>
+                                    `<div style="padding: 20px;">
+                                        <i class="fas fa-file" style="font-size: 3em; color: #6c757d;"></i>
+                                        <p style="margin-top: 10px;">${slot.data.name}</p>
                                     </div>`
                                 }
                                 <div class="report-info">
@@ -1197,9 +1072,9 @@
                             <div class="slot-number">${slot.number}</div>
                             <div class="empty-slot">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <div style="margin: 5px 0;">비어있음</div>
+                                <div>보고서 업로드</div>
                                 <button class="upload-btn" onclick="triggerFileUpload(${slot.number})">
-                                    업로드
+                                    파일 선택
                                 </button>
                             </div>
                         </div>
