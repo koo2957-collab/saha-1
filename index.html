@@ -794,6 +794,128 @@
             overflow-y: auto;
         }
 
+        /* 로그 관리 창 내 로그 아이템 스타일 */
+        .log-window .log-item {
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .log-window .log-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .log-window .log-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .log-window .log-item-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .log-window .log-item-type.directive {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .log-window .log-item-type.upload {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .log-window .log-item-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .log-window .log-item-content {
+            margin: 10px 0;
+        }
+
+        .log-window .log-item-title {
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .log-window .log-item-message {
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .log-window .log-item-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .log-window .log-item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .log-window .json-viewer-btn,
+        .log-window .copy-json-btn {
+            padding: 8px 12px;
+            background: var(--bg-dark-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .log-window .json-viewer-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .log-window .copy-json-btn:hover {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .log-window .json-content {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-dark-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-window .json-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
         @media (max-width: 768px) {
             .log-window {
                 width: 95vw;
@@ -3667,8 +3789,13 @@
                                 ${log.filename ? `<span><i class="fa-solid fa-file"></i> ${log.filename}</span>` : ''}
                                 ${log.slot ? `<span><i class="fa-solid fa-hashtag"></i> 슬롯 ${log.slot + 1}</span>` : ''}
                             </div>
-                            <div class="json-viewer" onclick="toggleJsonViewer(this)">
-                                <i class="fa-solid fa-code"></i> JSON 보기
+                            <div class="log-item-actions">
+                                <button class="json-viewer-btn" onclick="toggleJsonViewer(this)">
+                                    <i class="fa-solid fa-code"></i> JSON 보기
+                                </button>
+                                <button class="copy-json-btn" onclick="copyJsonToClipboard(this)" title="JSON 복사">
+                                    <i class="fa-solid fa-copy"></i> 복사
+                                </button>
                             </div>
                             <div class="json-content" style="display: none;">
                                 <pre>${JSON.stringify(log, null, 2)}</pre>
@@ -3683,7 +3810,7 @@
 
         function toggleJsonViewer(element) {
             try {
-                const jsonContent = element.nextElementSibling;
+                const jsonContent = element.parentElement.nextElementSibling;
                 if (jsonContent.style.display === 'none') {
                     jsonContent.style.display = 'block';
                     element.innerHTML = '<i class="fa-solid fa-eye-slash"></i> JSON 숨기기';
@@ -3693,6 +3820,45 @@
                 }
             } catch (e) {
                 console.error('JSON 뷰어 토글 오류:', e);
+            }
+        }
+
+        function copyJsonToClipboard(element) {
+            try {
+                const jsonContent = element.parentElement.nextElementSibling;
+                const jsonText = jsonContent.querySelector('pre').textContent;
+                
+                navigator.clipboard.writeText(jsonText).then(() => {
+                    // 복사 성공 피드백
+                    const originalText = element.innerHTML;
+                    element.innerHTML = '<i class="fa-solid fa-check"></i> 복사됨';
+                    element.style.background = 'var(--accent-green)';
+                    
+                    setTimeout(() => {
+                        element.innerHTML = originalText;
+                        element.style.background = '';
+                    }, 2000);
+                }).catch(() => {
+                    // 클립보드 API 실패 시 대체 방법
+                    const textArea = document.createElement('textarea');
+                    textArea.value = jsonText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    const originalText = element.innerHTML;
+                    element.innerHTML = '<i class="fa-solid fa-check"></i> 복사됨';
+                    element.style.background = 'var(--accent-green)';
+                    
+                    setTimeout(() => {
+                        element.innerHTML = originalText;
+                        element.style.background = '';
+                    }, 2000);
+                });
+            } catch (e) {
+                console.error('JSON 복사 오류:', e);
+                alert('복사에 실패했습니다.');
             }
         }
 
