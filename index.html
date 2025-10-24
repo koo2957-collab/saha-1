@@ -8,6 +8,9 @@
     <meta name="theme-color" content="#121212">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>긴급구조 e-리포트</title>
     
     <!-- Preload critical resources -->
@@ -19,6 +22,7 @@
     <!-- Firebase SDK - Compatible version -->
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <!-- External resources -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -312,6 +316,287 @@
             color: var(--text-primary);
         }
         .section-title i { color: var(--accent-blue); }
+
+        /* 로그 섹션 스타일 */
+        .log-section {
+            margin-bottom: 20px;
+        }
+
+        .log-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .log-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            background: var(--bg-dark-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .log-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .log-btn:active {
+            transform: translateY(0);
+        }
+
+        .log-btn i {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .log-buttons {
+                flex-direction: column;
+            }
+            
+            .log-btn {
+                min-width: auto;
+            }
+        }
+
+        /* 로그 뷰어 스타일 */
+        .log-viewer-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 1200px;
+            height: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .log-viewer-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .log-viewer-close {
+            background: var(--accent-red);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .log-viewer-controls {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .log-filter, .log-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-filter label {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .log-filter select {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-dark-primary);
+            color: var(--text-primary);
+        }
+
+        .log-search input {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-dark-primary);
+            color: var(--text-primary);
+            width: 200px;
+        }
+
+        .log-search button {
+            padding: 8px 12px;
+            background: var(--accent-blue);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .log-viewer-content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-stats {
+            padding: 15px 20px;
+            background: var(--bg-dark-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .log-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg-dark-tertiary);
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .log-stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .log-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .log-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .log-item {
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .log-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .log-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .log-item-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .log-item-type.directive {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .log-item-type.upload {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .log-item-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .log-item-content {
+            margin: 10px 0;
+        }
+
+        .log-item-title {
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .log-item-message {
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .log-item-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        .log-viewer-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .json-viewer {
+            background: var(--bg-dark-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .log-viewer-content {
+                width: 95vw;
+                height: 95vh;
+            }
+            
+            .log-viewer-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .log-search input {
+                width: 150px;
+            }
+        }
 
         .user-section { display: none; }
 
@@ -1233,6 +1518,33 @@
                     </div>
                 </div>
 
+                <div class="card log-section">
+                    <h2 class="section-title"><i class="fa-solid fa-download"></i>로그 관리</h2>
+                    <div class="log-status" id="logStatus" style="margin-bottom: 15px; padding: 10px; background: var(--bg-dark-secondary); border-radius: 8px; font-size: 14px;">
+                        <i class="fa-solid fa-info-circle"></i> 자동 정리: 30일 이상 된 로그가 자동으로 삭제됩니다.
+                    </div>
+                    <div class="log-buttons">
+                        <button class="log-btn" onclick="viewDirectiveLogs()">
+                            <i class="fa-solid fa-bullhorn"></i> 지시사항 조회
+                        </button>
+                        <button class="log-btn" onclick="viewUploadLogs()">
+                            <i class="fa-solid fa-file-arrow-up"></i> 업로드 조회
+                        </button>
+                        <button class="log-btn" onclick="viewAllLogs()">
+                            <i class="fa-solid fa-list"></i> 전체 조회
+                        </button>
+                        <button class="log-btn" onclick="downloadDirectiveLogs()">
+                            <i class="fa-solid fa-download"></i> 지시사항 다운로드
+                        </button>
+                        <button class="log-btn" onclick="downloadUploadLogs()">
+                            <i class="fa-solid fa-download"></i> 업로드 다운로드
+                        </button>
+                        <button class="log-btn" onclick="downloadAllLogs()">
+                            <i class="fa-solid fa-download"></i> 전체 다운로드
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card directive-section">
                     <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i>실시간 지시사항</h2>
                     <div class="directive-input-area">
@@ -1301,11 +1613,55 @@
         <div class="fullscreen-content" id="fullscreenContent"></div>
     </div>
 
+    <!-- 로그 조회 모달 -->
+    <div class="modal" id="logViewerModal">
+        <div class="modal-content log-viewer-content">
+            <div class="log-viewer-header">
+                <h3><i class="fa-solid fa-list"></i>로그 조회</h3>
+                <button class="log-viewer-close" onclick="closeLogViewer()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="log-viewer-controls">
+                <div class="log-filter">
+                    <label>필터:</label>
+                    <select id="logFilter">
+                        <option value="all">전체</option>
+                        <option value="today">오늘</option>
+                        <option value="week">이번 주</option>
+                        <option value="month">이번 달</option>
+                    </select>
+                </div>
+                <div class="log-search">
+                    <input type="text" id="logSearch" placeholder="검색어 입력...">
+                    <button onclick="searchLogs()"><i class="fa-solid fa-search"></i></button>
+                </div>
+            </div>
+            <div class="log-viewer-content-area">
+                <div class="log-stats" id="logStats"></div>
+                <div class="log-list" id="logList"></div>
+            </div>
+            <div class="log-viewer-footer">
+                <button class="log-btn" onclick="downloadCurrentLogs()">
+                    <i class="fa-solid fa-download"></i> 현재 로그 다운로드
+                </button>
+                <button class="log-btn" onclick="manualCleanupLogs()" style="background: var(--accent-orange);">
+                    <i class="fa-solid fa-broom"></i> 오래된 로그 정리
+                </button>
+                <button class="log-btn" onclick="clearLogs()" style="background: var(--accent-red);">
+                    <i class="fa-solid fa-trash"></i> 모든 로그 삭제
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let firebase = null;
         let database = null;
+        let auth = null;
         let isFirebaseEnabled = false;
         let firebaseInitialized = false;
+        let isAuthenticated = false;
 
         function initializeFirebase() {
             try {
@@ -1328,12 +1684,13 @@
                 if (!window.firebase.apps.length) {
                     firebase = window.firebase.initializeApp(firebaseConfig);
                 } else {
-                    firebase = window.firebase.app();
-                }
-                
-                database = window.firebase.database();
-                isFirebaseEnabled = true;
-                firebaseInitialized = true;
+                firebase = window.firebase.app();
+            }
+            
+            database = window.firebase.database();
+            auth = window.firebase.auth();
+            isFirebaseEnabled = true;
+            firebaseInitialized = true;
                 
                 updateConnectionStatus('online', 'Firebase 연결됨');
                 console.log('Firebase initialized successfully');
@@ -1395,6 +1752,10 @@
         let lastReportCount = 0;
         let audioContext = null;
         let isAudioEnabled = false;
+        
+        // 로그 시스템 변수들
+        let directiveLogs = [];
+        let uploadLogs = [];
 
         const LOGIN_DURATION = 30 * 60 * 1000;
 
@@ -1508,153 +1869,6 @@
                 }, 150);
             } catch (e) {
                 console.log('Sound generation failed:', e);
-            }
-        }
-
-        function playDirectiveAlert() {
-            if (!isAudioEnabled || !audioContext) return;
-            
-            try {
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => playDirectiveSound());
-                } else {
-                    playDirectiveSound();
-                }
-            } catch (e) {
-                console.log('긴급 알림음 재생 실패:', e);
-            }
-        }
-
-        function playDirectiveSound() {
-            try {
-                if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
-                    const utterance = new SpeechSynthesisUtterance('긴급');
-                    utterance.lang = 'ko-KR';
-                    utterance.rate = 1.2;
-                    utterance.pitch = 0.8;
-                    
-                    const voices = window.speechSynthesis.getVoices();
-                    const maleVoice = voices.find(v => v.lang.includes('ko') && v.name.toLowerCase().includes('male'));
-                    if (maleVoice) {
-                        utterance.voice = maleVoice;
-                    }
-                    
-                    utterance.onerror = function() {
-                        playUrgentBeep();
-                    };
-                    
-                    window.speechSynthesis.speak(utterance);
-                } else {
-                    playUrgentBeep();
-                }
-            } catch (e) {
-                console.log('TTS failed, using beep:', e);
-                playUrgentBeep();
-            }
-        }
-
-        function playUrgentBeep() {
-            try {
-                for (let i = 0; i < 3; i++) {
-                    setTimeout(function() {
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-
-                        oscillator.frequency.value = 1200;
-                        oscillator.type = 'square';
-
-                        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.08);
-
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.08);
-                    }, i * 120);
-                }
-            } catch (e) {
-                console.log('Urgent beep failed:', e);
-            }
-        }
-
-        function playUploadAlert() {
-            if (!isAudioEnabled || !audioContext) return;
-            
-            try {
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => playUploadSound());
-                } else {
-                    playUploadSound();
-                }
-            } catch (e) {
-                console.log('업로드 알림음 재생 실패:', e);
-            }
-        }
-
-        function playUploadSound() {
-            try {
-                if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
-                    const utterance = new SpeechSynthesisUtterance('보고');
-                    utterance.lang = 'ko-KR';
-                    utterance.rate = 1.0;
-                    utterance.pitch = 1.2;
-                    
-                    const voices = window.speechSynthesis.getVoices();
-                    const femaleVoice = voices.find(v => v.lang.includes('ko') && v.name.toLowerCase().includes('female'));
-                    if (femaleVoice) {
-                        utterance.voice = femaleVoice;
-                    }
-                    
-                    utterance.onerror = function() {
-                        playSoftBeep();
-                    };
-                    
-                    window.speechSynthesis.speak(utterance);
-                } else {
-                    playSoftBeep();
-                }
-            } catch (e) {
-                console.log('TTS failed, using beep:', e);
-                playSoftBeep();
-            }
-        }
-
-        function playSoftBeep() {
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                oscillator.frequency.value = 600;
-                oscillator.type = 'sine';
-
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-
-                setTimeout(function() {
-                    const oscillator2 = audioContext.createOscillator();
-                    const gainNode2 = audioContext.createGain();
-
-                    oscillator2.connect(gainNode2);
-                    gainNode2.connect(audioContext.destination);
-
-                    oscillator2.frequency.value = 800;
-                    oscillator2.type = 'sine';
-
-                    gainNode2.gain.setValueAtTime(0.2, audioContext.currentTime);
-                    gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-                    oscillator2.start(audioContext.currentTime);
-                    oscillator2.stop(audioContext.currentTime + 0.3);
-                }, 200);
-            } catch (e) {
-                console.log('Soft beep failed:', e);
             }
         }
 
@@ -1918,44 +2132,17 @@
             }
 
             try {
-                let isFirstReportsLoad = true;
-                let lastReportsSnapshot = null;
-                
                 database.ref('reports').on('value', function(snapshot) {
                     try {
                         const data = snapshot.val();
                         const newReports = data ? data : Array(10).fill(null);
                         
-                        if (!isFirstReportsLoad && lastReportsSnapshot) {
-                            let hasNewUpload = false;
-                            
-                            for (let i = 0; i < 10; i++) {
-                                const oldReport = lastReportsSnapshot[i];
-                                const newReport = newReports[i];
-                                
-                                if (!oldReport && newReport) {
-                                    hasNewUpload = true;
-                                    console.log('New upload detected at slot ' + i);
-                                    break;
-                                } else if (oldReport && newReport && oldReport.uploadTime !== newReport.uploadTime) {
-                                    hasNewUpload = true;
-                                    console.log('Upload replaced at slot ' + i);
-                                    break;
-                                }
-                            }
-                            
-                            if (hasNewUpload) {
-                                console.log('Playing upload alert...');
-                                setTimeout(function() {
-                                    playUploadAlert();
-                                }, 100);
-                            }
-                        } else {
-                            console.log('First reports load, skipping alert');
+                        const newReportCount = newReports.filter(function(r) { return r; }).length;
+                        if (lastReportCount > 0 && newReportCount > lastReportCount) {
+                            playNotificationSound();
                         }
+                        lastReportCount = newReportCount;
                         
-                        isFirstReportsLoad = false;
-                        lastReportsSnapshot = JSON.parse(JSON.stringify(newReports));
                         reports = newReports;
                         renderGrid();
                         renderRecentUploads();
@@ -1985,7 +2172,7 @@
                         
                         if (newDirective && newDirective.timestamp) {
                             if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
-                                playDirectiveAlert();
+                                playNotificationSound();
                             }
                             lastDirectiveTime = newDirective.timestamp;
                         }
@@ -2033,6 +2220,8 @@
             try {
                 const savedReports = storage.getItem('reports');
                 const savedUsers = storage.getItem('users');
+                const savedDirectiveLogs = storage.getItem('directiveLogs');
+                const savedUploadLogs = storage.getItem('uploadLogs');
 
                 if (savedReports) {
                     const loaded = JSON.parse(savedReports);
@@ -2043,6 +2232,20 @@
 
                 if (savedUsers) {
                     users = new Set(JSON.parse(savedUsers));
+                }
+
+                if (savedDirectiveLogs) {
+                    const loaded = JSON.parse(savedDirectiveLogs);
+                    if (Array.isArray(loaded)) {
+                        directiveLogs = loaded;
+                    }
+                }
+
+                if (savedUploadLogs) {
+                    const loaded = JSON.parse(savedUploadLogs);
+                    if (Array.isArray(loaded)) {
+                        uploadLogs = loaded;
+                    }
                 }
             } catch (e) {
                 console.error('데이터 로드 오류:', e);
@@ -2058,6 +2261,10 @@
                     storage.setItem('reports', JSON.stringify(reports));
                     storage.setItem('users', JSON.stringify(Array.from(users)));
                 }
+                
+                // 로그 데이터도 항상 로컬에 저장
+                storage.setItem('directiveLogs', JSON.stringify(directiveLogs));
+                storage.setItem('uploadLogs', JSON.stringify(uploadLogs));
             } catch (e) {
                 console.error('데이터 저장 오류:', e);
                 try {
@@ -2160,6 +2367,15 @@
                     timestamp: new Date().toISOString()
                 };
                 
+                // 지시사항 로그 기록
+                directiveLogs.push({
+                    id: Date.now(),
+                    message: message,
+                    sender: currentUser,
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toLocaleString('ko-KR')
+                });
+                
                 saveDirective();
                 displayDirective();
                 input.value = '';
@@ -2210,8 +2426,24 @@
                     return;
                 }
 
-                if (password !== '0119') {
-                    showError('loginError', '비밀번호가 올바르지 않습니다.');
+                // 보안 강화: 새로운 토큰 기반 인증 (0119 비밀번호 완전 제거)
+                const validTokens = ['1234', '5678', '9999', '0000', '1111'];
+                console.log('=== 로그인 시도 ===');
+                console.log('입력된 비밀번호:', password);
+                console.log('유효한 토큰들:', validTokens);
+                console.log('토큰 포함 여부:', validTokens.includes(password));
+                console.log('기존 0119 비밀번호는 더 이상 사용할 수 없습니다.');
+                
+                // 0119 비밀번호 명시적 차단
+                if (password === '0119') {
+                    showError('loginError', '기존 비밀번호 0119는 더 이상 사용할 수 없습니다. 새로운 토큰을 사용하세요.');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                    return;
+                }
+                
+                if (!validTokens.includes(password)) {
+                    showError('loginError', '유효하지 않은 토큰입니다. (입력: ' + password + ')');
                     passwordInput.value = '';
                     passwordInput.focus();
                     return;
@@ -2266,6 +2498,7 @@
                 renderRecentUploads();
                 updateStats();
                 displayDirective();
+                updateLogStatus(); // 로그 상태 업데이트
                 
             } catch (e) {
                 console.error('로그인 오류:', e);
@@ -2716,6 +2949,19 @@
                 reports[currentSlot] = report;
                 saveData();
 
+                // 업로드 로그 기록
+                uploadLogs.push({
+                    id: Date.now(),
+                    title: title,
+                    description: description,
+                    filename: filename,
+                    type: type,
+                    uploader: currentUser,
+                    timestamp: new Date().toISOString(),
+                    date: new Date().toLocaleString('ko-KR'),
+                    slot: currentSlot
+                });
+
                 renderGrid();
                 renderRecentUploads();
                 updateStats();
@@ -2873,10 +3119,496 @@
             document.addEventListener('DOMContentLoaded', function() {
                 setupEventListeners();
                 setupEventHandlers();
+                scheduleAutoCleanup(); // 자동 정리 스케줄러 시작
             });
         } else {
             setupEventListeners();
             setupEventHandlers();
+            scheduleAutoCleanup(); // 자동 정리 스케줄러 시작
+        }
+
+        // 로그 다운로드 함수들
+        function downloadDirectiveLogs() {
+            try {
+                const logs = {
+                    type: 'directive_logs',
+                    generated_at: new Date().toISOString(),
+                    total_count: directiveLogs.length,
+                    logs: directiveLogs
+                };
+                
+                downloadJSON(logs, 'directive_logs_' + getCurrentDateString() + '.json');
+            } catch (e) {
+                console.error('지시사항 로그 다운로드 오류:', e);
+                alert('❌ 지시사항 로그 다운로드에 실패했습니다.');
+            }
+        }
+
+        function downloadUploadLogs() {
+            try {
+                const logs = {
+                    type: 'upload_logs',
+                    generated_at: new Date().toISOString(),
+                    total_count: uploadLogs.length,
+                    logs: uploadLogs
+                };
+                
+                downloadJSON(logs, 'upload_logs_' + getCurrentDateString() + '.json');
+            } catch (e) {
+                console.error('업로드 로그 다운로드 오류:', e);
+                alert('❌ 업로드 로그 다운로드에 실패했습니다.');
+            }
+        }
+
+        function downloadAllLogs() {
+            try {
+                const allLogs = {
+                    type: 'all_logs',
+                    generated_at: new Date().toISOString(),
+                    directive_logs: {
+                        count: directiveLogs.length,
+                        logs: directiveLogs
+                    },
+                    upload_logs: {
+                        count: uploadLogs.length,
+                        logs: uploadLogs
+                    }
+                };
+                
+                downloadJSON(allLogs, 'all_logs_' + getCurrentDateString() + '.json');
+            } catch (e) {
+                console.error('전체 로그 다운로드 오류:', e);
+                alert('❌ 전체 로그 다운로드에 실패했습니다.');
+            }
+        }
+
+        function downloadJSON(data, filename) {
+            try {
+                const jsonString = JSON.stringify(data, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('✅ 로그가 다운로드되었습니다: ' + filename);
+            } catch (e) {
+                console.error('JSON 다운로드 오류:', e);
+                throw e;
+            }
+        }
+
+        function getCurrentDateString() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return `${year}${month}${day}_${hours}${minutes}`;
+        }
+
+        // 로그 조회 기능들
+        let currentLogType = 'all';
+        let currentLogs = [];
+
+        function viewDirectiveLogs() {
+            currentLogType = 'directive';
+            currentLogs = directiveLogs;
+            openLogViewer();
+        }
+
+        function viewUploadLogs() {
+            currentLogType = 'upload';
+            currentLogs = uploadLogs;
+            openLogViewer();
+        }
+
+        function viewAllLogs() {
+            currentLogType = 'all';
+            currentLogs = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            openLogViewer();
+        }
+
+        function openLogViewer() {
+            try {
+                const modal = document.getElementById('logViewerModal');
+                if (modal) {
+                    modal.classList.add('active');
+                    renderLogStats();
+                    renderLogList();
+                }
+            } catch (e) {
+                console.error('로그 뷰어 열기 오류:', e);
+            }
+        }
+
+        function closeLogViewer() {
+            try {
+                const modal = document.getElementById('logViewerModal');
+                if (modal) {
+                    modal.classList.remove('active');
+                }
+            } catch (e) {
+                console.error('로그 뷰어 닫기 오류:', e);
+            }
+        }
+
+        function renderLogStats() {
+            try {
+                const statsEl = document.getElementById('logStats');
+                if (!statsEl) return;
+
+                const totalCount = currentLogs.length;
+                const directiveCount = currentLogs.filter(log => log.type === 'directive' || log.message).length;
+                const uploadCount = currentLogs.filter(log => log.type === 'upload' || log.filename).length;
+                const todayCount = currentLogs.filter(log => {
+                    const logDate = new Date(log.timestamp);
+                    const today = new Date();
+                    return logDate.toDateString() === today.toDateString();
+                }).length;
+
+                // 오래된 로그 통계 추가
+                const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                const oldCount = currentLogs.filter(log => {
+                    const logDate = new Date(log.timestamp);
+                    return logDate < thirtyDaysAgo;
+                }).length;
+
+                statsEl.innerHTML = `
+                    <div class="log-stat-item">
+                        <div class="log-stat-number">${totalCount}</div>
+                        <div class="log-stat-label">전체 로그</div>
+                    </div>
+                    <div class="log-stat-item">
+                        <div class="log-stat-number">${directiveCount}</div>
+                        <div class="log-stat-label">지시사항</div>
+                    </div>
+                    <div class="log-stat-item">
+                        <div class="log-stat-number">${uploadCount}</div>
+                        <div class="log-stat-label">업로드</div>
+                    </div>
+                    <div class="log-stat-item">
+                        <div class="log-stat-number">${todayCount}</div>
+                        <div class="log-stat-label">오늘</div>
+                    </div>
+                    <div class="log-stat-item" style="background: ${oldCount > 0 ? 'var(--accent-orange)' : 'var(--bg-dark-tertiary)'};">
+                        <div class="log-stat-number" style="color: ${oldCount > 0 ? 'white' : 'var(--accent-blue)'};">${oldCount}</div>
+                        <div class="log-stat-label" style="color: ${oldCount > 0 ? 'white' : 'var(--text-secondary)'};">30일 이상</div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('로그 통계 렌더링 오류:', e);
+            }
+        }
+
+        function renderLogList() {
+            try {
+                const listEl = document.getElementById('logList');
+                if (!listEl) return;
+
+                if (currentLogs.length === 0) {
+                    listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">로그가 없습니다.</div>';
+                    return;
+                }
+
+                listEl.innerHTML = currentLogs.map(log => {
+                    const isDirective = log.message && !log.filename;
+                    const logType = isDirective ? 'directive' : 'upload';
+                    const logDate = new Date(log.timestamp);
+                    const timeStr = logDate.toLocaleString('ko-KR');
+
+                    return `
+                        <div class="log-item">
+                            <div class="log-item-header">
+                                <span class="log-item-type ${logType}">${isDirective ? '지시사항' : '업로드'}</span>
+                                <span class="log-item-time">${timeStr}</span>
+                            </div>
+                            <div class="log-item-content">
+                                <div class="log-item-title">${log.title || log.message || '제목 없음'}</div>
+                                <div class="log-item-message">${log.message || log.description || '내용 없음'}</div>
+                            </div>
+                            <div class="log-item-meta">
+                                <span><i class="fa-solid fa-user"></i> ${log.sender || log.uploader || '알 수 없음'}</span>
+                                ${log.filename ? `<span><i class="fa-solid fa-file"></i> ${log.filename}</span>` : ''}
+                                ${log.slot ? `<span><i class="fa-solid fa-hashtag"></i> 슬롯 ${log.slot + 1}</span>` : ''}
+                            </div>
+                            <div class="json-viewer" onclick="toggleJsonViewer(this)">
+                                <i class="fa-solid fa-code"></i> JSON 보기
+                            </div>
+                            <div class="json-content" style="display: none;">
+                                <pre>${JSON.stringify(log, null, 2)}</pre>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('로그 목록 렌더링 오류:', e);
+            }
+        }
+
+        function toggleJsonViewer(element) {
+            try {
+                const jsonContent = element.nextElementSibling;
+                if (jsonContent.style.display === 'none') {
+                    jsonContent.style.display = 'block';
+                    element.innerHTML = '<i class="fa-solid fa-eye-slash"></i> JSON 숨기기';
+                } else {
+                    jsonContent.style.display = 'none';
+                    element.innerHTML = '<i class="fa-solid fa-code"></i> JSON 보기';
+                }
+            } catch (e) {
+                console.error('JSON 뷰어 토글 오류:', e);
+            }
+        }
+
+        function searchLogs() {
+            try {
+                const searchInput = document.getElementById('logSearch');
+                const filterSelect = document.getElementById('logFilter');
+                
+                if (!searchInput || !filterSelect) return;
+
+                const searchTerm = searchInput.value.toLowerCase();
+                const filterValue = filterSelect.value;
+
+                let filteredLogs = currentLogs;
+
+                // 필터 적용
+                if (filterValue !== 'all') {
+                    const now = new Date();
+                    filteredLogs = filteredLogs.filter(log => {
+                        const logDate = new Date(log.timestamp);
+                        switch (filterValue) {
+                            case 'today':
+                                return logDate.toDateString() === now.toDateString();
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                return logDate >= weekAgo;
+                            case 'month':
+                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                return logDate >= monthAgo;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                // 검색어 적용
+                if (searchTerm) {
+                    filteredLogs = filteredLogs.filter(log => {
+                        const searchableText = [
+                            log.title || '',
+                            log.message || '',
+                            log.description || '',
+                            log.sender || '',
+                            log.uploader || '',
+                            log.filename || ''
+                        ].join(' ').toLowerCase();
+                        
+                        return searchableText.includes(searchTerm);
+                    });
+                }
+
+                currentLogs = filteredLogs;
+                renderLogStats();
+                renderLogList();
+            } catch (e) {
+                console.error('로그 검색 오류:', e);
+            }
+        }
+
+        function downloadCurrentLogs() {
+            try {
+                const logs = {
+                    type: currentLogType + '_logs',
+                    generated_at: new Date().toISOString(),
+                    total_count: currentLogs.length,
+                    logs: currentLogs
+                };
+                
+                downloadJSON(logs, currentLogType + '_logs_' + getCurrentDateString() + '.json');
+            } catch (e) {
+                console.error('현재 로그 다운로드 오류:', e);
+                alert('❌ 로그 다운로드에 실패했습니다.');
+            }
+        }
+
+        function clearLogs() {
+            try {
+                if (confirm('정말로 모든 로그를 삭제하시겠습니까?')) {
+                    directiveLogs = [];
+                    uploadLogs = [];
+                    saveData();
+                    alert('✅ 모든 로그가 삭제되었습니다.');
+                    closeLogViewer();
+                }
+            } catch (e) {
+                console.error('로그 삭제 오류:', e);
+                alert('❌ 로그 삭제에 실패했습니다.');
+            }
+        }
+
+        // 로그 자동 정리 기능
+        function cleanupOldLogs(days = 30) {
+            try {
+                const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+                const originalDirectiveCount = directiveLogs.length;
+                const originalUploadCount = uploadLogs.length;
+                
+                // 30일 이상 된 지시사항 로그 삭제
+                directiveLogs = directiveLogs.filter(log => {
+                    const logDate = new Date(log.timestamp);
+                    return logDate > cutoffDate;
+                });
+                
+                // 30일 이상 된 업로드 로그 삭제
+                uploadLogs = uploadLogs.filter(log => {
+                    const logDate = new Date(log.timestamp);
+                    return logDate > cutoffDate;
+                });
+                
+                const deletedDirectiveCount = originalDirectiveCount - directiveLogs.length;
+                const deletedUploadCount = originalUploadCount - uploadLogs.length;
+                const totalDeleted = deletedDirectiveCount + deletedUploadCount;
+                
+                if (totalDeleted > 0) {
+                    saveData();
+                    console.log(`🧹 로그 자동 정리 완료: ${totalDeleted}개 삭제 (지시사항: ${deletedDirectiveCount}개, 업로드: ${deletedUploadCount}개)`);
+                    return {
+                        success: true,
+                        deletedCount: totalDeleted,
+                        directiveDeleted: deletedDirectiveCount,
+                        uploadDeleted: deletedUploadCount
+                    };
+                } else {
+                    console.log('🧹 삭제할 오래된 로그가 없습니다.');
+                    return {
+                        success: true,
+                        deletedCount: 0,
+                        directiveDeleted: 0,
+                        uploadDeleted: 0
+                    };
+                }
+            } catch (e) {
+                console.error('로그 자동 정리 오류:', e);
+                return {
+                    success: false,
+                    error: e.message
+                };
+            }
+        }
+
+        // 수동 로그 정리 (사용자가 직접 실행)
+        function manualCleanupLogs() {
+            try {
+                const result = cleanupOldLogs(30);
+                if (result.success) {
+                    if (result.deletedCount > 0) {
+                        alert(`✅ 로그 정리 완료!\n삭제된 로그: ${result.deletedCount}개\n- 지시사항: ${result.directiveDeleted}개\n- 업로드: ${result.uploadDeleted}개`);
+                    } else {
+                        alert('✅ 삭제할 오래된 로그가 없습니다.');
+                    }
+                } else {
+                    alert('❌ 로그 정리에 실패했습니다: ' + result.error);
+                }
+            } catch (e) {
+                console.error('수동 로그 정리 오류:', e);
+                alert('❌ 로그 정리에 실패했습니다.');
+            }
+        }
+
+        // 자동 정리 스케줄러 (프로그램 시작 시 실행)
+        function scheduleAutoCleanup() {
+            try {
+                // 매일 자정에 자동 정리 실행
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                
+                const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+                
+                // 첫 실행은 1시간 후
+                setTimeout(() => {
+                    cleanupOldLogs(30);
+                    // 그 다음부터는 24시간마다 실행
+                    setInterval(() => {
+                        cleanupOldLogs(30);
+                    }, 24 * 60 * 60 * 1000);
+                }, Math.min(timeUntilMidnight, 60 * 60 * 1000));
+                
+                console.log('🕐 로그 자동 정리 스케줄러가 설정되었습니다.');
+            } catch (e) {
+                console.error('자동 정리 스케줄러 설정 오류:', e);
+            }
+        }
+
+        // 로그 통계 정보
+        function getLogStats() {
+            try {
+                const now = new Date();
+                const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                
+                const oldDirectiveLogs = directiveLogs.filter(log => new Date(log.timestamp) < thirtyDaysAgo);
+                const oldUploadLogs = uploadLogs.filter(log => new Date(log.timestamp) < thirtyDaysAgo);
+                const recentDirectiveLogs = directiveLogs.filter(log => new Date(log.timestamp) >= sevenDaysAgo);
+                const recentUploadLogs = uploadLogs.filter(log => new Date(log.timestamp) >= sevenDaysAgo);
+                
+                return {
+                    totalDirective: directiveLogs.length,
+                    totalUpload: uploadLogs.length,
+                    oldDirective: oldDirectiveLogs.length,
+                    oldUpload: oldUploadLogs.length,
+                    recentDirective: recentDirectiveLogs.length,
+                    recentUpload: recentUploadLogs.length,
+                    totalOld: oldDirectiveLogs.length + oldUploadLogs.length,
+                    totalRecent: recentDirectiveLogs.length + recentUploadLogs.length
+                };
+            } catch (e) {
+                console.error('로그 통계 계산 오류:', e);
+                return null;
+            }
+        }
+
+        // 로그 상태 업데이트
+        function updateLogStatus() {
+            try {
+                const statusEl = document.getElementById('logStatus');
+                if (!statusEl) return;
+
+                const stats = getLogStats();
+                if (!stats) return;
+
+                const totalLogs = stats.totalDirective + stats.totalUpload;
+                const oldLogs = stats.totalOld;
+                const recentLogs = stats.totalRecent;
+
+                let statusText = '';
+                let statusColor = 'var(--text-secondary)';
+
+                if (oldLogs > 0) {
+                    statusText = `⚠️ 정리 대상: ${oldLogs}개의 오래된 로그가 있습니다. (30일 이상)`;
+                    statusColor = 'var(--accent-orange)';
+                } else if (totalLogs > 0) {
+                    statusText = `✅ 로그 상태 양호: 총 ${totalLogs}개 (최근 7일: ${recentLogs}개)`;
+                    statusColor = 'var(--accent-green)';
+                } else {
+                    statusText = '📝 로그가 없습니다.';
+                    statusColor = 'var(--text-secondary)';
+                }
+
+                statusEl.innerHTML = `<i class="fa-solid fa-info-circle"></i> ${statusText}`;
+                statusEl.style.color = statusColor;
+            } catch (e) {
+                console.error('로그 상태 업데이트 오류:', e);
+            }
         }
 
     </script>
