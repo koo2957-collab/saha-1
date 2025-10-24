@@ -598,6 +598,230 @@
             }
         }
 
+        /* 로그 관리 창 스타일 */
+        .log-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw;
+            height: 85vh;
+            max-width: 1200px;
+            background: var(--bg-dark-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-window.active {
+            display: flex;
+        }
+
+        .log-window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-dark-secondary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .log-window-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .log-window-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-window-minimize,
+        .log-window-close {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .log-window-minimize {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .log-window-close {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .log-window-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .log-window-tabs {
+            display: flex;
+            background: var(--bg-dark-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .log-tab {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .log-tab:hover {
+            background: var(--bg-dark-secondary);
+            color: var(--text-primary);
+        }
+
+        .log-tab.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .log-window-body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .log-tab-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .log-tab-content.active {
+            display: block;
+        }
+
+        .log-overview-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .log-overview-stat-card {
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .log-overview-stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+
+        .log-overview-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .log-overview-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .log-action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 16px;
+            background: var(--bg-dark-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .log-action-btn:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .log-tab-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .log-tab-stats {
+            margin-bottom: 15px;
+        }
+
+        .log-tab-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .log-window {
+                width: 95vw;
+                height: 90vh;
+            }
+            
+            .log-window-tabs {
+                flex-direction: column;
+            }
+            
+            .log-tab {
+                padding: 10px;
+                font-size: 12px;
+            }
+            
+            .log-overview-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .log-overview-actions {
+                flex-direction: column;
+            }
+            
+            .log-action-btn {
+                min-width: auto;
+            }
+        }
+
         .user-section { display: none; }
 
         /* === STATS === */
@@ -1524,22 +1748,10 @@
                         <i class="fa-solid fa-info-circle"></i> 자동 정리: 30일 이상 된 로그가 자동으로 삭제됩니다.
                     </div>
                     <div class="log-buttons">
-                        <button class="log-btn" onclick="viewDirectiveLogs()">
-                            <i class="fa-solid fa-bullhorn"></i> 지시사항 조회
+                        <button class="log-btn log-window-btn" onclick="openLogWindow()" style="background: var(--accent-blue); flex: 1; min-width: 200px;">
+                            <i class="fa-solid fa-window-maximize"></i> 로그 관리 창 열기
                         </button>
-                        <button class="log-btn" onclick="viewUploadLogs()">
-                            <i class="fa-solid fa-file-arrow-up"></i> 업로드 조회
-                        </button>
-                        <button class="log-btn" onclick="viewAllLogs()">
-                            <i class="fa-solid fa-list"></i> 전체 조회
-                        </button>
-                        <button class="log-btn" onclick="downloadDirectiveLogs()">
-                            <i class="fa-solid fa-download"></i> 지시사항 다운로드
-                        </button>
-                        <button class="log-btn" onclick="downloadUploadLogs()">
-                            <i class="fa-solid fa-download"></i> 업로드 다운로드
-                        </button>
-                        <button class="log-btn" onclick="downloadAllLogs()">
+                        <button class="log-btn" onclick="downloadAllLogs()" style="flex: 1;">
                             <i class="fa-solid fa-download"></i> 전체 다운로드
                         </button>
                     </div>
@@ -1655,6 +1867,110 @@
         </div>
     </div>
 
+    <!-- 로그 관리 전용 창 -->
+    <div class="log-window" id="logWindow">
+        <div class="log-window-header">
+            <h2><i class="fa-solid fa-chart-line"></i>로그 관리 센터</h2>
+            <div class="log-window-controls">
+                <button class="log-window-minimize" onclick="minimizeLogWindow()">
+                    <i class="fa-solid fa-window-minimize"></i>
+                </button>
+                <button class="log-window-close" onclick="closeLogWindow()">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="log-window-content">
+            <div class="log-window-tabs">
+                <button class="log-tab active" onclick="switchLogTab('overview')">
+                    <i class="fa-solid fa-chart-pie"></i> 개요
+                </button>
+                <button class="log-tab" onclick="switchLogTab('directive')">
+                    <i class="fa-solid fa-bullhorn"></i> 지시사항
+                </button>
+                <button class="log-tab" onclick="switchLogTab('upload')">
+                    <i class="fa-solid fa-file-arrow-up"></i> 업로드
+                </button>
+                <button class="log-tab" onclick="switchLogTab('all')">
+                    <i class="fa-solid fa-list"></i> 전체
+                </button>
+            </div>
+            <div class="log-window-body">
+                <div class="log-tab-content active" id="logTabOverview">
+                    <div class="log-overview-stats" id="logOverviewStats"></div>
+                    <div class="log-overview-actions">
+                        <button class="log-action-btn" onclick="downloadAllLogs()">
+                            <i class="fa-solid fa-download"></i> 전체 다운로드
+                        </button>
+                        <button class="log-action-btn" onclick="manualCleanupLogs()">
+                            <i class="fa-solid fa-broom"></i> 오래된 로그 정리
+                        </button>
+                        <button class="log-action-btn" onclick="clearLogs()" style="background: var(--accent-red);">
+                            <i class="fa-solid fa-trash"></i> 모든 로그 삭제
+                        </button>
+                    </div>
+                </div>
+                <div class="log-tab-content" id="logTabDirective">
+                    <div class="log-tab-controls">
+                        <div class="log-filter">
+                            <label>필터:</label>
+                            <select id="directiveLogFilter">
+                                <option value="all">전체</option>
+                                <option value="today">오늘</option>
+                                <option value="week">이번 주</option>
+                                <option value="month">이번 달</option>
+                            </select>
+                        </div>
+                        <div class="log-search">
+                            <input type="text" id="directiveLogSearch" placeholder="지시사항 검색...">
+                            <button onclick="searchDirectiveLogs()"><i class="fa-solid fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="log-tab-stats" id="directiveLogStats"></div>
+                    <div class="log-tab-list" id="directiveLogList"></div>
+                </div>
+                <div class="log-tab-content" id="logTabUpload">
+                    <div class="log-tab-controls">
+                        <div class="log-filter">
+                            <label>필터:</label>
+                            <select id="uploadLogFilter">
+                                <option value="all">전체</option>
+                                <option value="today">오늘</option>
+                                <option value="week">이번 주</option>
+                                <option value="month">이번 달</option>
+                            </select>
+                        </div>
+                        <div class="log-search">
+                            <input type="text" id="uploadLogSearch" placeholder="업로드 검색...">
+                            <button onclick="searchUploadLogs()"><i class="fa-solid fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="log-tab-stats" id="uploadLogStats"></div>
+                    <div class="log-tab-list" id="uploadLogList"></div>
+                </div>
+                <div class="log-tab-content" id="logTabAll">
+                    <div class="log-tab-controls">
+                        <div class="log-filter">
+                            <label>필터:</label>
+                            <select id="allLogFilter">
+                                <option value="all">전체</option>
+                                <option value="today">오늘</option>
+                                <option value="week">이번 주</option>
+                                <option value="month">이번 달</option>
+                            </select>
+                        </div>
+                        <div class="log-search">
+                            <input type="text" id="allLogSearch" placeholder="전체 로그 검색...">
+                            <button onclick="searchAllLogs()"><i class="fa-solid fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="log-tab-stats" id="allLogStats"></div>
+                    <div class="log-tab-list" id="allLogList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         let firebase = null;
         let database = null;
@@ -1694,6 +2010,9 @@
                 
                 updateConnectionStatus('online', 'Firebase 연결됨');
                 console.log('Firebase initialized successfully');
+                
+                // Firebase 연결 테스트
+                testFirebaseConnection();
                 return true;
             } catch (error) {
                 console.error('Firebase initialization failed:', error);
@@ -2152,7 +2471,17 @@
                     }
                 }, function(error) {
                     console.error('Reports listener error:', error);
-                    showError('loginError', 'Firebase 연결 오류: ' + error.message);
+                    console.error('Firebase 오류 상세:', error);
+                    updateConnectionStatus('offline', 'Firebase 연결 오류: ' + error.message);
+                    
+                    // 오류 유형별 처리
+                    if (error.code === 'PERMISSION_DENIED') {
+                        showError('loginError', 'Firebase 보안 규칙 오류: 권한이 거부되었습니다. Firebase 콘솔에서 보안 규칙을 확인하세요.');
+                    } else if (error.code === 'NETWORK_ERROR') {
+                        showError('loginError', '네트워크 오류: 인터넷 연결을 확인하세요.');
+                    } else {
+                        showError('loginError', 'Firebase 연결 오류: ' + error.message);
+                    }
                 });
 
                 database.ref('users').on('value', function(snapshot) {
@@ -3577,6 +3906,52 @@
             }
         }
 
+        // Firebase 연결 테스트
+        function testFirebaseConnection() {
+            try {
+                if (!isFirebaseEnabled || !database) {
+                    console.error('Firebase not initialized');
+                    updateConnectionStatus('offline', 'Firebase 초기화 실패');
+                    return;
+                }
+
+                // 간단한 테스트 데이터 읽기/쓰기
+                const testRef = database.ref('connectionTest');
+                const testData = {
+                    timestamp: Date.now(),
+                    user: currentUser || 'anonymous',
+                    message: 'Connection test'
+                };
+
+                // 테스트 데이터 쓰기
+                testRef.set(testData).then(() => {
+                    console.log('✅ Firebase 쓰기 테스트 성공');
+                    
+                    // 테스트 데이터 읽기
+                    testRef.once('value').then((snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            console.log('✅ Firebase 읽기 테스트 성공:', data);
+                            updateConnectionStatus('online', 'Firebase 연결됨 (테스트 완료)');
+                        } else {
+                            console.error('❌ Firebase 읽기 테스트 실패: 데이터 없음');
+                            updateConnectionStatus('offline', 'Firebase 읽기 실패');
+                        }
+                    }).catch((error) => {
+                        console.error('❌ Firebase 읽기 테스트 실패:', error);
+                        updateConnectionStatus('offline', 'Firebase 읽기 오류: ' + error.message);
+                    });
+                }).catch((error) => {
+                    console.error('❌ Firebase 쓰기 테스트 실패:', error);
+                    updateConnectionStatus('offline', 'Firebase 쓰기 오류: ' + error.message);
+                });
+
+            } catch (e) {
+                console.error('Firebase 연결 테스트 오류:', e);
+                updateConnectionStatus('offline', 'Firebase 테스트 오류: ' + e.message);
+            }
+        }
+
         // 로그 상태 업데이트
         function updateLogStatus() {
             try {
@@ -3608,6 +3983,183 @@
                 statusEl.style.color = statusColor;
             } catch (e) {
                 console.error('로그 상태 업데이트 오류:', e);
+            }
+        }
+
+        // 로그 관리 창 제어 함수들
+        function openLogWindow() {
+            try {
+                const logWindow = document.getElementById('logWindow');
+                if (logWindow) {
+                    logWindow.classList.add('active');
+                    switchLogTab('overview');
+                    renderLogOverview();
+                }
+            } catch (e) {
+                console.error('로그 창 열기 오류:', e);
+            }
+        }
+
+        function closeLogWindow() {
+            try {
+                const logWindow = document.getElementById('logWindow');
+                if (logWindow) {
+                    logWindow.classList.remove('active');
+                }
+            } catch (e) {
+                console.error('로그 창 닫기 오류:', e);
+            }
+        }
+
+        function minimizeLogWindow() {
+            try {
+                const logWindow = document.getElementById('logWindow');
+                if (logWindow) {
+                    logWindow.style.transform = 'translate(-50%, -50%) scale(0.1)';
+                    logWindow.style.opacity = '0';
+                    setTimeout(() => {
+                        logWindow.classList.remove('active');
+                        logWindow.style.transform = 'translate(-50%, -50%) scale(1)';
+                        logWindow.style.opacity = '1';
+                    }, 300);
+                }
+            } catch (e) {
+                console.error('로그 창 최소화 오류:', e);
+            }
+        }
+
+        function switchLogTab(tabName) {
+            try {
+                // 모든 탭 비활성화
+                document.querySelectorAll('.log-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.log-tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // 선택된 탭 활성화
+                const activeTab = document.querySelector(`[onclick="switchLogTab('${tabName}')"]`);
+                const activeContent = document.getElementById(`logTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+                
+                if (activeTab) activeTab.classList.add('active');
+                if (activeContent) activeContent.classList.add('active');
+
+                // 탭별 데이터 로드
+                switch (tabName) {
+                    case 'overview':
+                        renderLogOverview();
+                        break;
+                    case 'directive':
+                        renderDirectiveLogs();
+                        break;
+                    case 'upload':
+                        renderUploadLogs();
+                        break;
+                    case 'all':
+                        renderAllLogs();
+                        break;
+                }
+            } catch (e) {
+                console.error('로그 탭 전환 오류:', e);
+            }
+        }
+
+        function renderLogOverview() {
+            try {
+                const stats = getLogStats();
+                if (!stats) return;
+
+                const overviewStatsEl = document.getElementById('logOverviewStats');
+                if (!overviewStatsEl) return;
+
+                overviewStatsEl.innerHTML = `
+                    <div class="log-overview-stat-card">
+                        <div class="log-overview-stat-number">${stats.totalDirective + stats.totalUpload}</div>
+                        <div class="log-overview-stat-label">전체 로그</div>
+                    </div>
+                    <div class="log-overview-stat-card">
+                        <div class="log-overview-stat-number">${stats.totalDirective}</div>
+                        <div class="log-overview-stat-label">지시사항</div>
+                    </div>
+                    <div class="log-overview-stat-card">
+                        <div class="log-overview-stat-number">${stats.totalUpload}</div>
+                        <div class="log-overview-stat-label">업로드</div>
+                    </div>
+                    <div class="log-overview-stat-card">
+                        <div class="log-overview-stat-number">${stats.totalRecent}</div>
+                        <div class="log-overview-stat-label">최근 7일</div>
+                    </div>
+                    <div class="log-overview-stat-card" style="background: ${stats.totalOld > 0 ? 'var(--accent-orange)' : 'var(--bg-dark-secondary)'};">
+                        <div class="log-overview-stat-number" style="color: ${stats.totalOld > 0 ? 'white' : 'var(--accent-blue)'};">${stats.totalOld}</div>
+                        <div class="log-overview-stat-label" style="color: ${stats.totalOld > 0 ? 'white' : 'var(--text-secondary)'};">30일 이상</div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('로그 개요 렌더링 오류:', e);
+            }
+        }
+
+        function renderDirectiveLogs() {
+            try {
+                currentLogType = 'directive';
+                currentLogs = directiveLogs;
+                renderLogStats();
+                renderLogList();
+            } catch (e) {
+                console.error('지시사항 로그 렌더링 오류:', e);
+            }
+        }
+
+        function renderUploadLogs() {
+            try {
+                currentLogType = 'upload';
+                currentLogs = uploadLogs;
+                renderLogStats();
+                renderLogList();
+            } catch (e) {
+                console.error('업로드 로그 렌더링 오류:', e);
+            }
+        }
+
+        function renderAllLogs() {
+            try {
+                currentLogType = 'all';
+                currentLogs = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                renderLogStats();
+                renderLogList();
+            } catch (e) {
+                console.error('전체 로그 렌더링 오류:', e);
+            }
+        }
+
+        function searchDirectiveLogs() {
+            try {
+                currentLogType = 'directive';
+                currentLogs = directiveLogs;
+                searchLogs();
+            } catch (e) {
+                console.error('지시사항 로그 검색 오류:', e);
+            }
+        }
+
+        function searchUploadLogs() {
+            try {
+                currentLogType = 'upload';
+                currentLogs = uploadLogs;
+                searchLogs();
+            } catch (e) {
+                console.error('업로드 로그 검색 오류:', e);
+            }
+        }
+
+        function searchAllLogs() {
+            try {
+                currentLogType = 'all';
+                currentLogs = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                searchLogs();
+            } catch (e) {
+                console.error('전체 로그 검색 오류:', e);
             }
         }
 
