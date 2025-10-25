@@ -6241,6 +6241,34 @@
             }
         }
 
+        function saveDirectiveData() {
+            try {
+                // 업로드와 동일한 방식: Firebase 우선, 로컬 백업
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    console.log('Firebase에 지시사항 저장 시도');
+                    database.ref('directive').set(currentDirective);
+                    console.log('✅ Firebase 지시사항 저장 완료');
+                } else {
+                    console.log('Firebase 사용 불가 - 로컬 스토리지 사용');
+                }
+                
+                // 로컬 스토리지에도 항상 저장 (백업)
+                storage.setItem('directive', JSON.stringify(currentDirective));
+                console.log('✅ 로컬 스토리지에 지시사항 저장 완료');
+                
+            } catch (e) {
+                console.error('지시사항 저장 오류:', e);
+                // Firebase 실패 시 로컬 스토리지로 폴백
+                try {
+                    storage.setItem('directive', JSON.stringify(currentDirective));
+                    console.log('✅ 로컬 스토리지 폴백 저장 완료');
+                } catch (e2) {
+                    console.error('로컬 저장 실패:', e2);
+                    showCustomAlert('❌ 지시사항 저장에 실패했습니다.', 'error');
+                }
+            }
+        }
+
         function saveDirective() {
             try {
                 // 로컬 스토리지에 항상 저장 (백업)
@@ -6275,9 +6303,8 @@
                 
                 if (!display || !content || !meta) return;
                 
-                // 지시사항 로그에서 가장 최근 지시사항 가져오기
-                const latestDirective = getLatestDirective();
-                const directiveToShow = latestDirective || currentDirective;
+                // currentDirective를 우선 사용
+                const directiveToShow = currentDirective;
                 
                 if (directiveToShow && directiveToShow.message) {
                     content.textContent = directiveToShow.message;
@@ -6346,50 +6373,32 @@
                     date: new Date().toLocaleString('ko-KR')
                 });
                 
-                // 지시사항 저장 시도
-                try {
-                    // Firebase와 로컬 스토리지 모두에 저장
-                    if (isFirebaseEnabled && firebaseInitialized && database) {
-                        console.log('Firebase에 지시사항 저장 시도');
-                        database.ref('directive').set(currentDirective)
-                            .then(() => {
-                                console.log('✅ Firebase 지시사항 저장 성공');
-                            })
-                            .catch((error) => {
-                                console.error('❌ Firebase 지시사항 저장 실패:', error);
-                            });
-                    }
-                    
-                    // 로컬 스토리지에도 항상 저장 (백업)
-                    storage.setItem('directive', JSON.stringify(currentDirective));
-                    console.log('✅ 로컬 스토리지에 지시사항 저장 완료');
-                    
-                    // UI 업데이트
-                    displayDirective();
-                    input.value = '';
-                    
-                    // 음성 알림: "긴급"
-                    speakEmergency();
-                    
-                    // 브라우저 알림
-                    if (notificationManager) {
-                        const directiveData = {
-                            id: Date.now(),
-                            title: message.length > 50 ? message.substring(0, 50) + '...' : message,
-                            content: message,
-                            sender: currentUser,
-                            timestamp: new Date().toISOString()
-                        };
-                        notificationManager.notifyDirective(directiveData);
-                    }
-                    
-                    // 성공 메시지 표시
-                    showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
-                    
-                } catch (saveError) {
-                    console.error('지시사항 저장 오류:', saveError);
-                    showCustomAlert('❌ 지시사항 저장에 실패했습니다.', 'error');
+                // 지시사항 저장 (업로드와 동일한 방식)
+                console.log('지시사항 저장 시작:', currentDirective);
+                
+                // 업로드와 동일한 방식으로 저장
+                saveDirectiveData();
+                
+                // 3. UI 업데이트
+                displayDirective();
+                input.value = '';
+                
+                // 4. 알림
+                speakEmergency();
+                
+                if (notificationManager) {
+                    const directiveData = {
+                        id: Date.now(),
+                        title: message.length > 50 ? message.substring(0, 50) + '...' : message,
+                        content: message,
+                        sender: currentUser,
+                        timestamp: new Date().toISOString()
+                    };
+                    notificationManager.notifyDirective(directiveData);
                 }
+                
+                // 5. 성공 메시지
+                showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
             } catch (e) {
                 console.error('지시사항 전송 오류:', e);
                 showCustomAlert('❌ 지시사항 전송에 실패했습니다.', 'error');
