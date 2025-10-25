@@ -6065,6 +6065,9 @@
                         const newReportCount = newReports.filter(function(r) { return r; }).length;
                         if (lastReportCount > 0 && newReportCount > lastReportCount) {
                             playNotificationSound();
+                            
+                            // 보고 음성 알림
+                            speakReport();
                         }
                         lastReportCount = newReportCount;
                         
@@ -6108,6 +6111,9 @@
                         if (newDirective && newDirective.timestamp) {
                             if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
                                 playNotificationSound();
+                                
+                                // 긴급 음성 알림
+                                speakEmergency();
                                 
                                 // 모바일에서 강제 UI 업데이트
                                 if (isMobileDevice()) {
@@ -6264,7 +6270,6 @@
                     console.log('✅ 로컬 스토리지 폴백 저장 완료');
                 } catch (e2) {
                     console.error('로컬 저장 실패:', e2);
-                    showCustomAlert('❌ 지시사항 저장에 실패했습니다.', 'error');
                 }
             }
         }
@@ -6401,7 +6406,6 @@
                 showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
             } catch (e) {
                 console.error('지시사항 전송 오류:', e);
-                showCustomAlert('❌ 지시사항 전송에 실패했습니다.', 'error');
             }
         }
 
@@ -10079,6 +10083,9 @@
                         const newReportCount = newReports.filter(function(r) { return r; }).length;
                         if (lastReportCount > 0 && newReportCount > lastReportCount) {
                             playNotificationSound();
+                            
+                            // 보고 음성 알림
+                            speakReport();
                         }
                         lastReportCount = newReportCount;
                         
@@ -10113,6 +10120,10 @@
                         if (newDirective && newDirective.timestamp) {
                             if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
                                 playNotificationSound();
+                                
+                                // 긴급 음성 알림
+                                speakEmergency();
+                                
                                 console.log('새 지시사항 감지');
                             }
                             lastDirectiveTime = newDirective.timestamp;
