@@ -1,5 +1,5 @@
 // FIRE SLOTBOARD Service Worker
-const CACHE_NAME = 'fire-slotboard-v1';
+const CACHE_NAME = 'fire-slotboard-v2';
 const urlsToCache = [
   './',
   './index.html',
