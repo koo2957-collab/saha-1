@@ -6199,16 +6199,22 @@
         function saveDirective() {
             try {
                 if (isFirebaseEnabled && firebaseInitialized && database) {
-                    database.ref('directive').set(currentDirective);
+                    // Firebase에 저장
+                    return database.ref('directive').set(currentDirective);
                 } else {
+                    // 로컬 스토리지에 저장
                     storage.setItem('directive', JSON.stringify(currentDirective));
+                    return Promise.resolve();
                 }
             } catch (e) {
                 console.error('지시사항 저장 오류:', e);
+                // Firebase 실패 시 로컬 스토리지로 폴백
                 try {
                     storage.setItem('directive', JSON.stringify(currentDirective));
+                    return Promise.resolve();
                 } catch (e2) {
                     console.error('로컬 지시사항 저장 실패:', e2);
+                    return Promise.reject(e2);
                 }
             }
         }
@@ -6294,27 +6300,34 @@
                     date: new Date().toLocaleString('ko-KR')
                 });
                 
-                saveDirective();
-                displayDirective();
-                input.value = '';
-                
-                // 음성 알림: "긴급"
-                speakEmergency();
-                
-                // 브라우저 알림
-                if (notificationManager) {
-                    const directiveData = {
-                        id: Date.now(),
-                        title: message.length > 50 ? message.substring(0, 50) + '...' : message,
-                        content: message,
-                        sender: currentUser,
-                        timestamp: new Date().toISOString()
-                    };
-                    notificationManager.notifyDirective(directiveData);
-                }
-                
-                // 비프음 없는 사용자 정의 알림
-                showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
+                // 지시사항 저장 시도
+                saveDirective()
+                    .then(() => {
+                        displayDirective();
+                        input.value = '';
+                        
+                        // 음성 알림: "긴급"
+                        speakEmergency();
+                        
+                        // 브라우저 알림
+                        if (notificationManager) {
+                            const directiveData = {
+                                id: Date.now(),
+                                title: message.length > 50 ? message.substring(0, 50) + '...' : message,
+                                content: message,
+                                sender: currentUser,
+                                timestamp: new Date().toISOString()
+                            };
+                            notificationManager.notifyDirective(directiveData);
+                        }
+                        
+                        // 비프음 없는 사용자 정의 알림
+                        showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
+                    })
+                    .catch((saveError) => {
+                        console.error('지시사항 저장 실패:', saveError);
+                        showCustomAlert('❌ 지시사항 저장에 실패했습니다.', 'error');
+                    });
             } catch (e) {
                 console.error('지시사항 전송 오류:', e);
                 showCustomAlert('❌ 지시사항 전송에 실패했습니다.', 'error');
