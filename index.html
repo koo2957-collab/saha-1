@@ -5433,6 +5433,11 @@
                 setTimeout(() => {
                     testFirebaseConnection();
                 }, 1000);
+
+                // Firebase 리스너 등록 (실시간 동기화)
+                setTimeout(() => {
+                    setupFirebaseListeners();
+                }, 2000);
                 
                 return true;
             } catch (error) {
@@ -5849,7 +5854,7 @@
                     checkAutoLogin();
                     
                     if (firebaseReady && isFirebaseEnabled) {
-                        setupFirebaseSync();
+                        setupFirebaseListeners();
                     } else {
                         // Firebase 없이 로컬 데이터 로드
                         loadData();
@@ -5917,6 +5922,38 @@
 
                 window.addEventListener('offline', function() {
                     updateConnectionStatus('offline', 'Offline');
+                });
+
+                // 모바일에서 페이지 포커스 시 자동 새로고침
+                window.addEventListener('focus', function() {
+                    if (isMobileDevice()) {
+                        console.log('모바일 페이지 포커스 - 데이터 동기화');
+                        setTimeout(() => {
+                            if (isFirebaseEnabled && firebaseInitialized) {
+                                // Firebase 데이터 강제 동기화
+                                syncFromFirebase();
+                            } else {
+                                // 로컬 데이터 새로고침
+                                loadDirective();
+                                renderGrid();
+                            }
+                        }, 500);
+                    }
+                });
+
+                // 모바일에서 페이지 가시성 변경 시 동기화
+                document.addEventListener('visibilitychange', function() {
+                    if (isMobileDevice() && !document.hidden) {
+                        console.log('모바일 페이지 가시성 복원 - 데이터 동기화');
+                        setTimeout(() => {
+                            if (isFirebaseEnabled && firebaseInitialized) {
+                                syncFromFirebase();
+                            } else {
+                                loadDirective();
+                                renderGrid();
+                            }
+                        }, 300);
+                    }
                 });
 
                 // 음성 설정 초기화
@@ -6071,6 +6108,14 @@
                         if (newDirective && newDirective.timestamp) {
                             if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
                                 playNotificationSound();
+                                
+                                // 모바일에서 강제 UI 업데이트
+                                if (isMobileDevice()) {
+                                    setTimeout(() => {
+                                        displayDirective();
+                                        renderGrid();
+                                    }, 100);
+                                }
                             }
                             lastDirectiveTime = newDirective.timestamp;
                         }
@@ -9982,6 +10027,140 @@
                 console.log('✅ PWA 설치 가능 - beforeinstallprompt 이벤트 대기 중');
             } else {
                 console.log('❌ PWA 설치 불가능 - 조건 미충족');
+            }
+        }
+
+        // Firebase 리스너 설정 (실시간 동기화)
+        function setupFirebaseListeners() {
+            if (!isFirebaseEnabled || !firebaseInitialized || !database) {
+                console.log('Firebase 사용 불가 - 리스너 등록 건너뜀');
+                return;
+            }
+
+            try {
+                console.log('Firebase 리스너 등록 시작');
+
+                // 보고서 실시간 동기화
+                database.ref('reports').on('value', function(snapshot) {
+                    try {
+                        const data = snapshot.val();
+                        const newReports = data ? data : Array(10).fill(null);
+                        
+                        const newReportCount = newReports.filter(function(r) { return r; }).length;
+                        if (lastReportCount > 0 && newReportCount > lastReportCount) {
+                            playNotificationSound();
+                        }
+                        lastReportCount = newReportCount;
+                        
+                        reports = newReports;
+                        renderGrid();
+                        renderRecentUploads();
+                        updateStats();
+                        console.log('보고서 실시간 동기화 완료');
+                    } catch (e) {
+                        console.error('Reports sync error:', e);
+                    }
+                });
+
+                // 사용자 실시간 동기화
+                database.ref('users').on('value', function(snapshot) {
+                    try {
+                        const data = snapshot.val();
+                        users = data ? new Set(data) : new Set();
+                        updateStats();
+                        console.log('사용자 실시간 동기화 완료');
+                    } catch (e) {
+                        console.error('Users sync error:', e);
+                    }
+                });
+
+                // 지시사항 실시간 동기화
+                let lastDirectiveTime = null;
+                database.ref('directive').on('value', function(snapshot) {
+                    try {
+                        const newDirective = snapshot.val();
+                        
+                        if (newDirective && newDirective.timestamp) {
+                            if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
+                                playNotificationSound();
+                                console.log('새 지시사항 감지');
+                            }
+                            lastDirectiveTime = newDirective.timestamp;
+                        }
+                        
+                        currentDirective = newDirective;
+                        displayDirective();
+                        console.log('지시사항 실시간 동기화 완료');
+                    } catch (e) {
+                        console.error('Directive sync error:', e);
+                    }
+                });
+
+                // 온라인 사용자 실시간 동기화
+                database.ref('onlineUsers').on('value', function(snapshot) {
+                    try {
+                        onlineUsers = snapshot.val() || {};
+                        updateStats();
+                        console.log('온라인 사용자 실시간 동기화 완료');
+                    } catch (e) {
+                        console.error('Online users sync error:', e);
+                    }
+                });
+
+                console.log('✅ Firebase 리스너 등록 완료');
+
+            } catch (e) {
+                console.error('Firebase 리스너 등록 실패:', e);
+            }
+        }
+
+        // 모바일에서 Firebase 데이터 강제 동기화
+        function syncFromFirebase() {
+            if (!isFirebaseEnabled || !firebaseInitialized || !database) {
+                console.log('Firebase 사용 불가 - 로컬 데이터만 새로고침');
+                loadDirective();
+                renderGrid();
+                return;
+            }
+
+            try {
+                console.log('모바일 Firebase 동기화 시작');
+                
+                // 지시사항 동기화
+                database.ref('directive').once('value').then(function(snapshot) {
+                    const newDirective = snapshot.val();
+                    if (newDirective) {
+                        currentDirective = newDirective;
+                        displayDirective();
+                        console.log('지시사항 동기화 완료');
+                    }
+                });
+
+                // 보고서 동기화
+                database.ref('reports').once('value').then(function(snapshot) {
+                    const data = snapshot.val();
+                    if (data) {
+                        reports = data;
+                        renderGrid();
+                        console.log('보고서 동기화 완료');
+                    }
+                });
+
+                // 사용자 동기화
+                database.ref('users').once('value').then(function(snapshot) {
+                    const data = snapshot.val();
+                    if (data) {
+                        users = new Set(data);
+                        updateStats();
+                        console.log('사용자 동기화 완료');
+                    }
+                });
+
+            } catch (e) {
+                console.error('모바일 동기화 오류:', e);
+                // 동기화 실패 시 로컬 데이터로 폴백
+                loadDirective();
+                renderGrid();
             }
         }
 
