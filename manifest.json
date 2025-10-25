@@ -2,7 +2,7 @@
   "name": "FIRE SLOTBOARD",
   "short_name": "FIRE SLOT",
   "description": "실시간 보고서 관리 시스템",
-  "start_url": "/saha-1/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#FF9900",
@@ -22,7 +22,7 @@
   "categories": ["productivity", "utilities"],
   "lang": "ko",
   "dir": "ltr",
-  "scope": "/saha-1/",
+  "scope": "./",
   "id": "fire-slotboard"
 }
 
