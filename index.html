@@ -2,15 +2,26 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- iOS PWA Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FIRE SLOTBOARD">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23FF9900' width='100' height='100'/><text x='50' y='70' font-size='50' fill='white' text-anchor='middle'>F</text></svg>">
+    
+    <!-- Android PWA Support -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#121212">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Safari & Chrome -->
+    <meta name="format-detection" content="telephone=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    
     <title>FIRE SLOTBOARD</title>
     
     <!-- Preload critical resources -->
@@ -23,6 +34,9 @@
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
 
     <!-- External resources -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -68,6 +82,12 @@
             --accent-blue: #03A9F4;
             --accent-green: #28a745;
             --border-color: #333;
+            
+            /* 모바일 최적화 변수 */
+            --safe-area-inset-top: env(safe-area-inset-top);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-inset-left: env(safe-area-inset-left);
+            --safe-area-inset-right: env(safe-area-inset-right);
         }
 
         * {
@@ -84,13 +104,27 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding: 15px;
+            padding-top: calc(15px + var(--safe-area-inset-top));
+            padding-bottom: calc(15px + var(--safe-area-inset-bottom));
+            padding-left: calc(15px + var(--safe-area-inset-left));
+            padding-right: calc(15px + var(--safe-area-inset-right));
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             -ms-overflow-style: none;
+            /* 모바일 최적화 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            /* 스크롤 최적화 */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
             scrollbar-width: none;
         }
 
-        /* iOS Safari fixes */
+        /* iOS Safari & Android fixes */
         body {
             -webkit-text-size-adjust: 100%;
             -webkit-touch-callout: none;
@@ -98,6 +132,20 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            /* iOS Safari bounce prevention */
+            overscroll-behavior: none;
+            /* Smooth scrolling for Android */
+            -webkit-overflow-scrolling: touch;
+            /* Prevent zoom on double tap */
+            touch-action: manipulation;
+        }
+        
+        /* Fix iOS address bar issue */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                /* iOS Safari 100vh fix */
+                min-height: -webkit-fill-available;
+            }
         }
 
         input, textarea, button {
@@ -105,6 +153,19 @@
             -moz-user-select: text;
             -ms-user-select: text;
             user-select: text;
+            /* Prevent iOS input zoom */
+            font-size: 16px !important;
+            /* Better touch target size for mobile */
+            min-height: 44px;
+        }
+        
+        /* iOS specific input fixes */
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 0;
         }
 
         .container {
@@ -2982,13 +3043,15 @@
 
         .notification-settings-section,
         .notification-options-section,
-        .notification-test-section {
+        .notification-test-section,
+        .voice-settings-section {
             margin-bottom: 25px;
         }
 
         .notification-settings-section h4,
         .notification-options-section h4,
-        .notification-test-section h4 {
+        .notification-test-section h4,
+        .voice-settings-section h4 {
             margin: 0 0 15px 0;
             color: var(--text-primary);
             display: flex;
@@ -3095,6 +3158,282 @@
         }
 
         .notification-close-btn:hover {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        /* 음성 설정 스타일 */
+        .voice-control-item {
+            margin-bottom: 15px;
+        }
+
+        .voice-control-label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .voice-control-label:hover {
+            background: var(--bg-dark-tertiary);
+        }
+
+        .voice-control-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            min-width: 100px;
+        }
+
+        .voice-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-dark-tertiary);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .voice-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-slider::-webkit-slider-thumb:hover {
+            background: #0288d1;
+            transform: scale(1.1);
+        }
+
+        .voice-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .voice-slider::-moz-range-thumb:hover {
+            background: #0288d1;
+            transform: scale(1.1);
+        }
+
+        .voice-value {
+            color: var(--accent-blue);
+            font-weight: bold;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .voice-test-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .voice-test-btn {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .voice-test-btn:hover {
+            background: #2e7d32;
+            transform: translateY(-1px);
+        }
+
+        /* 모바일 최적화 스타일 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                padding-top: calc(10px + var(--safe-area-inset-top));
+                padding-bottom: calc(10px + var(--safe-area-inset-bottom));
+            }
+            
+            .header {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .slot {
+                min-height: 100px;
+                padding: 10px;
+            }
+            
+            .slot h3 {
+                font-size: 0.9em;
+            }
+            
+            .slot p {
+                font-size: 0.8em;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                max-width: calc(100vw - 20px);
+                max-height: calc(100vh - 20px);
+            }
+            
+            .notification-settings-content {
+                width: 100vw;
+                height: 100vh;
+                max-width: none;
+                max-height: none;
+                border-radius: 0;
+            }
+            
+            .voice-control-label {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .voice-slider {
+                width: 100%;
+            }
+        }
+
+        /* 터치 디바이스 최적화 */
+        @media (hover: none) and (pointer: coarse) {
+            .slot:hover {
+                transform: none;
+            }
+            
+            .slot:active {
+                transform: scale(0.98);
+                background: var(--bg-dark-tertiary);
+            }
+            
+            button:hover {
+                transform: none;
+            }
+            
+            button:active {
+                transform: scale(0.95);
+            }
+        }
+
+        /* PWA 설치 프롬프트 스타일 */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--bg-dark-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .install-prompt.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .install-prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .install-prompt-icon {
+            font-size: 24px;
+            color: var(--accent-orange);
+        }
+
+        .install-prompt-text {
+            flex: 1;
+        }
+
+        .install-prompt-text h4 {
+            margin: 0 0 5px 0;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .install-prompt-text p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .install-prompt-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .install-btn {
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            background: #e68900;
+        }
+
+        .install-dismiss {
+            background: var(--bg-dark-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .install-dismiss:hover {
             background: var(--accent-red);
             color: white;
             border-color: var(--accent-red);
@@ -4511,6 +4850,55 @@
                             </span>
                         </label>
                     </div>
+                </div>
+
+                <div class="voice-settings-section">
+                    <h4><i class="fa-solid fa-volume-high"></i>음성 설정</h4>
+                    <div class="notification-setting-item">
+                        <label class="notification-setting-label">
+                            <input type="checkbox" id="voiceEnabled" checked>
+                            <span class="notification-setting-text">
+                                <i class="fa-solid fa-microphone"></i>
+                                음성 알림 활성화
+                            </span>
+                        </label>
+                    </div>
+                    <div class="voice-control-item">
+                        <label class="voice-control-label">
+                            <span class="voice-control-text">
+                                <i class="fa-solid fa-tachometer-alt"></i>
+                                음성 속도
+                            </span>
+                            <input type="range" id="voiceRate" min="0.5" max="2.0" step="0.1" value="1.0" class="voice-slider">
+                            <span class="voice-value" id="voiceRateValue">1.0</span>
+                        </label>
+                    </div>
+                    <div class="voice-control-item">
+                        <label class="voice-control-label">
+                            <span class="voice-control-text">
+                                <i class="fa-solid fa-music"></i>
+                                음성 피치
+                            </span>
+                            <input type="range" id="voicePitch" min="0.5" max="2.0" step="0.1" value="1.0" class="voice-slider">
+                            <span class="voice-value" id="voicePitchValue">1.0</span>
+                        </label>
+                    </div>
+                    <div class="voice-control-item">
+                        <label class="voice-control-label">
+                            <span class="voice-control-text">
+                                <i class="fa-solid fa-volume-up"></i>
+                                음성 볼륨
+                            </span>
+                            <input type="range" id="voiceVolume" min="0.1" max="1.0" step="0.1" value="0.8" class="voice-slider">
+                            <span class="voice-value" id="voiceVolumeValue">0.8</span>
+                        </label>
+                    </div>
+                    <div class="voice-test-section">
+                        <button type="button" id="testVoiceBtn" class="voice-test-btn">
+                            <i class="fa-solid fa-play"></i>
+                            음성 테스트
+                        </button>
+                    </div>
                     <div class="notification-setting-item">
                         <label class="notification-setting-label">
                             <input type="checkbox" id="systemNotifications">
@@ -4792,7 +5180,11 @@
                     uploadNotifications: true,
                     systemNotifications: false,
                     soundEnabled: true,
-                    vibrationEnabled: true
+                    vibrationEnabled: true,
+                    voiceEnabled: true,
+                    voiceRate: 1.0,
+                    voicePitch: 1.0,
+                    voiceVolume: 0.8
                 };
                 
                 try {
@@ -4977,7 +5369,8 @@
                     return false;
                 }
 
-                const firebaseConfig = {
+                // Firebase 설정 파일 사용
+                const config = getFirebaseConfig ? getFirebaseConfig() : {
                     apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
                     authDomain: "project-3907456119741146864.firebaseapp.com",
                     databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -4988,7 +5381,7 @@
                 };
 
                 if (!window.firebase.apps.length) {
-                    firebase = window.firebase.initializeApp(firebaseConfig);
+                    firebase = window.firebase.initializeApp(config);
                 } else {
                 firebase = window.firebase.app();
             }
@@ -5124,7 +5517,7 @@
                                 audioContext.resume().then(() => {
                                     document.removeEventListener('touchstart', resumeAudio);
                                 });
-                            }, { once: true });
+                            }, { once: true, passive: true });
                         }
                     }
                 } catch (e) {
@@ -5413,6 +5806,12 @@
                 window.addEventListener('offline', function() {
                     updateConnectionStatus('offline', 'Offline');
                 });
+
+                // 음성 설정 초기화
+                initializeVoiceSettings();
+
+                // Service Worker 등록
+                registerServiceWorker();
 
             } catch (e) {
                 console.error('Event listener setup failed:', e);
@@ -9038,12 +9437,16 @@
         // 음성 알림 함수들
         function speakText(text, rate = 1.0, pitch = 1.0) {
             try {
+                // 음성 설정 확인
+                const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true, voiceVolume: 0.8 };
+                if (!settings.voiceEnabled) return;
+
                 if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'ko-KR';
                     utterance.rate = rate;
                     utterance.pitch = pitch;
-                    utterance.volume = 0.8;
+                    utterance.volume = settings.voiceVolume || 0.8;
                     
                     // 음성 목록이 로드될 때까지 기다림
                     const speakWithVoice = () => {
@@ -9070,28 +9473,44 @@
         }
 
         function speakEmergency() {
+            // 음성 설정 확인
+            const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true };
+            if (!settings.voiceEnabled) return;
+
             // 0.5초 지연 후 긴급한 남자 목소리로 설정
             setTimeout(() => {
-                speakTextWithVoice('긴급', 1.5, 0.8, 'male');
+                const userRate = settings.voiceRate || 1.5;
+                const userPitch = settings.voicePitch || 0.8;
+                speakTextWithVoice('긴급', userRate, userPitch, 'male');
             }, 500);
         }
 
         function speakReport() {
+            // 음성 설정 확인
+            const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true };
+            if (!settings.voiceEnabled) return;
+
             // 0.5초 지연 후 여유로운 여자 목소리로 설정
             setTimeout(() => {
-                speakTextWithVoice('보고', 0.9, 1.3, 'female');
+                const userRate = settings.voiceRate || 0.9;
+                const userPitch = settings.voicePitch || 1.3;
+                speakTextWithVoice('보고', userRate, userPitch, 'female');
             }, 500);
         }
 
         // 성별에 따른 음성 선택 함수
         function speakTextWithVoice(text, rate = 1.0, pitch = 1.0, gender = 'auto') {
             try {
+                // 음성 설정 확인
+                const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true, voiceVolume: 0.8 };
+                if (!settings.voiceEnabled) return;
+
                 if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'ko-KR';
                     utterance.rate = rate;
                     utterance.pitch = pitch;
-                    utterance.volume = 0.8;
+                    utterance.volume = settings.voiceVolume || 0.8;
                     
                     // 음성 목록이 로드될 때까지 기다림
                     const speakWithVoice = () => {
@@ -9221,6 +9640,177 @@
                 console.error('사용자 정의 알림 오류:', e);
                 // 폴백으로 기본 alert 사용
                 alert(message);
+            }
+        }
+
+        // 음성 설정 초기화 함수
+        function initializeVoiceSettings() {
+            try {
+                // 음성 설정 로드
+                const settings = notificationManager ? notificationManager.settings : {
+                    voiceEnabled: true,
+                    voiceRate: 1.0,
+                    voicePitch: 1.0,
+                    voiceVolume: 0.8
+                };
+
+                // UI 요소에 설정 적용
+                const voiceEnabledCheckbox = document.getElementById('voiceEnabled');
+                const voiceRateSlider = document.getElementById('voiceRate');
+                const voicePitchSlider = document.getElementById('voicePitch');
+                const voiceVolumeSlider = document.getElementById('voiceVolume');
+                const voiceRateValue = document.getElementById('voiceRateValue');
+                const voicePitchValue = document.getElementById('voicePitchValue');
+                const voiceVolumeValue = document.getElementById('voiceVolumeValue');
+
+                if (voiceEnabledCheckbox) {
+                    voiceEnabledCheckbox.checked = settings.voiceEnabled;
+                }
+
+                if (voiceRateSlider) {
+                    voiceRateSlider.value = settings.voiceRate;
+                    if (voiceRateValue) voiceRateValue.textContent = settings.voiceRate;
+                }
+
+                if (voicePitchSlider) {
+                    voicePitchSlider.value = settings.voicePitch;
+                    if (voicePitchValue) voicePitchValue.textContent = settings.voicePitch;
+                }
+
+                if (voiceVolumeSlider) {
+                    voiceVolumeSlider.value = settings.voiceVolume;
+                    if (voiceVolumeValue) voiceVolumeValue.textContent = settings.voiceVolume;
+                }
+
+                // 이벤트 리스너 설정
+                setupVoiceEventListeners();
+
+                console.log('🔊 음성 설정 초기화 완료');
+            } catch (e) {
+                console.error('음성 설정 초기화 오류:', e);
+            }
+        }
+
+        // 음성 설정 이벤트 리스너 설정
+        function setupVoiceEventListeners() {
+            try {
+                // 음성 활성화 체크박스
+                const voiceEnabledCheckbox = document.getElementById('voiceEnabled');
+                if (voiceEnabledCheckbox) {
+                    voiceEnabledCheckbox.addEventListener('change', function() {
+                        if (notificationManager) {
+                            notificationManager.settings.voiceEnabled = this.checked;
+                            notificationManager.saveSettings();
+                        }
+                        console.log('🔊 음성 알림:', this.checked ? '활성화' : '비활성화');
+                    });
+                }
+
+                // 음성 속도 슬라이더
+                const voiceRateSlider = document.getElementById('voiceRate');
+                const voiceRateValue = document.getElementById('voiceRateValue');
+                if (voiceRateSlider && voiceRateValue) {
+                    voiceRateSlider.addEventListener('input', function() {
+                        voiceRateValue.textContent = this.value;
+                        if (notificationManager) {
+                            notificationManager.settings.voiceRate = parseFloat(this.value);
+                            notificationManager.saveSettings();
+                        }
+                    });
+                }
+
+                // 음성 피치 슬라이더
+                const voicePitchSlider = document.getElementById('voicePitch');
+                const voicePitchValue = document.getElementById('voicePitchValue');
+                if (voicePitchSlider && voicePitchValue) {
+                    voicePitchSlider.addEventListener('input', function() {
+                        voicePitchValue.textContent = this.value;
+                        if (notificationManager) {
+                            notificationManager.settings.voicePitch = parseFloat(this.value);
+                            notificationManager.saveSettings();
+                        }
+                    });
+                }
+
+                // 음성 볼륨 슬라이더
+                const voiceVolumeSlider = document.getElementById('voiceVolume');
+                const voiceVolumeValue = document.getElementById('voiceVolumeValue');
+                if (voiceVolumeSlider && voiceVolumeValue) {
+                    voiceVolumeSlider.addEventListener('input', function() {
+                        voiceVolumeValue.textContent = this.value;
+                        if (notificationManager) {
+                            notificationManager.settings.voiceVolume = parseFloat(this.value);
+                            notificationManager.saveSettings();
+                        }
+                    });
+                }
+
+                // 음성 테스트 버튼
+                const testVoiceBtn = document.getElementById('testVoiceBtn');
+                if (testVoiceBtn) {
+                    testVoiceBtn.addEventListener('click', function() {
+                        testVoiceSettings();
+                    });
+                }
+
+                console.log('🔊 음성 설정 이벤트 리스너 설정 완료');
+            } catch (e) {
+                console.error('음성 설정 이벤트 리스너 설정 오류:', e);
+            }
+        }
+
+        // 음성 설정 테스트 함수
+        function testVoiceSettings() {
+            try {
+                const settings = notificationManager ? notificationManager.settings : {
+                    voiceEnabled: true,
+                    voiceRate: 1.0,
+                    voicePitch: 1.0,
+                    voiceVolume: 0.8
+                };
+
+                if (!settings.voiceEnabled) {
+                    showCustomAlert('음성 알림이 비활성화되어 있습니다.', 'warning');
+                    return;
+                }
+
+                const testText = '음성 설정 테스트입니다. 현재 설정으로 음성이 재생됩니다.';
+                speakTextWithVoice(testText, settings.voiceRate, settings.voicePitch, 'auto');
+                
+                showCustomAlert('음성 테스트가 재생되었습니다.', 'success');
+            } catch (e) {
+                console.error('음성 테스트 오류:', e);
+                showCustomAlert('음성 테스트에 실패했습니다.', 'error');
+            }
+        }
+
+        // Service Worker 등록 함수
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(function(registration) {
+                            console.log('Service Worker 등록 성공:', registration.scope);
+                            
+                            // 업데이트 확인
+                            registration.addEventListener('updatefound', function() {
+                                const newWorker = registration.installing;
+                                newWorker.addEventListener('statechange', function() {
+                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        // 새 버전이 설치됨
+                                        if (confirm('새 버전이 사용 가능합니다. 지금 업데이트하시겠습니까?')) {
+                                            window.location.reload();
+                                        }
+                                    }
+                                });
+                            });
+                        })
+                        .catch(function(error) {
+                            console.log('Service Worker 등록 실패:', error);
+                        });
+                });
+            } else {
+                console.log('Service Worker를 지원하지 않는 브라우저입니다.');
             }
         }
 
@@ -10276,6 +10866,69 @@
             }
         }
 
+    </script>
+
+    <!-- PWA 설치 프롬프트 -->
+    <div class="install-prompt" id="installPrompt">
+        <div class="install-prompt-content">
+            <div class="install-prompt-icon">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <div class="install-prompt-text">
+                <h4>앱으로 설치하기</h4>
+                <p>홈 화면에 추가하여 더 빠르게 접근하세요</p>
+            </div>
+            <div class="install-prompt-buttons">
+                <button class="install-btn" id="installBtn">설치</button>
+                <button class="install-dismiss" id="installDismiss">나중에</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PWA 설치 프롬프트 관리
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const installDismiss = document.getElementById('installDismiss');
+
+        // 설치 가능 이벤트 감지
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA 설치 가능');
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.classList.add('show');
+        });
+
+        // 설치 버튼 클릭
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('설치 결과:', outcome);
+                deferredPrompt = null;
+                installPrompt.classList.remove('show');
+            }
+        });
+
+        // 나중에 버튼 클릭
+        installDismiss.addEventListener('click', () => {
+            installPrompt.classList.remove('show');
+            localStorage.setItem('pwa-install-dismissed', Date.now());
+        });
+
+        // 이미 설치된 경우 프롬프트 숨김
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA 설치 완료');
+            installPrompt.classList.remove('show');
+            deferredPrompt = null;
+        });
+
+        // 이전에 거부한 경우 7일 후 다시 표시
+        const dismissedTime = localStorage.getItem('pwa-install-dismissed');
+        if (dismissedTime && Date.now() - dismissedTime < 7 * 24 * 60 * 60 * 1000) {
+            installPrompt.style.display = 'none';
+        }
     </script>
 </body>
 </html>
