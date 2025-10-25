@@ -282,8 +282,6 @@
             font-size: 16px;
             background: var(--bg-dark-primary);
             color: var(--text-primary);
-            -webkit-appearance: none;
-            -moz-appearance: none;
             appearance: none;
         }
 
@@ -294,7 +292,7 @@
 
         .login-box input[type="text"], 
         .login-box input[type="password"] {
-            -webkit-border-radius: 8px;
+            border-radius: 8px;
         }
 
         .login-box button {
@@ -309,8 +307,7 @@
             font-weight: bold;
             margin-top: 10px;
             transition: background-color 0.2s ease;
-            -webkit-transition: background-color 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .login-box button:hover { background: #e68a00; }
         .login-box button:active { transform: scale(0.98); }
@@ -2453,7 +2450,7 @@
             background: var(--bg-dark-primary);
             color: var(--text-primary);
             resize: vertical;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .directive-input:focus { border-color: var(--accent-orange); outline: none;}
 
@@ -2467,7 +2464,7 @@
             font-size: 15px;
             font-weight: bold;
             transition: background-color 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .directive-send-btn:hover { background: #e68a00; }
         .directive-send-btn:active { transform: scale(0.98); }
@@ -2524,7 +2521,7 @@
             font-size: 12px;
             font-weight: bold;
             transition: all 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .directive-delete-btn:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
@@ -2783,7 +2780,7 @@
             font-weight: bold;
             font-size: 12px;
             transition: all 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
             -webkit-tap-highlight-color: transparent;
         }
         .upload-btn { background: var(--accent-green); width: 100%; margin-top: 10px;}
@@ -2851,7 +2848,7 @@
             font-size: 16px;
             background: var(--bg-dark-primary);
             color: var(--text-primary);
-            -webkit-appearance: none;
+            appearance: none;
         }
         .form-group input[type="text"]:focus { border-color: var(--accent-orange); outline: none;}
 
@@ -2866,7 +2863,7 @@
             font-weight: bold;
             margin-bottom: 10px;
             transition: background-color 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .file-select-btn:hover { background: #0288d1; }
         
@@ -2890,7 +2887,7 @@
             font-weight: bold;
             font-size: 15px;
             transition: opacity 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .modal-buttons button:hover { opacity: 0.9; }
         .btn-confirm { background: var(--accent-green); color: white; }
@@ -3129,7 +3126,7 @@
             justify-content: center;
             z-index: 2001;
             transition: all 0.2s ease;
-            -webkit-appearance: none;
+            appearance: none;
         }
         .fullscreen-back-btn:hover { background: rgba(0,0,0,0.8); }
         .fullscreen-back-btn:active { transform: scale(0.9); }
@@ -3149,7 +3146,7 @@
             height: 100vh;
             object-fit: contain;
             -webkit-user-drag: none;
-            user-drag: none;
+            pointer-events: none;
             background-color: black;
         }
         
