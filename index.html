@@ -5363,60 +5363,83 @@
 
         function initializeFirebase() {
             try {
+                console.log('Firebase 초기화 시작...');
+                
                 if (typeof window.firebase === 'undefined') {
                     console.warn('Firebase SDK not loaded');
-                    updateConnectionStatus('offline', 'Firebase 연결 실패');
+                    updateConnectionStatus('offline', 'Firebase SDK 로드 실패');
                     return false;
                 }
 
                 // Firebase 설정 파일 사용
-                const config = getFirebaseConfig ? getFirebaseConfig() : {
-                    apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
-                    authDomain: "project-3907456119741146864.firebaseapp.com",
-                    databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
-                    projectId: "project-3907456119741146864",
-                    storageBucket: "project-3907456119741146864.firebasestorage.app",
-                    messagingSenderId: "690596721309",
-                    appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
-                };
+                let config;
+                if (typeof getFirebaseConfig === 'function') {
+                    config = getFirebaseConfig();
+                    console.log('Firebase 설정 파일 사용');
+                } else {
+                    config = {
+                        apiKey: "AIzaSyAaFm9ttA3HC_cxIgctBi_jolA1h_80rQk",
+                        authDomain: "project-3907456119741146864.firebaseapp.com",
+                        databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
+                        projectId: "project-3907456119741146864",
+                        storageBucket: "project-3907456119741146864.firebasestorage.app",
+                        messagingSenderId: "690596721309",
+                        appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
+                    };
+                    console.log('기본 Firebase 설정 사용');
+                }
 
+                // Firebase 앱 초기화
                 if (!window.firebase.apps.length) {
                     firebase = window.firebase.initializeApp(config);
+                    console.log('Firebase 앱 초기화 완료');
                 } else {
-                firebase = window.firebase.app();
-            }
-            
-            database = window.firebase.database();
-            auth = window.firebase.auth();
-            isFirebaseEnabled = true;
-            firebaseInitialized = true;
+                    firebase = window.firebase.app();
+                    console.log('기존 Firebase 앱 사용');
+                }
                 
+                // Firebase 서비스 초기화
+                database = window.firebase.database();
+                auth = window.firebase.auth();
+                isFirebaseEnabled = true;
+                firebaseInitialized = true;
+                
+                console.log('Firebase 서비스 초기화 완료');
                 updateConnectionStatus('online', 'Firebase 연결됨');
-                console.log('Firebase initialized successfully');
                 
                 // Firebase 연결 테스트
-                testFirebaseConnection();
+                setTimeout(() => {
+                    testFirebaseConnection();
+                }, 1000);
+                
                 return true;
             } catch (error) {
                 console.error('Firebase initialization failed:', error);
                 updateConnectionStatus('offline', 'Firebase 연결 실패: ' + error.message);
                 isFirebaseEnabled = false;
+                firebaseInitialized = false;
                 return false;
             }
         }
 
         function updateConnectionStatus(status, message) {
             const statusEl = document.getElementById('connectionStatus');
-            if (!statusEl) return;
+            if (!statusEl) {
+                console.warn('connectionStatus 요소를 찾을 수 없습니다');
+                return;
+            }
 
             statusEl.className = 'connection-status ' + status;
             
             if (status === 'online') {
                 statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #28a745;"></i> ' + message;
+                console.log('✅ Firebase 연결됨:', message);
             } else if (status === 'offline') {
                 statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #E53935;"></i> ' + message;
+                console.log('❌ Firebase 연결 실패:', message);
             } else {
                 statusEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ' + message;
+                console.log('🔄 Firebase 연결 중:', message);
             }
         }
 
@@ -5690,10 +5713,13 @@
 
         function waitForFirebaseAndInit() {
             let attempts = 0;
-            const maxAttempts = 50; // 5초 동안 시도 (100ms * 50)
+            const maxAttempts = 100; // 10초 동안 시도 (100ms * 100)
+            
+            console.log('Firebase SDK 로드 대기 시작...');
             
             const checkFirebase = setInterval(function() {
                 attempts++;
+                console.log(`Firebase SDK 로드 시도 ${attempts}/${maxAttempts}`);
                 
                 if (typeof window.firebase !== 'undefined') {
                     clearInterval(checkFirebase);
@@ -5721,6 +5747,7 @@
                     updateConnectionStatus('offline', 'Firebase SDK 로드 시간 초과');
                     
                     // Firebase 없이 로컬 데이터 로드
+                    console.log('Firebase 없이 로컬 모드로 실행');
                     loadData();
                     renderGrid();
                     renderRecentUploads();
@@ -8768,6 +8795,8 @@
         // Firebase 연결 테스트
         function testFirebaseConnection() {
             try {
+                console.log('Firebase 연결 테스트 시작...');
+                
                 if (!isFirebaseEnabled || !database) {
                     console.error('Firebase not initialized');
                     updateConnectionStatus('offline', 'Firebase 초기화 실패');
@@ -8779,8 +8808,12 @@
                 const testData = {
                     timestamp: Date.now(),
                     user: currentUser || 'anonymous',
-                    message: 'Connection test'
+                    message: 'Connection test',
+                    browser: navigator.userAgent,
+                    url: window.location.href
                 };
+
+                console.log('Firebase 테스트 데이터 전송:', testData);
 
                 // 테스트 데이터 쓰기
                 testRef.set(testData).then(() => {
@@ -8792,6 +8825,11 @@
                         if (data) {
                             console.log('✅ Firebase 읽기 테스트 성공:', data);
                             updateConnectionStatus('online', 'Firebase 연결됨');
+                            
+                            // 테스트 데이터 정리 (선택사항)
+                            setTimeout(() => {
+                                testRef.remove().catch(e => console.log('테스트 데이터 정리 실패:', e));
+                            }, 5000);
                         } else {
                             console.error('❌ Firebase 읽기 테스트 실패: 데이터 없음');
                             updateConnectionStatus('offline', 'Firebase 읽기 실패');
@@ -10932,3 +10970,4 @@
     </script>
 </body>
 </html>
+
