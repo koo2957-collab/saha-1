@@ -3969,13 +3969,19 @@
                     <h2><i class="fa-solid fa-lock"></i>로그인</h2>
                     
                     <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.5;">
+                        <div style="font-size: 14px; color: #ffc107; margin-bottom: 10px; line-height: 1.6;">
                             <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
-                            더 나은 사용을 위해 외부 브라우저를 사용하세요
+                            <span style="font-size: 13px; color: var(--text-secondary);">
+                                카카오톡 브라우저에서는 일부 기능이 제한될 수 있습니다.<br>
+                                최적의 성능을 위해 Chrome 또는 Safari로 열어주세요.
+                            </span>
                         </div>
-                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 12px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px;">
                             <i class="fa-solid fa-globe"></i> Chrome/Safari에서 열기
                         </button>
+                        <div style="font-size: 12px; color: var(--text-secondary); text-align: center;">
+                            그냥 사용할 수도 있지만 일부 기능이 제한될 수 있습니다
+                        </div>
                     </div>
 
                     <div id="loginError" class="error-message"></div>
