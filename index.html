@@ -5924,22 +5924,42 @@
                     updateConnectionStatus('offline', 'Offline');
                 });
 
-                // 모바일에서 페이지 포커스 시 자동 새로고침
-                window.addEventListener('focus', function() {
-                    if (isMobileDevice()) {
-                        console.log('모바일 페이지 포커스 - 데이터 동기화');
-                        setTimeout(() => {
-                            if (isFirebaseEnabled && firebaseInitialized) {
-                                // Firebase 데이터 강제 동기화
-                                syncFromFirebase();
-                            } else {
-                                // 로컬 데이터 새로고침
-                                loadDirective();
-                                renderGrid();
-                            }
-                        }, 500);
+        // 모바일에서 페이지 포커스 시 자동 새로고침
+        window.addEventListener('focus', function() {
+            if (isMobileDevice()) {
+                console.log('모바일 페이지 포커스 - 데이터 동기화');
+                setTimeout(() => {
+                    if (isFirebaseEnabled && firebaseInitialized) {
+                        // Firebase 데이터 강제 동기화
+                        syncFromFirebase();
+                    } else {
+                        // 로컬 데이터 새로고침
+                        loadDirective();
+                        renderGrid();
                     }
-                });
+                }, 500);
+            }
+        });
+
+        // iOS Safari 전용 최적화
+        if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+            console.log('iOS Safari 감지 - 최적화 적용');
+            
+            // iOS Safari에서 Firebase 연결 안정성 향상
+            if (isFirebaseEnabled && firebaseInitialized) {
+                // iOS Safari에서 Firebase 재연결 시도
+                setInterval(() => {
+                    if (database && database.ref) {
+                        database.ref('.info/connected').on('value', function(connectedSnap) {
+                            if (connectedSnap.val() === false) {
+                                console.log('iOS Safari Firebase 재연결 시도');
+                                // Firebase 재초기화는 자동으로 처리됨
+                            }
+                        });
+                    }
+                }, 30000); // 30초마다 연결 상태 확인
+            }
+        }
 
                 // 모바일에서 페이지 가시성 변경 시 동기화
                 document.addEventListener('visibilitychange', function() {
