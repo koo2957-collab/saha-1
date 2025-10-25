@@ -6070,120 +6070,6 @@
             }
         }
 
-        function setupFirebaseSync() {
-            if (!isFirebaseEnabled || !database) {
-                console.warn('Firebase not available for sync');
-                return;
-            }
-
-            try {
-                database.ref('reports').on('value', function(snapshot) {
-                    try {
-                        const data = snapshot.val();
-                        const newReports = data ? data : Array(10).fill(null);
-                        
-                        const newReportCount = newReports.filter(function(r) { return r; }).length;
-                        if (lastReportCount > 0 && newReportCount > lastReportCount) {
-                            playNotificationSound();
-                            
-                            // 보고 음성 알림
-                            speakReport();
-                        }
-                        lastReportCount = newReportCount;
-                        
-                        reports = newReports;
-                        renderGrid();
-                        renderRecentUploads();
-                        updateStats();
-                    } catch (e) {
-                        console.error('Reports sync error:', e);
-                    }
-                }, function(error) {
-                    console.error('Reports listener error:', error);
-                    console.error('Firebase 오류 상세:', error);
-                    updateConnectionStatus('offline', 'Firebase 연결 오류: ' + error.message);
-                    
-                    // 오류 유형별 처리
-                    if (error.code === 'PERMISSION_DENIED') {
-                        showError('loginError', 'Firebase 보안 규칙 오류: 권한이 거부되었습니다. Firebase 콘솔에서 보안 규칙을 확인하세요.');
-                    } else if (error.code === 'NETWORK_ERROR') {
-                        showError('loginError', '네트워크 오류: 인터넷 연결을 확인하세요.');
-                    } else {
-                        showError('loginError', 'Firebase 연결 오류: ' + error.message);
-                    }
-                });
-
-                database.ref('users').on('value', function(snapshot) {
-                    try {
-                        const data = snapshot.val();
-                        users = data ? new Set(data) : new Set();
-                        updateStats();
-                    } catch (e) {
-                        console.error('Users sync error:', e);
-                    }
-                });
-
-                let lastDirectiveTime = null;
-                database.ref('directive').on('value', function(snapshot) {
-                    try {
-                        const newDirective = snapshot.val();
-                        
-                        if (newDirective && newDirective.timestamp) {
-                            if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
-                                playNotificationSound();
-                                
-                                // 긴급 음성 알림
-                                speakEmergency();
-                                
-                                // 모바일에서 강제 UI 업데이트
-                                if (isMobileDevice()) {
-                                    setTimeout(() => {
-                                        displayDirective();
-                                        renderGrid();
-                                    }, 100);
-                                }
-                            }
-                            lastDirectiveTime = newDirective.timestamp;
-                        }
-                        
-                        currentDirective = newDirective;
-                        displayDirective();
-                    } catch (e) {
-                        console.error('Directive sync error:', e);
-                    }
-                });
-
-                database.ref('onlineUsers').on('value', function(snapshot) {
-                    try {
-                        onlineUsers = snapshot.val() || {};
-                        
-                        const now = Date.now();
-                        const updates = {};
-                        let hasChanges = false;
-                        
-                        Object.keys(onlineUsers).forEach(function(userId) {
-                            const userData = onlineUsers[userId];
-                            if (now - userData.lastSeen > 60000) {
-                                updates[userId] = null;
-                                hasChanges = true;
-                            }
-                        });
-                        
-                        if (hasChanges) {
-                            database.ref('onlineUsers').update(updates);
-                        }
-                        
-                        updateStats();
-                    } catch (e) {
-                        console.error('Online users sync error:', e);
-                    }
-                });
-
-            } catch (e) {
-                console.error('Firebase sync setup failed:', e);
-                showError('loginError', 'Firebase 동기화 설정 실패: ' + e.message);
-            }
-        }
 
         function loadData() {
             try {
@@ -6267,56 +6153,6 @@
             }
         }
 
-        function saveDirectiveData() {
-            try {
-                // 업로드와 동일한 방식: Firebase 우선, 로컬 백업
-                if (isFirebaseEnabled && firebaseInitialized && database) {
-                    console.log('Firebase에 지시사항 저장 시도');
-                    database.ref('directive').set(currentDirective);
-                    console.log('✅ Firebase 지시사항 저장 완료');
-                } else {
-                    console.log('Firebase 사용 불가 - 로컬 스토리지 사용');
-                }
-                
-                // 로컬 스토리지에도 항상 저장 (백업)
-                storage.setItem('directive', JSON.stringify(currentDirective));
-                console.log('✅ 로컬 스토리지에 지시사항 저장 완료');
-                
-            } catch (e) {
-                console.error('지시사항 저장 오류:', e);
-                // Firebase 실패 시 로컬 스토리지로 폴백
-                try {
-                    storage.setItem('directive', JSON.stringify(currentDirective));
-                    console.log('✅ 로컬 스토리지 폴백 저장 완료');
-                } catch (e2) {
-                    console.error('로컬 저장 실패:', e2);
-                }
-            }
-        }
-
-        function saveDirective() {
-            try {
-                // 로컬 스토리지에 항상 저장 (백업)
-                storage.setItem('directive', JSON.stringify(currentDirective));
-                console.log('✅ 로컬 스토리지에 지시사항 저장 완료');
-                
-                // Firebase에도 저장 시도 (실패해도 상관없음)
-                if (isFirebaseEnabled && firebaseInitialized && database) {
-                    database.ref('directive').set(currentDirective)
-                        .then(() => {
-                            console.log('✅ Firebase 지시사항 저장 성공');
-                        })
-                        .catch((error) => {
-                            console.error('❌ Firebase 지시사항 저장 실패:', error);
-                        });
-                }
-                
-                return Promise.resolve();
-            } catch (e) {
-                console.error('지시사항 저장 오류:', e);
-                return Promise.reject(e);
-            }
-        }
 
         function displayDirective() {
             try {
@@ -6398,18 +6234,45 @@
                     date: new Date().toLocaleString('ko-KR')
                 });
                 
-                // 지시사항 저장 (업로드와 동일한 방식)
-                console.log('지시사항 저장 시작:', currentDirective);
-                
                 // 업로드와 동일한 방식으로 저장
-                saveDirectiveData();
+                console.log('지시사항 저장 시작:', currentDirective);
+                console.log('Firebase 상태:', {
+                    enabled: isFirebaseEnabled,
+                    initialized: firebaseInitialized,
+                    database: !!database,
+                    url: window.location.href
+                });
+                
+                // 1. 로컬 스토리지에 저장 (업로드와 동일)
+                try {
+                    storage.setItem('directive', JSON.stringify(currentDirective));
+                    console.log('✅ 로컬 스토리지 저장 성공');
+                } catch (e) {
+                    console.error('❌ 로컬 스토리지 저장 실패:', e);
+                    showCustomAlert('❌ 지시사항 저장에 실패했습니다.', 'error');
+                    return;
+                }
+                
+                // 2. Firebase에 저장 (업로드와 동일)
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    console.log('Firebase에 지시사항 저장 시도:', currentDirective);
+                    database.ref('directive').set(currentDirective)
+                        .then(() => {
+                            console.log('✅ Firebase 지시사항 저장 성공');
+                        })
+                        .catch((error) => {
+                            console.error('❌ Firebase 지시사항 저장 실패:', error);
+                            showCustomAlert('⚠️ Firebase 저장 실패 - 로컬에만 저장됨', 'warning');
+                        });
+                } else {
+                    console.log('Firebase 사용 불가 - 로컬 스토리지만 사용');
+                }
                 
                 // 3. UI 업데이트
                 displayDirective();
                 input.value = '';
                 
-                // 4. 알림
-                speakEmergency();
+                // 4. 알림 (Firebase 리스너에서 자동으로 처리됨)
                 
                 if (notificationManager) {
                     const directiveData = {
@@ -10131,7 +9994,31 @@
                     }
                 });
 
-                // 중복된 지시사항 리스너 제거됨 (이미 위에서 등록됨)
+                // 지시사항 실시간 동기화 (업로드와 동일)
+                let lastDirectiveTime = null;
+                database.ref('directive').on('value', function(snapshot) {
+                    try {
+                        const newDirective = snapshot.val();
+                        
+                        if (newDirective && newDirective.timestamp) {
+                            if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
+                                playNotificationSound();
+                                
+                                // 긴급 음성 알림
+                                speakEmergency();
+                                
+                                console.log('새 지시사항 감지');
+                            }
+                            lastDirectiveTime = newDirective.timestamp;
+                        }
+                        
+                        currentDirective = newDirective;
+                        displayDirective();
+                        console.log('지시사항 실시간 동기화 완료');
+                    } catch (e) {
+                        console.error('Directive sync error:', e);
+                    }
+                });
 
                 // 온라인 사용자 실시간 동기화
                 database.ref('onlineUsers').on('value', function(snapshot) {
