@@ -5,11 +5,14 @@ const urlsToCache = [
   './index.html',
   './firebase-config.js',
   './manifest.json',
+  './sw.js',
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js',
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js',
   'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+  'https://via.placeholder.com/192x192/FF9900/FFFFFF?text=F',
+  'https://via.placeholder.com/512x512/FF9900/FFFFFF?text=F'
 ];
 
 // Service Worker 설치
