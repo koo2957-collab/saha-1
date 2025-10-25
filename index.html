@@ -5771,35 +5771,70 @@
             try {
                 console.log('=== 카카오톡 브라우저 감지 시작 ===');
                 
-                // 카카오톡 브라우저 체크 (정확한 감지)
                 const ua = navigator.userAgent.toLowerCase();
                 console.log('User Agent (소문자):', ua);
                 
-                // 카카오톡 브라우저 패턴 체크 (정확한 패턴만)
+                // 카카오톡 브라우저 감지 패턴 (포괄적)
                 const kakaoPatterns = [
                     'kakaotalk',
-                    'kakaotalkbrowser'
+                    'kakaotalkbrowser',
+                    'kakao',
+                    'kakaotalk/',
+                    'kakaotalkbrowser/',
+                    'kakao/',
+                    'kakaotalk browser',
+                    'kakaotalkbrowser/',
+                    'kakaotalk browser/'
                 ];
                 
                 let isKakao = false;
+                let detectedPattern = '';
+                
+                // User Agent 패턴 체크
                 for (let pattern of kakaoPatterns) {
                     if (ua.includes(pattern)) {
                         isKakao = true;
+                        detectedPattern = pattern;
                         console.log('카카오톡 패턴 발견:', pattern);
                         break;
                     }
                 }
                 
-                // window 객체 체크 (정확한 카카오톡 객체만)
+                // window 객체 체크
                 if (window.Kakao && typeof window.Kakao === 'object') {
                     isKakao = true;
+                    detectedPattern = 'window.Kakao';
                     console.log('window.Kakao 객체 발견');
                 }
                 
+                // 추가 감지 방법들
+                if (!isKakao) {
+                    // navigator.userAgentData 체크 (최신 브라우저)
+                    if (navigator.userAgentData && navigator.userAgentData.brands) {
+                        for (let brand of navigator.userAgentData.brands) {
+                            if (brand.brand.toLowerCase().includes('kakao') || 
+                                brand.brand.toLowerCase().includes('kakaotalk')) {
+                                isKakao = true;
+                                detectedPattern = 'userAgentData: ' + brand.brand;
+                                console.log('userAgentData에서 카카오톡 발견:', brand.brand);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 특정 카카오톡 전용 API 체크
+                    if (window.kakao && typeof window.kakao === 'object') {
+                        isKakao = true;
+                        detectedPattern = 'window.kakao';
+                        console.log('window.kakao 객체 발견');
+                    }
+                }
+                
+                console.log('감지된 패턴:', detectedPattern);
                 console.log('최종 카카오톡 브라우저 여부:', isKakao);
                 
                 if (isKakao) {
-                    console.log('⚠️ 카카오톡 브라우저 감지됨!');
+                    console.log('⚠️ 카카오톡 브라우저 감지됨! 패턴:', detectedPattern);
                     
                     const kakaoWarning = document.getElementById('kakaoWarning');
                     if (kakaoWarning) {
@@ -5811,6 +5846,12 @@
                         if (currentUrlEl) {
                             currentUrlEl.textContent = window.location.href;
                         }
+                        
+                        // 감지된 패턴 정보 표시
+                        const patternInfo = document.createElement('div');
+                        patternInfo.style.cssText = 'font-size: 12px; color: #ffc107; margin-top: 10px; text-align: center;';
+                        patternInfo.textContent = '감지된 패턴: ' + detectedPattern;
+                        kakaoWarning.appendChild(patternInfo);
                     }
                 } else {
                     console.log('카카오톡 브라우저가 아닙니다.');
@@ -5843,6 +5884,15 @@
 
                 // 카카오톡 브라우저 체크 (한 번만 실행)
                 checkKakaoBrowser();
+                
+                // 디버깅을 위한 추가 정보 표시
+                console.log('=== 브라우저 정보 디버깅 ===');
+                console.log('User Agent:', navigator.userAgent);
+                console.log('User Agent Data:', navigator.userAgentData);
+                console.log('Platform:', navigator.platform);
+                console.log('App Name:', navigator.appName);
+                console.log('App Version:', navigator.appVersion);
+                console.log('Window 객체들:', Object.keys(window).filter(key => key.toLowerCase().includes('kakao')));
                 
                 window.addEventListener('load', function() {
                     try {
