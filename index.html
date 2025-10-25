@@ -5769,33 +5769,68 @@
         
         function checkKakaoBrowser() {
             try {
+                console.log('=== 카카오톡 브라우저 감지 시작 ===');
+                
                 // 카카오톡 브라우저 체크 (더 강화된 감지)
                 const ua = navigator.userAgent.toLowerCase();
-                const isKakao = ua.includes('kakaotalk') || 
-                               ua.includes('kakao') || 
-                               ua.includes('kakaotalkbrowser') ||
-                               ua.includes('kakaotalk browser') ||
-                               window.Kakao !== undefined ||
-                               window.kakao !== undefined;
+                console.log('User Agent (소문자):', ua);
                 
-                console.log('=== 카카오톡 브라우저 감지 ===');
-                console.log('브라우저 User Agent:', navigator.userAgent);
-                console.log('카카오톡 브라우저 여부:', isKakao);
+                // 다양한 카카오톡 브라우저 패턴 체크
+                const patterns = [
+                    'kakaotalk',
+                    'kakao',
+                    'kakaotalkbrowser',
+                    'kakaotalk browser',
+                    'kakaotalkbrowser',
+                    'kakaotalkbrowser/',
+                    'kakaotalk/',
+                    'kakao/',
+                    'kakaotalkbrowser/',
+                    'kakaotalk browser/'
+                ];
+                
+                let isKakao = false;
+                for (let pattern of patterns) {
+                    if (ua.includes(pattern)) {
+                        isKakao = true;
+                        console.log('카카오톡 패턴 발견:', pattern);
+                        break;
+                    }
+                }
+                
+                // window 객체 체크
+                if (window.Kakao !== undefined) {
+                    isKakao = true;
+                    console.log('window.Kakao 발견');
+                }
+                if (window.kakao !== undefined) {
+                    isKakao = true;
+                    console.log('window.kakao 발견');
+                }
+                
+                console.log('최종 카카오톡 브라우저 여부:', isKakao);
                 
                 const kakaoWarning = document.getElementById('kakaoWarning');
+                console.log('kakaoWarning 요소:', kakaoWarning);
                 
-                if (isKakao && kakaoWarning) {
-                    kakaoWarning.style.display = 'block';
-                    console.log('⚠️ 카카오톡 브라우저 감지 - 경고 메시지 표시');
+                if (isKakao) {
+                    console.log('⚠️ 카카오톡 브라우저 감지됨!');
                     
-                    // 현재 URL 표시
-                    const currentUrlEl = document.getElementById('currentUrl');
-                    if (currentUrlEl) {
-                        currentUrlEl.textContent = window.location.href;
+                    if (kakaoWarning) {
+                        kakaoWarning.style.display = 'block';
+                        console.log('경고 메시지 표시됨');
+                        
+                        // 현재 URL 표시
+                        const currentUrlEl = document.getElementById('currentUrl');
+                        if (currentUrlEl) {
+                            currentUrlEl.textContent = window.location.href;
+                        }
+                        
+                        // 즉시 경고 메시지 표시
+                        alert('⚠️ 카카오톡 브라우저 감지\n\n카카오톡 브라우저에서는 일부 기능이 제한될 수 있습니다.\n최적의 성능을 위해 Chrome 또는 Safari를 권장합니다.');
+                    } else {
+                        console.error('kakaoWarning 요소를 찾을 수 없습니다!');
                     }
-                    
-                    // 즉시 경고 메시지 표시
-                    alert('⚠️ 카카오톡 브라우저 감지\n\n카카오톡 브라우저에서는 일부 기능이 제한될 수 있습니다.\n최적의 성능을 위해 Chrome 또는 Safari를 권장합니다.');
                     
                     // 카카오톡 브라우저에서 Firebase 연결 문제 해결 시도
                     setTimeout(function() {
@@ -5852,9 +5887,16 @@
                 // 페이지 로드 즉시 카카오톡 브라우저 체크
                 checkKakaoBrowser();
                 
+                // DOM 로드 완료 후 다시 체크
+                document.addEventListener('DOMContentLoaded', function() {
+                    console.log('DOM 로드 완료 - 카카오톡 브라우저 재체크');
+                    checkKakaoBrowser();
+                });
+                
                 window.addEventListener('load', function() {
                     try {
                         // 다시 한번 카카오톡 브라우저 체크
+                        console.log('Window 로드 완료 - 카카오톡 브라우저 재체크');
                         checkKakaoBrowser();
                         
                         // Firebase SDK 로드 대기 (모바일 호환성 향상)
@@ -5864,6 +5906,32 @@
                         showError('loginError', '애플리케이션 초기화에 실패했습니다: ' + e.message);
                     }
                 });
+                
+                // 추가적인 카카오톡 브라우저 체크 (1초 후)
+                setTimeout(function() {
+                    console.log('1초 후 카카오톡 브라우저 재체크');
+                    checkKakaoBrowser();
+                }, 1000);
+                
+                // 강제 테스트용 - 3초 후에 강제로 경고 표시
+                setTimeout(function() {
+                    console.log('3초 후 강제 테스트 - 경고 메시지 표시');
+                    const kakaoWarning = document.getElementById('kakaoWarning');
+                    if (kakaoWarning) {
+                        kakaoWarning.style.display = 'block';
+                        console.log('강제로 경고 메시지 표시됨');
+                        
+                        // 현재 URL 표시
+                        const currentUrlEl = document.getElementById('currentUrl');
+                        if (currentUrlEl) {
+                            currentUrlEl.textContent = window.location.href;
+                        }
+                        
+                        alert('강제 테스트: 카카오톡 브라우저 감지 테스트\n\n이 메시지가 보이면 JavaScript는 정상 작동합니다.');
+                    } else {
+                        console.error('kakaoWarning 요소를 찾을 수 없습니다!');
+                    }
+                }, 3000);
 
                 window.addEventListener('online', function() {
                     updateConnectionStatus('online', 'Online');
@@ -9868,7 +9936,7 @@
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js')
+                    navigator.serviceWorker.register('./sw.js')
                         .then(function(registration) {
                             console.log('Service Worker 등록 성공:', registration.scope);
                             

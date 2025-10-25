@@ -10,3 +10,4 @@ function getFirebaseConfig() {
         appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
     };
 }
+
