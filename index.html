@@ -10111,31 +10111,7 @@
                     }
                 });
 
-                // 지시사항 실시간 동기화
-                let lastDirectiveTime = null;
-                database.ref('directive').on('value', function(snapshot) {
-                    try {
-                        const newDirective = snapshot.val();
-                        
-                        if (newDirective && newDirective.timestamp) {
-                            if (lastDirectiveTime && newDirective.timestamp !== lastDirectiveTime) {
-                                playNotificationSound();
-                                
-                                // 긴급 음성 알림
-                                speakEmergency();
-                                
-                                console.log('새 지시사항 감지');
-                            }
-                            lastDirectiveTime = newDirective.timestamp;
-                        }
-                        
-                        currentDirective = newDirective;
-                        displayDirective();
-                        console.log('지시사항 실시간 동기화 완료');
-                    } catch (e) {
-                        console.error('Directive sync error:', e);
-                    }
-                });
+                // 중복된 지시사항 리스너 제거됨 (이미 위에서 등록됨)
 
                 // 온라인 사용자 실시간 동기화
                 database.ref('onlineUsers').on('value', function(snapshot) {
