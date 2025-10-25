@@ -4274,12 +4274,6 @@
             }
         }
         
-        /* 카카오톡 브라우저 경고 애니메이션 */
-        @keyframes pulse {
-            0% { border-color: #ffc107; }
-            50% { border-color: #ff9800; }
-            100% { border-color: #ffc107; }
-        }
     </style>
 </head>
 <body>
@@ -4311,22 +4305,10 @@
                 <div class="login-box">
                     <h2><i class="fa-solid fa-lock"></i>로그인</h2>
                     
-                    <div id="kakaoWarning" style="display: none; background: #2a2a2e; border: 2px solid #ffc107; border-radius: 8px; padding: 20px; margin-bottom: 20px; animation: pulse 2s infinite;">
-                        <div style="font-size: 16px; color: #ffc107; margin-bottom: 15px; line-height: 1.6; text-align: center;">
-                            <strong>⚠️ 카카오톡 브라우저 감지</strong><br>
-                            <span style="font-size: 14px; color: var(--text-secondary);">
-                                카카오톡 브라우저에서는 Firebase 연결이 불안정합니다.<br>
-                                <strong>최적의 성능을 위해 Chrome 또는 Safari를 권장합니다.</strong>
-                            </span>
-                        </div>
-                        <button onclick="openInExternalBrowser()" style="width: 100%; padding: 15px; background: #1976d2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 16px;">
-                            🌐 Chrome/Safari에서 열기
-                        </button>
-                        <div style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-bottom: 10px;">
-                            또는 아래 URL을 복사하여 Chrome/Safari에서 직접 열어주세요
-                        </div>
-                        <div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; color: #4CAF50; word-break: break-all;" id="currentUrl">
-                            URL 로딩 중...
+                    <div class="browser-recommendation" style="background: #2a2a2e; border: 1px solid #444; border-radius: 8px; padding: 12px; margin-bottom: 20px; text-align: center;">
+                        <div style="font-size: 13px; color: #B3B3B3; line-height: 1.4;">
+                            <i class="fa-solid fa-external-link-alt" style="color: #FF9900; margin-right: 6px;"></i>
+                            <strong style="color: #FF9900;">외부 브라우저</strong>에서 열어주세요
                         </div>
                     </div>
 
@@ -4347,6 +4329,28 @@
             </div>
 
             <div class="content-area" id="contentArea">
+                <!-- PWA 설치 안내 -->
+                <div class="card pwa-install-guide" id="pwaInstallGuide" style="display: none; background: linear-gradient(135deg, #FF9900, #FFB84D); border: none; margin-bottom: 20px;">
+                    <div style="text-align: center; color: white;">
+                        <div style="font-size: 18px; margin-bottom: 8px;">
+                            <i class="fa-solid fa-mobile-alt" style="margin-right: 8px;"></i>
+                            <strong>앱으로 설치하기</strong>
+                        </div>
+                        <div style="font-size: 14px; margin-bottom: 15px; opacity: 0.9;">
+                            홈 화면에 추가하여 더 빠르게 접속하세요
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                            <button id="installPWA" onclick="installPWA()" style="background: white; color: #FF9900; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fa-solid fa-download" style="margin-right: 6px;"></i>
+                                지금 설치
+                            </button>
+                            <button onclick="hidePWAInstallGuide()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">
+                                나중에
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card user-section">
                     <div class="current-user">
                         <span><i class="fa-solid fa-user"></i> 현재 사용자: <span id="currentUser"></span></span>
@@ -5616,52 +5620,6 @@
             }
         }
 
-        function getBrowserInfo() {
-            const ua = navigator.userAgent.toLowerCase();
-            return {
-                isKakaoTalk: ua.includes('kakaotalk'),
-                isMobile: /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua),
-                isIOS: /iphone|ipad|ipod/i.test(ua),
-                isAndroid: /android/i.test(ua),
-                isSafari: /safari/i.test(ua) && !/chrome/i.test(ua),
-                isChrome: /chrome/i.test(ua),
-                isFirefox: /firefox/i.test(ua)
-            };
-        }
-
-        function isKakaoTalkBrowser() {
-            return getBrowserInfo().isKakaoTalk;
-        }
-
-        function isMobileDevice() {
-            return getBrowserInfo().isMobile;
-        }
-
-        function openInExternalBrowser() {
-            const currentUrl = window.location.href;
-            const browserInfo = getBrowserInfo();
-            
-            try {
-                if (browserInfo.isIOS) {
-                    window.location.href = currentUrl;
-                    setTimeout(function() {
-                        alert('상단 메뉴에서 "Safari에서 열기" 또는 "다른 앱에서 열기"를 선택하세요.');
-                    }, 500);
-                } else if (browserInfo.isAndroid) {
-                    const intent = 'intent://' + currentUrl.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
-                    window.location.href = intent;
-                    
-                    setTimeout(function() {
-                        window.open(currentUrl, '_blank');
-                    }, 500);
-                } else {
-                    window.open(currentUrl, '_blank');
-                }
-            } catch (e) {
-                console.error('Failed to open external browser:', e);
-                alert('외부 브라우저에서 열 수 없습니다. URL을 복사하여 Chrome 또는 Safari에서 열어주세요.\n\n' + currentUrl);
-            }
-        }
 
         function handleBackPress() {
             const currentTime = Date.now();
@@ -5721,6 +5679,63 @@
             }
         }
 
+        // PWA 설치 관련 함수들
+        let deferredPrompt;
+        let pwaInstallShown = false;
+
+        function showPWAInstallGuide() {
+            // 이미 표시했거나 데스크톱이면 표시하지 않음
+            if (pwaInstallShown || !isMobileDevice()) {
+                return;
+            }
+
+            // PWA가 이미 설치되어 있으면 표시하지 않음
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                return;
+            }
+
+            const pwaGuide = document.getElementById('pwaInstallGuide');
+            if (pwaGuide) {
+                pwaGuide.style.display = 'block';
+                pwaInstallShown = true;
+                
+                // 10초 후 자동으로 숨김
+                setTimeout(function() {
+                    hidePWAInstallGuide();
+                }, 10000);
+            }
+        }
+
+        function hidePWAInstallGuide() {
+            const pwaGuide = document.getElementById('pwaInstallGuide');
+            if (pwaGuide) {
+                pwaGuide.style.display = 'none';
+            }
+        }
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA 설치 승인됨');
+                        showCustomAlert('앱이 설치되었습니다! 홈 화면에서 바로 접속할 수 있습니다.', 'success');
+                    } else {
+                        console.log('PWA 설치 거부됨');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // 수동 설치 안내
+                showCustomAlert('브라우저 메뉴에서 "앱 설치" 또는 "홈 화면에 추가"를 선택하세요.', 'info');
+            }
+            hidePWAInstallGuide();
+        }
+
+        function isMobileDevice() {
+            return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent);
+        }
+
         function waitForFirebaseAndInit() {
             let attempts = 0;
             const maxAttempts = 100; // 10초 동안 시도 (100ms * 100)
@@ -5767,99 +5782,6 @@
             }, 100); // 100ms마다 체크
         }
         
-        function checkKakaoBrowser() {
-            try {
-                console.log('=== 카카오톡 브라우저 감지 시작 ===');
-                
-                const ua = navigator.userAgent.toLowerCase();
-                console.log('User Agent (소문자):', ua);
-                
-                // 카카오톡 브라우저 감지 패턴 (포괄적)
-                const kakaoPatterns = [
-                    'kakaotalk',
-                    'kakaotalkbrowser',
-                    'kakao',
-                    'kakaotalk/',
-                    'kakaotalkbrowser/',
-                    'kakao/',
-                    'kakaotalk browser',
-                    'kakaotalkbrowser/',
-                    'kakaotalk browser/'
-                ];
-                
-                let isKakao = false;
-                let detectedPattern = '';
-                
-                // User Agent 패턴 체크
-                for (let pattern of kakaoPatterns) {
-                    if (ua.includes(pattern)) {
-                        isKakao = true;
-                        detectedPattern = pattern;
-                        console.log('카카오톡 패턴 발견:', pattern);
-                        break;
-                    }
-                }
-                
-                // window 객체 체크
-                if (window.Kakao && typeof window.Kakao === 'object') {
-                    isKakao = true;
-                    detectedPattern = 'window.Kakao';
-                    console.log('window.Kakao 객체 발견');
-                }
-                
-                // 추가 감지 방법들
-                if (!isKakao) {
-                    // navigator.userAgentData 체크 (최신 브라우저)
-                    if (navigator.userAgentData && navigator.userAgentData.brands) {
-                        for (let brand of navigator.userAgentData.brands) {
-                            if (brand.brand.toLowerCase().includes('kakao') || 
-                                brand.brand.toLowerCase().includes('kakaotalk')) {
-                                isKakao = true;
-                                detectedPattern = 'userAgentData: ' + brand.brand;
-                                console.log('userAgentData에서 카카오톡 발견:', brand.brand);
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // 특정 카카오톡 전용 API 체크
-                    if (window.kakao && typeof window.kakao === 'object') {
-                        isKakao = true;
-                        detectedPattern = 'window.kakao';
-                        console.log('window.kakao 객체 발견');
-                    }
-                }
-                
-                console.log('감지된 패턴:', detectedPattern);
-                console.log('최종 카카오톡 브라우저 여부:', isKakao);
-                
-                if (isKakao) {
-                    console.log('⚠️ 카카오톡 브라우저 감지됨! 패턴:', detectedPattern);
-                    
-                    const kakaoWarning = document.getElementById('kakaoWarning');
-                    if (kakaoWarning) {
-                        kakaoWarning.style.display = 'block';
-                        console.log('경고 메시지 표시됨');
-                        
-                        // 현재 URL 표시
-                        const currentUrlEl = document.getElementById('currentUrl');
-                        if (currentUrlEl) {
-                            currentUrlEl.textContent = window.location.href;
-                        }
-                        
-                        // 감지된 패턴 정보 표시
-                        const patternInfo = document.createElement('div');
-                        patternInfo.style.cssText = 'font-size: 12px; color: #ffc107; margin-top: 10px; text-align: center;';
-                        patternInfo.textContent = '감지된 패턴: ' + detectedPattern;
-                        kakaoWarning.appendChild(patternInfo);
-                    }
-                } else {
-                    console.log('카카오톡 브라우저가 아닙니다.');
-                }
-            } catch (e) {
-                console.error('카카오톡 브라우저 체크 오류:', e);
-            }
-        }
 
         function setupEventListeners() {
             try {
@@ -5882,17 +5804,6 @@
                     }
                 });
 
-                // 카카오톡 브라우저 체크 (한 번만 실행)
-                checkKakaoBrowser();
-                
-                // 디버깅을 위한 추가 정보 표시
-                console.log('=== 브라우저 정보 디버깅 ===');
-                console.log('User Agent:', navigator.userAgent);
-                console.log('User Agent Data:', navigator.userAgentData);
-                console.log('Platform:', navigator.platform);
-                console.log('App Name:', navigator.appName);
-                console.log('App Version:', navigator.appVersion);
-                console.log('Window 객체들:', Object.keys(window).filter(key => key.toLowerCase().includes('kakao')));
                 
                 window.addEventListener('load', function() {
                     try {
@@ -5904,7 +5815,6 @@
                     }
                 });
                 
-                // 카카오톡 브라우저 감지 로직 제거 (더 이상 강제로 경고 표시하지 않음)
 
                 window.addEventListener('online', function() {
                     updateConnectionStatus('online', 'Online');
@@ -6442,6 +6352,11 @@
                 if (currentUserHeaderEl) currentUserHeaderEl.textContent = username;
                 if (headerLoginStatus) headerLoginStatus.classList.add('active');
                 if (passwordInput) passwordInput.value = '';
+
+                // PWA 설치 안내 표시 (모바일에서만)
+                setTimeout(function() {
+                    showPWAInstallGuide();
+                }, 1000);
 
                 lastReportCount = reports.filter(function(r) { return r; }).length;
 
@@ -11016,7 +10931,8 @@
             console.log('PWA 설치 가능');
             e.preventDefault();
             deferredPrompt = e;
-            installPrompt.classList.add('show');
+            // 새로운 PWA 설치 안내 표시
+            showPWAInstallGuide();
         });
 
         // 설치 버튼 클릭
