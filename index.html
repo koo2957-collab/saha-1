@@ -4326,15 +4326,20 @@
         /* 모바일 최적화 */
         @media (max-width: 768px) {
             .current-user {
-                flex-direction: row;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
             }
             
             .user-info-wrapper {
-                width: auto;
+                width: 100%;
                 flex-wrap: wrap;
+            }
+            
+            .logout-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: auto;
             }
         }
         
@@ -4356,9 +4361,6 @@
                     <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
                     <span id="headerRoleBadge" style="padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;"></span>
                 </div>
-                <button class="header-logout-btn" onclick="logout()" title="로그아웃">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
             </div>
         </div>
 
@@ -4398,22 +4400,25 @@
 
             <div class="content-area" id="contentArea">
                 <!-- PWA 설치 안내 -->
-                <div class="card pwa-install-guide" id="pwaInstallGuide" style="display: none; background: linear-gradient(135deg, #FF9900, #FFB84D); border: none; margin-bottom: 20px;">
+                <div class="card pwa-install-guide" id="pwaInstallGuide" style="display: none; background: linear-gradient(135deg, #FF9900, #FFB84D); border: none; margin-bottom: 20px; padding: 20px;">
                     <div style="text-align: center; color: white;">
-                        <div style="font-size: 18px; margin-bottom: 8px;">
+                        <div style="font-size: 20px; margin-bottom: 12px; font-weight: bold;">
                             <i class="fa-solid fa-mobile-alt" style="margin-right: 8px;"></i>
-                            <strong>앱으로 설치하기</strong>
+                            앱으로 설치하기
                         </div>
-                        <div style="font-size: 14px; margin-bottom: 15px; opacity: 0.9;">
-                            홈 화면에 추가하여 더 빠르게 접속하세요
+                        <div style="font-size: 15px; margin-bottom: 20px; opacity: 0.95; line-height: 1.6;">
+                            <strong>iOS (아이폰/아이패드):</strong><br>
+                            <span style="font-size: 14px;">1. 하단 공유 버튼 <i class="fa-solid fa-arrow-up" style="transform: rotate(-90deg);"></i> 탭</span><br>
+                            <span style="font-size: 14px;">2. "홈 화면에 추가" 선택</span>
+                        </div>
+                        <div style="font-size: 15px; margin-bottom: 20px; opacity: 0.95; line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 15px;">
+                            <strong>Android (안드로이드):</strong><br>
+                            <span style="font-size: 14px;">하단의 "홈 화면에 추가" 버튼 사용</span>
                         </div>
                         <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                            <button id="installPWA" onclick="installPWA()" style="background: white; color: #FF9900; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fa-solid fa-download" style="margin-right: 6px;"></i>
-                                지금 설치
-                            </button>
-                            <button onclick="hidePWAInstallGuide()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px; border-radius: 25px; cursor: pointer; transition: all 0.3s ease;">
-                                나중에
+                            <button onclick="hidePWAInstallGuide()" style="background: rgba(255,255,255,0.9); color: #FF9900; border: none; padding: 12px 24px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; font-size: 14px;">
+                                <i class="fa-solid fa-check" style="margin-right: 6px;"></i>
+                                확인했습니다
                             </button>
                         </div>
                     </div>
@@ -4619,18 +4624,30 @@
                     <i class="fa-solid fa-window-maximize"></i> 로그 관리 창 열기
                 </button>
             </div>
-            
-            <!-- 알림 설정 버튼 (로그 관리 섹션 내부) -->
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-bell"></i> 알림 설정
-                </h3>
-                <div class="log-buttons">
-                    <button class="log-btn" onclick="openNotificationSettings()" style="background: var(--accent-purple); color: white; width: 100%;">
-                        <i class="fa-solid fa-sliders-h"></i> 알림 설정 열기
-                    </button>
-                </div>
+        </div>
+    </div>
+    
+    <!-- 알림 설정 섹션 (로그 관리 섹션 밖 - 모든 사용자 접근 가능) -->
+    <div class="card">
+        <h2 class="section-title"><i class="fa-solid fa-bell"></i>알림 설정</h2>
+        <div style="padding: 20px;">
+            <div class="log-buttons">
+                <button class="log-btn" onclick="openNotificationSettings()" style="background: var(--accent-purple); color: white; width: 100%;">
+                    <i class="fa-solid fa-sliders-h"></i> 알림 설정 열기
+                </button>
             </div>
+            <div style="margin-top: 15px; padding: 15px; background: var(--bg-dark-secondary); border-radius: 8px; font-size: 14px; color: var(--text-secondary);">
+                <i class="fa-solid fa-info-circle"></i> 알림 권한, 음성 알림, 진동 등의 설정을 변경할 수 있습니다.
+            </div>
+        </div>
+    </div>
+    
+    <!-- 로그아웃 버튼 (페이지 하단) -->
+    <div class="card" style="margin-bottom: 30px;">
+        <div style="padding: 20px; text-align: center;">
+            <button class="logout-btn" onclick="logout()" style="padding: 10px 30px; font-size: 14px; margin: 0 auto; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+            </button>
         </div>
     </div>
 
@@ -5761,33 +5778,16 @@
                 return;
             }
 
-            // PWA 설치 조건 확인
-            const hasManifest = document.querySelector('link[rel="manifest"]');
-            const hasServiceWorker = 'serviceWorker' in navigator;
-            const isHTTPS = location.protocol === 'https:';
-            
-            console.log('PWA 설치 조건:', {
-                hasManifest: !!hasManifest,
-                hasServiceWorker: hasServiceWorker,
-                isHTTPS: isHTTPS,
-                isMobile: isMobileDevice()
-            });
-
-            if (!hasManifest || !hasServiceWorker || !isHTTPS) {
-                console.log('PWA 설치 조건 미충족 - 건너뜀');
-                return;
-            }
-
             const pwaGuide = document.getElementById('pwaInstallGuide');
             if (pwaGuide) {
                 pwaGuide.style.display = 'block';
                 pwaInstallShown = true;
                 console.log('PWA 설치 안내 표시됨');
                 
-                // 15초 후 자동으로 숨김
+                // 20초 후 자동으로 숨김
                 setTimeout(function() {
                     hidePWAInstallGuide();
-                }, 15000);
+                }, 20000);
             } else {
                 console.error('PWA 설치 안내 요소를 찾을 수 없음');
             }
@@ -6101,6 +6101,9 @@
                         
                         // 접속자 정리 자동 시작 (자동 로그인 시에도)
                         startUserCleanup();
+                        
+                        // 사용자 권한 적용
+                        applyUserPermissions();
                         
                         console.log('자동 로그인 성공:', currentUser);
                         return true;
