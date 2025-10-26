@@ -5420,8 +5420,13 @@
             notifyUpload(uploadInfo) {
                 if (!this.canNotify('upload')) return;
                 
-                const notification = new Notification('📁 파일 업로드 완료', {
-                    body: `슬롯 ${uploadInfo.slot}: ${uploadInfo.filename || '파일'}`,
+                // 파일 교체인지 새 업로드인지에 따라 메시지 구분
+                const isReplacement = uploadInfo.isReplacement;
+                const title = isReplacement ? '📁 파일 교체 완료' : '📁 파일 업로드 완료';
+                const body = `슬롯 ${uploadInfo.slot + 1}: ${uploadInfo.filename || '파일'}`;
+                
+                const notification = new Notification(title, {
+                    body: body,
                     icon: '/icons/upload.png',
                     badge: '/icons/badge.png',
                     tag: 'file-upload',
@@ -5432,7 +5437,8 @@
                         slot: uploadInfo.slot, 
                         type: 'upload',
                         filename: uploadInfo.filename,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        isReplacement: isReplacement
                     }
                 });
                 
@@ -7340,7 +7346,8 @@
                         filename: filename,
                         title: title,
                         uploader: currentUser,
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(),
+                        isReplacement: false // 새 파일 업로드
                     };
                     notificationManager.notifyUpload(uploadInfo);
                 }
@@ -7586,12 +7593,30 @@
                 return;
             }
             
+            // 새 파일 업로드 테스트
             const testUpload = {
                 slot: 1,
-                filename: 'test-image.jpg'
+                filename: 'test-image.jpg',
+                title: '테스트 파일',
+                uploader: '테스트 사용자',
+                timestamp: new Date().toISOString(),
+                isReplacement: false
             };
             
             notificationManager.notifyUpload(testUpload);
+            
+            // 2초 후 파일 교체 테스트
+            setTimeout(() => {
+                const testReplacement = {
+                    slot: 1,
+                    filename: 'test-image-updated.jpg',
+                    title: '업데이트된 테스트 파일',
+                    uploader: '테스트 사용자',
+                    timestamp: new Date().toISOString(),
+                    isReplacement: true
+                };
+                notificationManager.notifyUpload(testReplacement);
+            }, 2000);
         }
 
         if (document.readyState === 'loading') {
@@ -8369,10 +8394,12 @@
             try {
                 // 같은 슬롯의 기존 파일이 있는지 확인
                 const existingFileIndex = fileStorage.findIndex(file => file.slot === report.slot);
+                let isFileReplaced = false;
                 
                 if (existingFileIndex !== -1) {
                     // 기존 파일 교체
                     fileStorage[existingFileIndex] = report;
+                    isFileReplaced = true;
                     console.log(`📁 파일 저장소 업데이트: 슬롯 ${report.slot + 1}`);
                 } else {
                     // 500개 제한 확인
@@ -8384,6 +8411,19 @@
                     // 새 파일 추가
                     fileStorage.push(report);
                     console.log(`📁 파일 저장소 추가: 슬롯 ${report.slot + 1}`);
+                }
+                
+                // 파일 교체 시에도 알림 전송
+                if (isFileReplaced && notificationManager) {
+                    const uploadInfo = {
+                        slot: report.slot,
+                        filename: report.filename,
+                        title: report.title,
+                        uploader: report.uploader,
+                        timestamp: new Date().toISOString(),
+                        isReplacement: true // 교체 여부 표시
+                    };
+                    notificationManager.notifyUpload(uploadInfo);
                 }
                 
                 console.log(`📁 파일 저장소: ${fileStorage.length}/500개`);
