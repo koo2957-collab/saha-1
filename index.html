@@ -4413,7 +4413,7 @@
                 <!-- 일반 사용자용 지시사항 보기 섹션 -->
                 <div class="card directive-view-section" id="directiveViewSection" style="display: none;">
                     <h2 class="section-title"><i class="fa-solid fa-bullhorn"></i>현재 지시사항</h2>
-                    <div class="directive-view-preview" id="directiveViewPreview">
+                    <div class="directive-view-preview" id="directiveViewPreview" onclick="openDirectiveView()" style="cursor: pointer;">
                         <div class="directive-preview-content" id="directivePreviewContent">
                             지시사항이 없습니다.
                         </div>
@@ -4422,9 +4422,6 @@
                         </div>
                     </div>
                     <div class="directive-view-buttons">
-                        <button class="directive-view-btn" onclick="openDirectiveView()" style="background: var(--accent-blue); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-right: 10px;">
-                            <i class="fa-solid fa-eye"></i> 지시사항 보기
-                        </button>
                         <button class="directive-view-btn" onclick="openDirectiveHistory()" style="background: var(--bg-dark-secondary); color: var(--text-primary); padding: 12px 20px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px;">
                             <i class="fa-solid fa-history"></i> 히스토리
                         </button>
