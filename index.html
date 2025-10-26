@@ -7339,7 +7339,7 @@
                 updateStats();
                 closeUploadModal();
 
-                // 음성 알림: "보고"
+                // 음성 알림: "보고" (모든 업로드 시)
                 speakReport();
 
                 // 브라우저 알림 (파일 교체 여부에 따라 구분)
@@ -10006,14 +10006,23 @@
         }
 
         function speakReport() {
+            console.log('🔊 speakReport 호출됨');
+            console.log('🔊 notificationManager 상태:', notificationManager);
+            
             // 음성 설정 확인
             const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true };
-            if (!settings.voiceEnabled) return;
+            console.log('🔊 음성 설정:', settings);
+            
+            if (!settings.voiceEnabled) {
+                console.log('🔊 음성 알림이 비활성화됨');
+                return;
+            }
 
             // 0.5초 지연 후 여유로운 여자 목소리로 설정
             setTimeout(() => {
                 const userRate = settings.voiceRate || 0.9;
                 const userPitch = settings.voicePitch || 1.3;
+                console.log('🔊 음성 재생 시작 - 보고');
                 speakTextWithVoice('보고', userRate, userPitch, 'female');
             }, 500);
         }
@@ -10021,11 +10030,19 @@
         // 성별에 따른 음성 선택 함수
         function speakTextWithVoice(text, rate = 1.0, pitch = 1.0, gender = 'auto') {
             try {
+                console.log('🔊 speakTextWithVoice 호출됨:', text, rate, pitch, gender);
+                
                 // 음성 설정 확인
                 const settings = notificationManager ? notificationManager.settings : { voiceEnabled: true, voiceVolume: 0.8 };
-                if (!settings.voiceEnabled) return;
+                console.log('🔊 speakTextWithVoice 설정:', settings);
+                
+                if (!settings.voiceEnabled) {
+                    console.log('🔊 speakTextWithVoice: 음성 비활성화됨');
+                    return;
+                }
 
                 if ('speechSynthesis' in window) {
+                    console.log('🔊 speechSynthesis 지원됨');
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'ko-KR';
                     utterance.rate = rate;
@@ -10035,6 +10052,9 @@
                     // 음성 목록이 로드될 때까지 기다림
                     const speakWithVoice = () => {
                         const voices = speechSynthesis.getVoices();
+                        console.log('🔊 사용 가능한 음성 목록:', voices.length, '개');
+                        console.log('🔊 음성 목록:', voices.map(v => `${v.name} (${v.lang})`));
+                        
                         let selectedVoice = null;
                         
                         if (gender === 'male') {
@@ -10057,10 +10077,21 @@
                         if (selectedVoice) {
                             utterance.voice = selectedVoice;
                             console.log('🔊 선택된 음성:', selectedVoice.name, `(${gender})`);
+                        } else {
+                            console.warn('🔊 적절한 음성을 찾을 수 없음');
                         }
                         
+                        console.log('🔊 utterance 설정:', {
+                            text: utterance.text,
+                            lang: utterance.lang,
+                            rate: utterance.rate,
+                            pitch: utterance.pitch,
+                            volume: utterance.volume,
+                            voice: utterance.voice ? utterance.voice.name : '기본'
+                        });
+                        
                         speechSynthesis.speak(utterance);
-                        console.log('🔊 음성 알림:', text, `속도: ${rate}, 피치: ${pitch}, 성별: ${gender}`);
+                        console.log('🔊 음성 알림 실행:', text, `속도: ${rate}, 피치: ${pitch}, 성별: ${gender}`);
                     };
                     
                     if (speechSynthesis.getVoices().length === 0) {
@@ -10381,7 +10412,7 @@
                         if (lastReportCount > 0 && newReportCount > lastReportCount) {
                             playNotificationSound();
                             
-                            // 보고 음성 알림
+                            // 다른 사용자의 파일 업로드 시에도 "보고" 음성 알림
                             speakReport();
                         }
                         lastReportCount = newReportCount;
