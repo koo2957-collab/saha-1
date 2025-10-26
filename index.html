@@ -4293,9 +4293,6 @@
                 <div class="header-user-info">
                     <span><i class="fa-solid fa-user"></i> <span id="currentUserHeader"></span></span>
                 </div>
-                <button class="header-notification-btn" onclick="openNotificationSettings()" title="알림 설정">
-                    <i class="fa-solid fa-bell"></i>
-                </button>
                 <button class="header-logout-btn" onclick="logout()">
                     <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
                 </button>
@@ -4371,7 +4368,7 @@
                         <div class="stat-number" id="fiveMinUploads">0</div>
                         <div class="stat-label">5분 업로드</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" onclick="viewOnlineUsers()" style="cursor: pointer;" title="클릭하여 접속자 목록 보기">
                         <div class="stat-number" id="onlineUsers">0</div>
                         <div class="stat-label">동시접속자</div>
                     </div>
@@ -4533,22 +4530,36 @@
                 </div>
             </div>
             
-            <div class="log-buttons">
+            <!-- 업로드 로그 (로그 관리 섹션 내부) -->
+            <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-file-arrow-up"></i> 업로드 로그
+                </h3>
+                <div class="log-status" style="margin-bottom: 15px; padding: 10px; background: var(--bg-dark-secondary); border-radius: 8px; font-size: 14px;">
+                    <i class="fa-solid fa-info-circle"></i> 업로드된 모든 파일을 시각적으로 확인할 수 있습니다.
+                </div>
+                <div class="log-buttons">
+                    <button class="log-btn" onclick="openImageGallery()" style="background: var(--accent-orange); color: white; width: 100%;">
+                        <i class="fa-solid fa-images"></i> 업로드 로그 보기
+                    </button>
+                </div>
+            </div>
+            
+            <div class="log-buttons" style="margin-top: 20px;">
                 <button class="log-btn log-window-btn" onclick="openLogWindow()" style="background: var(--accent-blue); flex: 1; min-width: 200px;">
                     <i class="fa-solid fa-window-maximize"></i> 로그 관리 창 열기
                 </button>
-                <button class="log-btn" onclick="downloadAllLogs()" style="flex: 1;">
-                    <i class="fa-solid fa-download"></i> 전체 다운로드
-                </button>
-                <button class="log-btn" onclick="updateStorageInfo()" style="background: var(--accent-green); color: white; flex: 1;">
-                    <i class="fa-solid fa-refresh"></i> 저장공간 새로고침
-                </button>
-                <button class="log-btn" onclick="viewFileStorage()" style="background: var(--accent-purple); color: white; flex: 1;">
-                    <i class="fa-solid fa-archive"></i> 파일 저장소 (500개)
-                </button>
-                <button class="log-btn" onclick="openImageGallery()" style="background: var(--accent-orange); color: white; flex: 1;">
-                    <i class="fa-solid fa-images"></i> 이미지 갤러리
-                </button>
+            </div>
+            
+            <!-- 알림 설정 버튼 (로그 관리 섹션 내부) -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-bell"></i> 알림 설정
+                </h3>
+                <div class="log-buttons">
+                    <button class="log-btn" onclick="openNotificationSettings()" style="background: var(--accent-purple); color: white; width: 100%;">
+                        <i class="fa-solid fa-sliders-h"></i> 알림 설정 열기
+                    </button>
                 </div>
             </div>
         </div>
@@ -4584,48 +4595,6 @@
             <i class="fa-solid fa-arrow-left"></i>
         </button>
         <div class="fullscreen-content" id="fullscreenContent"></div>
-    </div>
-
-    <!-- 로그 조회 모달 -->
-    <div class="modal" id="logViewerModal">
-        <div class="modal-content log-viewer-content">
-            <div class="log-viewer-header">
-                <h3><i class="fa-solid fa-list"></i>로그 조회</h3>
-                <button class="log-viewer-close" onclick="closeLogViewer()">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="log-viewer-controls">
-                <div class="log-filter">
-                    <label>필터:</label>
-                    <select id="logFilter">
-                        <option value="all">전체</option>
-                        <option value="today">오늘</option>
-                        <option value="week">이번 주</option>
-                        <option value="month">이번 달</option>
-                    </select>
-                </div>
-                <div class="log-search">
-                    <input type="text" id="logSearch" placeholder="검색어 입력...">
-                    <button onclick="searchLogs()"><i class="fa-solid fa-search"></i></button>
-                </div>
-            </div>
-            <div class="log-viewer-content-area">
-                <div class="log-stats" id="logStats"></div>
-                <div class="log-list" id="logList"></div>
-            </div>
-            <div class="log-viewer-footer">
-                <button class="log-btn" onclick="downloadCurrentLogs()">
-                    <i class="fa-solid fa-download"></i> 현재 로그 다운로드
-                </button>
-                <button class="log-btn" onclick="manualCleanupLogs()" style="background: var(--accent-orange);">
-                    <i class="fa-solid fa-broom"></i> 오래된 로그 정리
-                </button>
-                <button class="log-btn" onclick="clearLogs()" style="background: var(--accent-red);">
-                    <i class="fa-solid fa-trash"></i> 모든 로그 삭제
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- 로그 관리 전용 창 -->
@@ -5519,6 +5488,12 @@
         };
 
         const LOGIN_DURATION = 30 * 60 * 1000;
+        
+        // 접속자 관리 상수
+        const USER_TIMEOUT = 4 * 60 * 60 * 1000; // 4시간 (휴면 접속자 정리 기준)
+        const HEARTBEAT_INTERVAL = 30 * 1000; // 30초 (하트비트 간격)
+        const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5분 (정리 작업 주기)
+        let cleanupIntervalId = null;
 
         function safeLocalStorage() {
             try {
@@ -6001,22 +5976,41 @@
                         
                         if (isFirebaseEnabled && firebaseInitialized) {
                             try {
-                                const userId = loginData.username + '_' + Date.now();
-                                presenceRef = database.ref('onlineUsers/' + userId);
+                                // 중복 로그인 방지: 같은 사용자명으로 기존 세션 제거
+                                const userOnlineRef = database.ref('onlineUsers');
                                 
-                                const userData = {
-                                    username: loginData.username,
-                                    loginTime: Date.now(),
-                                    lastSeen: Date.now()
-                                };
-                                presenceRef.set(userData);
-                                presenceRef.onDisconnect().remove();
-                                
-                                heartbeatInterval = setInterval(function() {
-                                    if (presenceRef) {
-                                        presenceRef.update({ lastSeen: Date.now() });
+                                userOnlineRef.once('value').then((snapshot) => {
+                                    const onlineUsers = snapshot.val();
+                                    if (onlineUsers) {
+                                        // 같은 사용자명의 기존 세션 찾아서 제거
+                                        for (const userId in onlineUsers) {
+                                            if (onlineUsers[userId] && onlineUsers[userId].username === loginData.username) {
+                                                database.ref('onlineUsers/' + userId).remove();
+                                                console.log('🔒 기존 세션 종료 (자동로그인):', loginData.username);
+                                            }
+                                        }
                                     }
-                                }, 30000);
+                                    
+                                    // 새 세션 등록
+                                    const userId = loginData.username + '_' + Date.now();
+                                    presenceRef = database.ref('onlineUsers/' + userId);
+                                    
+                                    const userData = {
+                                        username: loginData.username,
+                                        loginTime: Date.now(),
+                                        lastSeen: Date.now()
+                                    };
+                                    presenceRef.set(userData);
+                                    presenceRef.onDisconnect().remove();
+                                    
+                                    heartbeatInterval = setInterval(function() {
+                                        if (presenceRef) {
+                                            presenceRef.update({ lastSeen: Date.now() });
+                                        }
+                                    }, HEARTBEAT_INTERVAL);
+                                }).catch((error) => {
+                                    console.error('Firebase presence setup failed:', error);
+                                });
                             } catch (e) {
                                 console.error('Firebase presence setup failed:', e);
                             }
@@ -6035,6 +6029,9 @@
                         if (headerLoginStatus) headerLoginStatus.classList.add('active');
                         
                         lastReportCount = reports.filter(function(r) { return r; }).length;
+                        
+                        // 접속자 정리 자동 시작 (자동 로그인 시에도)
+                        startUserCleanup();
                         
                         console.log('자동 로그인 성공:', currentUser);
                         return true;
@@ -6203,9 +6200,9 @@
 
         function sendDirective() {
             try {
-                // 권한 체크: 긴급지시사항 작성은 관리자만 가능
+                // 권한 체크: 지시사항 작성은 지휘관과 관리자만 가능
                 if (!hasPermission('directive')) {
-                    showPermissionError('긴급지시사항 작성');
+                    showPermissionError('지시사항 전파');
                     return;
                 }
 
@@ -6219,20 +6216,27 @@
                     return;
                 }
 
-                currentDirective = {
+                const directiveId = Date.now();
+                const newDirective = {
+                    id: directiveId,
                     message: message,
                     sender: currentUser,
                     timestamp: new Date().toISOString()
                 };
+
+                currentDirective = newDirective;
                 
-                // 지시사항 로그 기록
-                directiveLogs.push({
-                    id: Date.now(),
+                // 지시사항 로그 기록 (공유 히스토리)
+                const directiveLogEntry = {
+                    id: directiveId,
                     message: message,
                     sender: currentUser,
                     timestamp: new Date().toISOString(),
                     date: new Date().toLocaleString('ko-KR')
-                });
+                };
+                
+                // 로컬 로그에 추가
+                directiveLogs.push(directiveLogEntry);
                 
                 // 업로드와 동일한 방식으로 저장
                 console.log('지시사항 저장 시작:', currentDirective);
@@ -6243,7 +6247,7 @@
                     url: window.location.href
                 });
                 
-                // 1. 로컬 스토리지에 저장 (업로드와 동일)
+                // 1. 로컬 스토리지에 현재 지시사항 저장
                 try {
                     storage.setItem('directive', JSON.stringify(currentDirective));
                     console.log('✅ 로컬 스토리지 저장 성공');
@@ -6253,15 +6257,23 @@
                     return;
                 }
                 
-                // 2. Firebase에 저장 (업로드와 동일)
+                // 2. Firebase에 현재 지시사항 저장
                 if (isFirebaseEnabled && firebaseInitialized && database) {
                     console.log('Firebase에 지시사항 저장 시도:', currentDirective);
+                    
+                    // 현재 지시사항 저장
                     database.ref('directive').set(currentDirective)
                         .then(() => {
-                            console.log('✅ Firebase 지시사항 저장 성공');
+                            console.log('✅ Firebase 현재 지시사항 저장 성공');
+                            
+                            // 히스토리에 추가
+                            return database.ref('directiveHistory').push(directiveLogEntry);
+                        })
+                        .then(() => {
+                            console.log('✅ Firebase 히스토리 저장 성공');
                         })
                         .catch((error) => {
-                            console.error('❌ Firebase 지시사항 저장 실패:', error);
+                            console.error('❌ Firebase 저장 실패:', error);
                             showCustomAlert('⚠️ Firebase 저장 실패 - 로컬에만 저장됨', 'warning');
                         });
                 } else {
@@ -6276,7 +6288,7 @@
                 
                 if (notificationManager) {
                     const directiveData = {
-                        id: Date.now(),
+                        id: directiveId,
                         title: message.length > 50 ? message.substring(0, 50) + '...' : message,
                         content: message,
                         sender: currentUser,
@@ -6286,7 +6298,7 @@
                 }
                 
                 // 5. 성공 메시지
-                showCustomAlert('✅ 지시사항이 전송되었습니다!', 'success');
+                showCustomAlert('✅ 지시사항이 전파되었습니다!', 'success');
             } catch (e) {
                 console.error('지시사항 전송 오류:', e);
             }
@@ -6382,22 +6394,41 @@
 
                 if (isFirebaseEnabled && firebaseInitialized && database) {
                     try {
-                        const userId = username + '_' + Date.now();
-                        presenceRef = database.ref('onlineUsers/' + userId);
+                        // 중복 로그인 방지: 같은 사용자명으로 기존 세션 제거
+                        const userOnlineRef = database.ref('onlineUsers');
                         
-                        const userData = {
-                            username: username,
-                            loginTime: Date.now(),
-                            lastSeen: Date.now()
-                        };
-                        presenceRef.set(userData);
-                        presenceRef.onDisconnect().remove();
-                        
-                        heartbeatInterval = setInterval(function() {
-                            if (presenceRef) {
-                                presenceRef.update({ lastSeen: Date.now() });
+                        userOnlineRef.once('value').then((snapshot) => {
+                            const onlineUsers = snapshot.val();
+                            if (onlineUsers) {
+                                // 같은 사용자명의 기존 세션 찾아서 제거
+                                for (const userId in onlineUsers) {
+                                    if (onlineUsers[userId] && onlineUsers[userId].username === username) {
+                                        database.ref('onlineUsers/' + userId).remove();
+                                        console.log('🔒 기존 세션 종료:', username);
+                                    }
+                                }
                             }
-                        }, 30000);
+                            
+                            // 새 세션 등록
+                            const userId = username + '_' + Date.now();
+                            presenceRef = database.ref('onlineUsers/' + userId);
+                            
+                            const userData = {
+                                username: username,
+                                loginTime: Date.now(),
+                                lastSeen: Date.now()
+                            };
+                            presenceRef.set(userData);
+                            presenceRef.onDisconnect().remove();
+                            
+                            heartbeatInterval = setInterval(function() {
+                                if (presenceRef) {
+                                    presenceRef.update({ lastSeen: Date.now() });
+                                }
+                            }, HEARTBEAT_INTERVAL);
+                        }).catch((error) => {
+                            console.error('Firebase presence setup failed:', error);
+                        });
                     } catch (e) {
                         console.error('Firebase presence setup failed:', e);
                     }
@@ -6432,6 +6463,9 @@
                 displayDirective();
                 updateLogStatus(); // 로그 상태 업데이트
                 
+                // 접속자 정리 자동 시작 (모든 사용자)
+                startUserCleanup();
+                
             } catch (e) {
                 console.error('로그인 오류:', e);
                 showError('loginError', '로그인 처리 중 오류가 발생했습니다: ' + e.message);
@@ -6449,6 +6483,9 @@
                     clearInterval(heartbeatInterval);
                     heartbeatInterval = null;
                 }
+                
+                // 접속자 정리 중지
+                stopUserCleanup();
                 
                 currentUser = null;
                 currentUserRole = USER_ROLES.ADMIN; // 로그아웃 시 기본값으로 관리자 권한 설정
@@ -6472,6 +6509,168 @@
                 
             } catch (e) {
                 console.error('로그아웃 오류:', e);
+            }
+        }
+
+        // 휴면 접속자 정리 함수
+        function cleanupInactiveUsers() {
+            try {
+                if (!isFirebaseEnabled || !firebaseInitialized || !database) {
+                    return;
+                }
+                
+                console.log('🔄 접속자 정리 시작...');
+                
+                database.ref('onlineUsers').once('value').then((snapshot) => {
+                    const onlineUsers = snapshot.val();
+                    if (!onlineUsers) {
+                        console.log('✅ 접속자 없음');
+                        return;
+                    }
+                    
+                    const now = Date.now();
+                    const userIdsToRemove = [];
+                    let activeCount = 0;
+                    
+                    // 각 접속자 확인
+                    for (const userId in onlineUsers) {
+                        const userData = onlineUsers[userId];
+                        if (!userData || !userData.lastSeen) {
+                            userIdsToRemove.push(userId);
+                            continue;
+                        }
+                        
+                        const inactiveTime = now - userData.lastSeen;
+                        
+                        // 4시간 이상 비활성 → 삭제 대상
+                        if (inactiveTime > USER_TIMEOUT) {
+                            userIdsToRemove.push(userId);
+                            console.log(`⏰ 휴면 사용자 발견: ${userData.username || '알 수 없음'} (비활성: ${Math.floor(inactiveTime / 60000)}분)`);
+                        } else {
+                            activeCount++;
+                        }
+                    }
+                    
+                    console.log(`📊 현재 접속자: ${Object.keys(onlineUsers).length}명 (활성: ${activeCount}명, 휴면: ${userIdsToRemove.length}명)`);
+                    
+                    // 휴면 접속자 삭제
+                    if (userIdsToRemove.length > 0) {
+                        const removalPromises = userIdsToRemove.map(userId => {
+                            return database.ref(`onlineUsers/${userId}`).remove();
+                        });
+                        
+                        Promise.all(removalPromises).then(() => {
+                            console.log(`✅ ${userIdsToRemove.length}명의 휴면 접속자 정리 완료`);
+                        }).catch((error) => {
+                            console.error('❌ 접속자 정리 실패:', error);
+                        });
+                    } else {
+                        console.log('✅ 정리할 접속자 없음');
+                    }
+                }).catch((error) => {
+                    console.error('❌ 접속자 목록 조회 실패:', error);
+                });
+            } catch (e) {
+                console.error('❌ 접속자 정리 오류:', e);
+            }
+        }
+
+        // 접속자 정리 자동 시작
+        function startUserCleanup() {
+            try {
+                if (cleanupIntervalId) {
+                    clearInterval(cleanupIntervalId);
+                }
+                
+                // 모든 사용자에게 자동 정리 실행 (권한 무관)
+                if (isFirebaseEnabled && firebaseInitialized) {
+                    // 즉시 한 번 실행
+                    cleanupInactiveUsers();
+                    
+                    // 5분마다 실행
+                    cleanupIntervalId = setInterval(() => {
+                        cleanupInactiveUsers();
+                    }, CLEANUP_INTERVAL);
+                    
+                    console.log('✅ 자동 접속자 정리 시작 (5분 주기, 4시간 타임아웃)');
+                }
+            } catch (e) {
+                console.error('❌ 자동 정리 시작 실패:', e);
+            }
+        }
+
+        // 접속자 정리 중지
+        function stopUserCleanup() {
+            try {
+                if (cleanupIntervalId) {
+                    clearInterval(cleanupIntervalId);
+                    cleanupIntervalId = null;
+                    console.log('⏸️ 자동 접속자 정리 중지');
+                }
+            } catch (e) {
+                console.error('❌ 자동 정리 중지 실패:', e);
+            }
+        }
+
+        // 관리자용 접속자 모니터 함수
+        function viewOnlineUsers() {
+            try {
+                if (!isFirebaseEnabled || !firebaseInitialized || !database) {
+                    showCustomAlert('⚠️ Firebase가 연결되지 않았습니다.', 'error');
+                    return;
+                }
+                
+                showCustomAlert('🔍 접속자 목록 조회 중...', 'info');
+                
+                database.ref('onlineUsers').once('value').then((snapshot) => {
+                    const onlineUsers = snapshot.val();
+                    if (!onlineUsers || Object.keys(onlineUsers).length === 0) {
+                        showCustomAlert('✅ 현재 접속자가 없습니다.', 'success');
+                        return;
+                    }
+                    
+                    const now = Date.now();
+                    let userList = '📊 현재 접속자 목록:\n\n';
+                    let activeCount = 0;
+                    let inactiveCount = 0;
+                    
+                    for (const userId in onlineUsers) {
+                        const userData = onlineUsers[userId];
+                        if (!userData) continue;
+                        
+                        const inactiveTime = now - userData.lastSeen;
+                        const inactiveMinutes = Math.floor(inactiveTime / 60000);
+                        const inactiveHours = Math.floor(inactiveMinutes / 60);
+                        
+                        const isActive = inactiveTime < USER_TIMEOUT;
+                        
+                        if (isActive) {
+                            activeCount++;
+                        } else {
+                            inactiveCount++;
+                        }
+                        
+                        let statusIcon = isActive ? '🟢' : '🔴';
+                        let statusText = isActive ? '활성' : '휴면';
+                        let timeText = isActive ? `${inactiveMinutes}분 전` : `${inactiveHours}시간 전`;
+                        
+                        userList += `${statusIcon} ${userData.username || '알 수 없음'} (${statusText}, ${timeText})\n`;
+                    }
+                    
+                    userList += `\n📊 통계:\n`;
+                    userList += `활성: ${activeCount}명\n`;
+                    userList += `휴면: ${inactiveCount}명\n`;
+                    userList += `전체: ${Object.keys(onlineUsers).length}명`;
+                    
+                    // 모달로 표시
+                    alert(userList);
+                }).catch((error) => {
+                    console.error('접속자 조회 실패:', error);
+                    showCustomAlert('❌ 접속자 조회 실패', 'error');
+                });
+            } catch (e) {
+                console.error('접속자 모니터 오류:', e);
+                showCustomAlert('❌ 접속자 모니터 오류', 'error');
             }
         }
 
@@ -6987,8 +7186,20 @@
                 }
                 
                 if (onlineUsersEl) {
-                    const onlineCount = Object.keys(onlineUsers).length;
-                    onlineUsersEl.textContent = onlineCount;
+                    // Firebase에서 접속자 수 가져오기
+                    if (isFirebaseEnabled && firebaseInitialized && database) {
+                        database.ref('onlineUsers').once('value').then((snapshot) => {
+                            const users = snapshot.val();
+                            const onlineCount = users ? Object.keys(users).length : 0;
+                            onlineUsersEl.textContent = onlineCount;
+                        }).catch((error) => {
+                            console.error('접속자 수 조회 실패:', error);
+                            onlineUsersEl.textContent = '?';
+                        });
+                    } else {
+                        const onlineCount = Object.keys(onlineUsers).length;
+                        onlineUsersEl.textContent = onlineCount;
+                    }
                 }
                 
                 if (todayUploadsEl) {
@@ -7313,147 +7524,28 @@
         let currentLogs = [];
 
         function viewDirectiveLogs() {
-            currentLogType = 'directive';
-            currentLogs = directiveLogs;
-            openLogViewer();
+            // 로그 조회 모달 제거됨 - 로그 관리 창으로 통합
+            // openLogWindow()로 대체됨
+            openLogWindow();
+            setTimeout(() => switchLogTab('directive'), 100);
         }
 
         function viewUploadLogs() {
-            currentLogType = 'upload';
-            currentLogs = uploadLogs;
-            openLogViewer();
+            // 로그 조회 모달 제거됨 - 로그 관리 창으로 통합
+            // openLogWindow()로 대체됨
+            openLogWindow();
+            setTimeout(() => switchLogTab('upload'), 100);
         }
 
         function viewAllLogs() {
-            currentLogType = 'all';
-            currentLogs = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            openLogViewer();
+            // 로그 조회 모달 제거됨 - 로그 관리 창으로 통합
+            // openLogWindow()로 대체됨
+            openLogWindow();
+            setTimeout(() => switchLogTab('all'), 100);
         }
 
-        function openLogViewer() {
-            try {
-                const modal = document.getElementById('logViewerModal');
-                if (modal) {
-                    modal.classList.add('active');
-                    renderLogStats();
-                    renderLogList();
-                }
-            } catch (e) {
-                console.error('로그 뷰어 열기 오류:', e);
-            }
-        }
-
-        function closeLogViewer() {
-            try {
-                const modal = document.getElementById('logViewerModal');
-                if (modal) {
-                    modal.classList.remove('active');
-                }
-            } catch (e) {
-                console.error('로그 뷰어 닫기 오류:', e);
-            }
-        }
-
-        function renderLogStats() {
-            try {
-                const statsEl = document.getElementById('logStats');
-                if (!statsEl) return;
-
-                const totalCount = currentLogs.length;
-                const directiveCount = currentLogs.filter(log => log.type === 'directive' || log.message).length;
-                const uploadCount = currentLogs.filter(log => log.type === 'upload' || log.filename).length;
-                const todayCount = currentLogs.filter(log => {
-                    const logDate = new Date(log.timestamp);
-                    const today = new Date();
-                    return logDate.toDateString() === today.toDateString();
-                }).length;
-
-                // 오래된 로그 통계 추가
-                const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-                const oldCount = currentLogs.filter(log => {
-                    const logDate = new Date(log.timestamp);
-                    return logDate < thirtyDaysAgo;
-                }).length;
-
-                statsEl.innerHTML = `
-                    <div class="log-stat-item clickable" onclick="viewJsonData('all', '전체 로그 데이터')">
-                        <div class="log-stat-number">${totalCount}</div>
-                        <div class="log-stat-label">전체 로그</div>
-                    </div>
-                    <div class="log-stat-item clickable" onclick="viewJsonData('directive', '지시사항 로그 데이터')">
-                        <div class="log-stat-number">${directiveCount}</div>
-                        <div class="log-stat-label">지시사항</div>
-                    </div>
-                    <div class="log-stat-item clickable" onclick="viewJsonData('upload', '업로드 로그 데이터')">
-                        <div class="log-stat-number">${uploadCount}</div>
-                        <div class="log-stat-label">업로드</div>
-                    </div>
-                    <div class="log-stat-item clickable" onclick="viewJsonData('today', '오늘의 로그 데이터')">
-                        <div class="log-stat-number">${todayCount}</div>
-                        <div class="log-stat-label">오늘</div>
-                    </div>
-                    <div class="log-stat-item clickable" onclick="viewJsonData('old', '30일 이상 된 로그 데이터')" style="background: ${oldCount > 0 ? 'var(--accent-orange)' : 'var(--bg-dark-tertiary)'};">
-                        <div class="log-stat-number" style="color: ${oldCount > 0 ? 'white' : 'var(--accent-blue)'};">${oldCount}</div>
-                        <div class="log-stat-label" style="color: ${oldCount > 0 ? 'white' : 'var(--text-secondary)'};">30일 이상</div>
-                    </div>
-                `;
-            } catch (e) {
-                console.error('로그 통계 렌더링 오류:', e);
-            }
-        }
-
-        function renderLogList() {
-            try {
-                const listEl = document.getElementById('logList');
-                if (!listEl) return;
-
-                if (currentLogs.length === 0) {
-                    listEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">로그가 없습니다.</div>';
-                    return;
-                }
-
-                listEl.innerHTML = currentLogs.map(log => {
-                    const isDirective = log.message && !log.filename;
-                    const logType = isDirective ? 'directive' : 'upload';
-                    const logDate = new Date(log.timestamp);
-                    const timeStr = logDate.toLocaleString('ko-KR');
-
-                    return `
-                        <div class="log-item">
-                            <div class="log-item-header">
-                                <span class="log-item-type ${logType}">${isDirective ? '지시사항' : '업로드'}</span>
-                                <span class="log-item-time">${timeStr}</span>
-                            </div>
-                            <div class="log-item-content">
-                                <div class="log-item-title">${log.title || log.message || '제목 없음'}</div>
-                                <div class="log-item-message">${log.message || log.description || '내용 없음'}</div>
-                            </div>
-                            <div class="log-item-meta">
-                                <span><i class="fa-solid fa-user"></i> ${log.sender || log.uploader || '알 수 없음'}</span>
-                                ${log.filename ? `<span><i class="fa-solid fa-file"></i> ${log.filename}</span>` : ''}
-                                ${log.slot ? `<span><i class="fa-solid fa-hashtag"></i> 슬롯 ${log.slot + 1}</span>` : ''}
-                            </div>
-                            <div class="log-item-actions">
-                                ${!isDirective ? `<button class="upload-log-viewer-btn" onclick="viewJsonData('upload', '업로드 로그', ${log.id})" style="background: var(--accent-green); color: white;">
-                                    <i class="fa-solid fa-image"></i> 이미지 보기
-                                </button>` : ''}
-                                <button class="json-viewer-btn" onclick="toggleJsonViewer(this)">
-                                    <i class="fa-solid fa-code"></i> JSON 보기
-                                </button>
-                                <button class="copy-json-btn" onclick="copyJsonToClipboard(this)" title="JSON 복사">
-                                    <i class="fa-solid fa-copy"></i> 복사
-                                </button>
-                            </div>
-                            <div class="json-content" style="display: none;">
-                                <pre>${JSON.stringify(log, null, 2)}</pre>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error('로그 목록 렌더링 오류:', e);
-            }
-        }
+        // renderLogStats와 renderLogList는 로그 조회 모달 제거로 삭제됨
+        // 로그 관리 창의 각 탭 렌더링 함수 사용
 
         function toggleJsonViewer(element) {
             try {
@@ -7588,7 +7680,8 @@
                     uploadLogs = [];
                     saveData();
                     alert('✅ 모든 로그가 삭제되었습니다.');
-                    closeLogViewer();
+                    // 로그 관리 창 새로고침
+                    renderLogOverview();
                 }
             } catch (e) {
                 console.error('로그 삭제 오류:', e);
@@ -10031,6 +10124,9 @@
                     }
                 });
 
+                // 페이지 로드 시 접속자 정리 자동 시작
+                startUserCleanup();
+
                 console.log('✅ Firebase 리스너 등록 완료');
 
             } catch (e) {
@@ -10620,12 +10716,7 @@
         // 지시사항 히스토리 관련 함수들
         function openDirectiveHistory() {
             try {
-                // 권한 체크: 지시사항 히스토리는 지휘관과 일반 사용자만 가능
-                if (!hasPermission('directive_history')) {
-                    showPermissionError('지시사항 히스토리');
-                    return;
-                }
-
+                // 모든 사용자가 히스토리 조회 가능 (권한 체크 제거)
                 const modal = document.getElementById('directiveHistoryModal');
                 if (modal) {
                     modal.classList.add('active');
@@ -10654,26 +10745,50 @@
                 
                 if (!listEl) return;
 
-                // 지시사항 로그에서 지시사항만 필터링
-                const directiveHistory = directiveLogs.filter(log => log.message && !log.filename);
-                
-                // 날짜순으로 정렬 (최신순)
-                const sortedHistory = directiveHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                // 사용자 권한에 따른 제한
-                let displayHistory = sortedHistory;
-                if (currentUserRole === USER_ROLES.USER) {
-                    displayHistory = sortedHistory; // 일반 사용자는 무제한
-                } else if (currentUserRole === USER_ROLES.COMMANDER) {
-                    displayHistory = sortedHistory.slice(0, 30); // 지휘관은 최근 30개
+                // Firebase에서 공유 히스토리 가져오기
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    database.ref('directiveHistory').once('value').then((snapshot) => {
+                        const historyData = snapshot.val();
+                        let directiveHistory = [];
+                        
+                        if (historyData) {
+                            // Firebase 객체를 배열로 변환
+                            directiveHistory = Object.values(historyData);
+                            
+                            // 날짜순으로 정렬 (최신순)
+                            directiveHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        }
+                        
+                        displayDirectiveHistory(directiveHistory, listEl, infoEl);
+                    }).catch((error) => {
+                        console.error('Firebase 히스토리 가져오기 실패:', error);
+                        // Firebase 실패 시 로컬 데이터 사용
+                        const localHistory = directiveLogs.filter(log => log.message && !log.filename);
+                        localHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        displayDirectiveHistory(localHistory, listEl, infoEl);
+                    });
+                } else {
+                    // Firebase 없으면 로컬 데이터 사용
+                    const localHistory = directiveLogs.filter(log => log.message && !log.filename);
+                    localHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    displayDirectiveHistory(localHistory, listEl, infoEl);
                 }
+            } catch (e) {
+                console.error('지시사항 히스토리 렌더링 오류:', e);
+            }
+        }
+
+        function displayDirectiveHistory(history, listEl, infoEl) {
+            try {
+                // 사용자 권한에 따른 제한
+                let displayHistory = history;
+                const userType = currentUserRole === USER_ROLES.USER ? '일반 사용자' : 
+                               currentUserRole === USER_ROLES.COMMANDER ? '지휘관' : '관리자';
 
                 // 정보 업데이트
                 if (infoEl) {
-                    const totalCount = directiveHistory.length;
+                    const totalCount = history.length;
                     const displayCount = displayHistory.length;
-                    const userType = currentUserRole === USER_ROLES.USER ? '일반 사용자' : 
-                                   currentUserRole === USER_ROLES.COMMANDER ? '지휘관' : '관리자';
                     infoEl.textContent = `${userType} | 표시: ${displayCount}개 | 전체: ${totalCount}개`;
                 }
 
@@ -10712,7 +10827,7 @@
                     `;
                 }).join('');
             } catch (e) {
-                console.error('지시사항 히스토리 렌더링 오류:', e);
+                console.error('히스토리 표시 오류:', e);
             }
         }
 
