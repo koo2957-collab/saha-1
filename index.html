@@ -7264,6 +7264,9 @@
                     slot: currentSlot // 슬롯 정보 추가
                 };
 
+                // 기존 파일이 있는지 확인 (파일 교체 여부 판단)
+                const isFileReplaced = reports[currentSlot] !== null;
+
                 // 현재 슬롯에 저장
                 reports[currentSlot] = report;
                 
@@ -7339,7 +7342,7 @@
                 // 음성 알림: "보고"
                 speakReport();
 
-                // 브라우저 알림
+                // 브라우저 알림 (파일 교체 여부에 따라 구분)
                 if (notificationManager) {
                     const uploadInfo = {
                         slot: currentSlot,
@@ -7347,13 +7350,14 @@
                         title: title,
                         uploader: currentUser,
                         timestamp: new Date().toISOString(),
-                        isReplacement: false // 새 파일 업로드
+                        isReplacement: isFileReplaced // 파일 교체 여부
                     };
                     notificationManager.notifyUpload(uploadInfo);
                 }
 
                 // 비프음 없는 사용자 정의 알림
-                showCustomAlert('✅ 파일이 업로드되었습니다!', 'success');
+                const alertMessage = isFileReplaced ? '✅ 파일이 교체되었습니다!' : '✅ 파일이 업로드되었습니다!';
+                showCustomAlert(alertMessage, 'success');
             } catch (e) {
                 console.error('보고서 저장 오류:', e);
                 showError('uploadError', '파일 저장에 실패했습니다.');
@@ -8413,18 +8417,7 @@
                     console.log(`📁 파일 저장소 추가: 슬롯 ${report.slot + 1}`);
                 }
                 
-                // 파일 교체 시에도 알림 전송
-                if (isFileReplaced && notificationManager) {
-                    const uploadInfo = {
-                        slot: report.slot,
-                        filename: report.filename,
-                        title: report.title,
-                        uploader: report.uploader,
-                        timestamp: new Date().toISOString(),
-                        isReplacement: true // 교체 여부 표시
-                    };
-                    notificationManager.notifyUpload(uploadInfo);
-                }
+                // 알림은 saveReport 함수에서 처리하므로 여기서는 제거
                 
                 console.log(`📁 파일 저장소: ${fileStorage.length}/500개`);
             } catch (e) {
