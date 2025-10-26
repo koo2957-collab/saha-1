@@ -10187,7 +10187,12 @@
         // 최신 지시사항 가져오기 함수
         function getLatestDirective() {
             try {
-                // 지시사항 로그에서 지시사항만 필터링하고 최신순으로 정렬
+                // 1. 현재 공유 지시사항을 우선 확인 (Firebase에서 동기화됨)
+                if (currentDirective && currentDirective.message) {
+                    return currentDirective;
+                }
+                
+                // 2. 로컬 히스토리에서 최신 지시사항 찾기
                 const directiveHistory = directiveLogs.filter(log => log.message && !log.filename);
                 if (directiveHistory.length === 0) return null;
                 
