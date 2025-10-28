@@ -5536,7 +5536,7 @@
                 firebaseInitialized = true;
                 
                 console.log('Firebase 서비스 초기화 완료');
-                updateConnectionStatus('online', 'Firebase 연결됨');
+                updateConnectionStatus('loading', 'Firebase 연결 중...');
 
                 // Firebase 연결 테스트
                 setTimeout(() => {
@@ -6518,20 +6518,15 @@
                 }
 
         // SHA256 해시 검증 사용 + 사용자는 평문 토큰 입력
-        const SECURITY_CONFIG = {
-            // 해시 상수는 security-config.js에서 주입됩니다
-            TOKENS_HASH: {
-                USER: '',
-                ADMIN: '',
-                COMMANDER: []
-            },
-            // 세션 타임아웃 (30분)
-            SESSION_TIMEOUT: 30 * 60 * 1000,
-            // 최대 로그인 시도 횟수
-            MAX_LOGIN_ATTEMPTS: 5,
-            // 로그인 시도 간격 (5분)
-            LOGIN_COOLDOWN: 5 * 60 * 1000
+        // 전역 보안 설정 통합: security-config.js에서 주입된 객체를 사용
+        window.SECURITY_CONFIG = window.SECURITY_CONFIG || {};
+        window.SECURITY_CONFIG.TOKENS_HASH = window.SECURITY_CONFIG.TOKENS_HASH || {
+            USER: '',
+            ADMIN: '',
+            COMMANDER: []
         };
+        // 로컬 참조
+        const SECURITY_CONFIG = window.SECURITY_CONFIG;
 
         // 로그인 시도 추적
         let loginAttempts = 0;
