@@ -5736,8 +5736,8 @@
             }
         }
 
-        // 보안 강화된 스토리지(즉시 초기화)
-        var storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+        // 보안 강화된 스토리지(지연 초기화)
+        var storage = null;
 
         function getTimeAgo(timestamp) {
             try {
@@ -6184,6 +6184,9 @@
 
         function checkAutoLogin() {
             try {
+                if (!storage) {
+                    storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                }
                 const loginData = JSON.parse(storage.getItem('loginSession') || 'null');
                 if (loginData && loginData.username && loginData.timestamp) {
                     const now = Date.now();
@@ -6272,14 +6275,18 @@
 
         function saveLoginSession(username) {
             try {
-                if (!storage) storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                if (!storage) {
+                    storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                }
                 const loginData = {
                     username: username,
                     timestamp: Date.now()
                 };
                 storage.setItem('loginSession', JSON.stringify(loginData));
+                console.log('✅ 로그인 세션 저장 성공');
             } catch (e) {
                 console.error('Login session save failed:', e);
+                showCustomAlert('⚠️ 로그인 세션 저장에 실패했습니다.', 'warning');
             }
         }
 
@@ -6295,7 +6302,7 @@
         function loadData() {
             try {
                 if (!storage) {
-                    storage = secureStorage();
+                    storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
                 }
                 const savedReports = storage.getItem('reports');
                 const savedUsers = storage.getItem('users');
@@ -6343,7 +6350,7 @@
         function saveData() {
             try {
                 if (!storage) {
-                    storage = secureStorage();
+                    storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
                 }
                 if (isFirebaseEnabled && firebaseInitialized && database) {
                     database.ref('reports').set(reports);
@@ -6519,10 +6526,14 @@
                 
                 // 로컬 스토리지에 지시사항 로그 저장 (즉시)
                 try {
+                    if (!storage) {
+                        storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                    }
                     storage.setItem('directiveLogs', JSON.stringify(directiveLogs));
                     console.log('✅ 로컬 지시사항 로그 저장 성공');
                 } catch (e) {
                     console.error('❌ 로컬 지시사항 로그 저장 실패:', e);
+                    showCustomAlert('⚠️ 로그 저장에 실패했습니다.', 'warning');
                 }
                 
                 // 업로드와 동일한 방식으로 저장
@@ -7668,7 +7679,14 @@
                 // 파일 저장소에도 저장 (500개 제한)
                 addToFileStorage(report);
                 
-                saveData();
+                // 데이터 저장 (안전한 오류 처리)
+                try {
+                    saveData();
+                } catch (saveError) {
+                    console.error('데이터 저장 실패:', saveError);
+                    showError('uploadError', '데이터 저장에 실패했습니다. 다시 시도해주세요.');
+                    return;
+                }
 
                 // 업로드 로그 기록 (report.id와 동일한 ID 사용)
                 const logId = report.id;
@@ -7711,10 +7729,14 @@
 
                 // 로컬 스토리지에 업로드 로그 즉시 저장
                 try {
+                    if (!storage) {
+                        storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                    }
                     storage.setItem('uploadLogs', JSON.stringify(uploadLogs));
                     console.log('✅ 로컬 업로드 로그 저장 성공');
                 } catch (e) {
                     console.error('❌ 로컬 업로드 로그 저장 실패:', e);
+                    showError('uploadError', '로그 저장에 실패했습니다.');
                 }
 
                 // Firebase에 업로드 로그 저장
