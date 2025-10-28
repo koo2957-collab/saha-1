@@ -789,7 +789,7 @@
 
         /* 모바일에서는 JSON 뷰어 버튼 숨김 */
         @media (max-width: 1024px) {
-            .json-viewer-btn {
+            .log-window .json-viewer-btn {
                 display: none !important;
             }
         }
@@ -1220,7 +1220,7 @@
             gap: 10px;
         }
 
-        .json-viewer-btn {
+        .log-window .json-viewer-btn {
             padding: 8px 12px;
             background: var(--bg-dark-secondary);
             border: 1px solid var(--border-color);
@@ -1234,7 +1234,7 @@
             font-size: 12px;
         }
 
-        .json-viewer-btn:hover {
+        .log-window .json-viewer-btn:hover {
             background: var(--accent-blue);
             border-color: var(--accent-blue);
             color: white;
@@ -4951,7 +4951,7 @@
     </div>
 
     <!-- JSON 뷰어 모달 (데스크탑 관리자 전용) -->
-    <div class="json-viewer-modal" id="jsonViewerModal">
+    <div class="json-viewer-modal" id="jsonViewerModal" style="display: none;">
         <div class="json-viewer-header">
             <h3 class="json-viewer-title">
                 <i class="fa-solid fa-code"></i> JSON 뷰어 - 전체 로그 데이터
@@ -5241,58 +5241,6 @@
         </div>
     </div>
 
-    <!-- JSON 뷰어 모달 -->
-    <div class="modal" id="jsonViewerModal">
-        <div class="modal-content json-viewer-content">
-            <div class="json-viewer-header">
-                <h3><i class="fa-solid fa-code"></i>JSON 뷰어</h3>
-                <button class="json-viewer-close" onclick="closeJsonViewer()">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="json-viewer-controls">
-                <div class="json-viewer-actions">
-                    <button class="json-viewer-btn" id="toggleViewBtn" onclick="toggleView()">
-                        <i class="fa-solid fa-table"></i> 테이블 보기
-                    </button>
-                    <button class="json-viewer-btn" onclick="copyJsonToClipboard()">
-                        <i class="fa-solid fa-copy"></i> 복사
-                    </button>
-                    <button class="json-viewer-btn" onclick="downloadJson()">
-                        <i class="fa-solid fa-download"></i> 다운로드
-                    </button>
-                    <button class="json-viewer-btn" onclick="formatJson()">
-                        <i class="fa-solid fa-magic"></i> 포맷
-                    </button>
-                </div>
-                <div class="json-viewer-info">
-                    <span id="jsonViewerInfo">데이터 로딩 중...</span>
-                </div>
-            </div>
-            <div class="json-viewer-content-area">
-                <!-- 이미지 표시 영역 (업로드 로그인 경우에만 표시) -->
-                <!-- 이미지 섹션 제거됨 - 업로드 로그와 중복 기능 방지 -->
-                
-                <div id="jsonViewerTable" class="table-view" style="display: none;">
-                    <div class="table-container">
-                        <table class="log-table">
-                            <thead>
-                                <tr>
-                                    <th>날짜/시간</th>
-                                    <th>작성자</th>
-                                    <th>타입</th>
-                                    <th>내용</th>
-                                </tr>
-                            </thead>
-                            <tbody id="logTableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <pre id="jsonViewerContent" class="json-content"></pre>
-            </div>
-        </div>
-    </div>
 
     <!-- 이미지 갤러리 모달 -->
     <div class="modal" id="imageGalleryModal">
@@ -9866,23 +9814,23 @@
                 if (!overviewStatsEl) return;
 
                 overviewStatsEl.innerHTML = `
-                    <div class="log-overview-stat-card clickable" onclick="viewJsonData('all', '전체 로그 데이터')">
+                    <div class="log-overview-stat-card clickable" onclick="openJsonViewer()">
                         <div class="log-overview-stat-number">${stats.totalDirective + stats.totalUpload}</div>
                         <div class="log-overview-stat-label">전체 로그</div>
                     </div>
-                    <div class="log-overview-stat-card clickable" onclick="viewJsonData('directive', '지시사항 로그 데이터')">
+                    <div class="log-overview-stat-card clickable" onclick="openJsonViewer()">
                         <div class="log-overview-stat-number">${stats.totalDirective}</div>
                         <div class="log-overview-stat-label">지시사항</div>
                     </div>
-                    <div class="log-overview-stat-card clickable" onclick="viewJsonData('upload', '업로드 로그 데이터')">
+                    <div class="log-overview-stat-card clickable" onclick="openJsonViewer()">
                         <div class="log-overview-stat-number">${stats.totalUpload}</div>
                         <div class="log-overview-stat-label">업로드</div>
                     </div>
-                    <div class="log-overview-stat-card clickable" onclick="viewJsonData('recent', '최근 7일 로그 데이터')">
+                    <div class="log-overview-stat-card clickable" onclick="openJsonViewer()">
                         <div class="log-overview-stat-number">${stats.totalRecent}</div>
                         <div class="log-overview-stat-label">최근 7일</div>
                     </div>
-                    <div class="log-overview-stat-card clickable" onclick="viewJsonData('old', '30일 이상 된 로그 데이터')" style="background: ${stats.totalOld > 0 ? 'var(--accent-orange)' : 'var(--bg-dark-secondary)'};">
+                    <div class="log-overview-stat-card clickable" onclick="openJsonViewer()" style="background: ${stats.totalOld > 0 ? 'var(--accent-orange)' : 'var(--bg-dark-secondary)'};">
                         <div class="log-overview-stat-number" style="color: ${stats.totalOld > 0 ? 'white' : 'var(--accent-blue)'};">${stats.totalOld}</div>
                         <div class="log-overview-stat-label" style="color: ${stats.totalOld > 0 ? 'white' : 'var(--text-secondary)'};">30일 이상</div>
                     </div>
@@ -11792,286 +11740,10 @@
             }
         }
 
-        // JSON 뷰어 관련 함수들
-        let currentJsonData = null;
-        let currentJsonType = '';
-        let isTableView = false;
 
-        function openJsonViewer(data, type, title) {
-            try {
-                currentJsonData = data;
-                currentJsonType = type;
-                
-                const modal = document.getElementById('jsonViewerModal');
-                const content = document.getElementById('jsonViewerContent');
-                const info = document.getElementById('jsonViewerInfo');
-                
-                if (!modal || !content || !info) return;
 
-                // JSON 데이터 포맷팅
-                const jsonString = JSON.stringify(data, null, 2);
-                content.textContent = jsonString;
-                
-                // 정보 업데이트
-                const dataSize = new Blob([jsonString]).size;
-                const itemCount = Array.isArray(data) ? data.length : 1;
-                info.textContent = `${title} | 항목: ${itemCount}개 | 크기: ${(dataSize / 1024).toFixed(2)}KB`;
-                
-                // 기본적으로 테이블 뷰로 시작
-                isTableView = true;
-                const toggleBtn = document.getElementById('toggleViewBtn');
-                const tableView = document.getElementById('jsonViewerTable');
-                const jsonView = document.getElementById('jsonViewerContent');
-                const viewImageBtn = document.getElementById('viewImageBtn');
-                
-                if (toggleBtn) toggleBtn.innerHTML = '<i class="fa-solid fa-code"></i> JSON 보기';
-                if (tableView) tableView.style.display = 'block';
-                if (jsonView) jsonView.style.display = 'none';
-                
-                // 이미지 관련 기능 제거됨 - 업로드 로그와 중복 기능 방지
-                
-                modal.classList.add('active');
-                
-                // 테이블 뷰 렌더링
-                setTimeout(() => {
-                    renderTableView();
-                }, 100);
-            } catch (e) {
-                console.error('JSON 뷰어 열기 오류:', e);
-            }
-        }
 
-        function closeJsonViewer() {
-            try {
-                const modal = document.getElementById('jsonViewerModal');
-                if (modal) {
-                    modal.classList.remove('active');
-                }
-            } catch (e) {
-                console.error('JSON 뷰어 닫기 오류:', e);
-            }
-        }
 
-        function copyJsonToClipboard() {
-            try {
-                const content = document.getElementById('jsonViewerContent');
-                if (!content) return;
-
-                navigator.clipboard.writeText(content.textContent).then(() => {
-                    alert('✅ JSON 데이터가 클립보드에 복사되었습니다.');
-                }).catch(() => {
-                    // 폴백: 텍스트 선택
-                    content.select();
-                    document.execCommand('copy');
-                    alert('✅ JSON 데이터가 클립보드에 복사되었습니다.');
-                });
-            } catch (e) {
-                console.error('JSON 복사 오류:', e);
-                alert('❌ 복사에 실패했습니다.');
-            }
-        }
-
-        function downloadJson() {
-            try {
-                if (!currentJsonData) return;
-
-                const jsonString = JSON.stringify(currentJsonData, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${currentJsonType}_${getCurrentDateString()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                alert('✅ JSON 파일이 다운로드되었습니다.');
-            } catch (e) {
-                console.error('JSON 다운로드 오류:', e);
-                alert('❌ 다운로드에 실패했습니다.');
-            }
-        }
-
-        function formatJson() {
-            try {
-                const content = document.getElementById('jsonViewerContent');
-                if (!content) return;
-
-                const jsonString = content.textContent;
-                const parsed = JSON.parse(jsonString);
-                const formatted = JSON.stringify(parsed, null, 2);
-                content.textContent = formatted;
-            } catch (e) {
-                console.error('JSON 포맷 오류:', e);
-                alert('❌ JSON 포맷에 실패했습니다. 유효하지 않은 JSON입니다.');
-            }
-        }
-
-        function toggleView() {
-            try {
-                const toggleBtn = document.getElementById('toggleViewBtn');
-                const tableView = document.getElementById('jsonViewerTable');
-                const jsonView = document.getElementById('jsonViewerContent');
-                
-                if (!toggleBtn || !tableView || !jsonView) return;
-
-                isTableView = !isTableView;
-                
-                if (isTableView) {
-                    // 테이블 뷰로 전환
-                    tableView.style.display = 'block';
-                    jsonView.style.display = 'none';
-                    toggleBtn.innerHTML = '<i class="fa-solid fa-code"></i> JSON 보기';
-                    renderTableView();
-                } else {
-                    // JSON 뷰로 전환
-                    tableView.style.display = 'none';
-                    jsonView.style.display = 'block';
-                    toggleBtn.innerHTML = '<i class="fa-solid fa-table"></i> 테이블 보기';
-                }
-            } catch (e) {
-                console.error('뷰 토글 오류:', e);
-            }
-        }
-
-        function renderTableView() {
-            try {
-                const tableBody = document.getElementById('logTableBody');
-                if (!tableBody || !currentJsonData) return;
-
-                // 테이블 내용 초기화
-                tableBody.innerHTML = '';
-
-                if (!Array.isArray(currentJsonData) || currentJsonData.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-secondary);">데이터가 없습니다.</td></tr>';
-                    return;
-                }
-
-                // 로그 데이터를 날짜순으로 정렬 (최신순)
-                const sortedData = [...currentJsonData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-                sortedData.forEach(log => {
-                    const row = document.createElement('tr');
-                    
-                    // 날짜/시간 포맷팅
-                    const logDate = new Date(log.timestamp);
-                    const dateTime = logDate.toLocaleString('ko-KR', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    });
-
-                    // 로그 타입 결정
-                    const isDirective = log.message && !log.filename;
-                    const logType = isDirective ? 'directive' : 'upload';
-                    const typeLabel = isDirective ? '지시사항' : '업로드';
-
-                    // 작성자 정보
-                    const author = log.sender || log.uploader || '알 수 없음';
-
-                    // 내용 정보
-                    let content = '';
-                    if (isDirective) {
-                        content = log.message || log.title || '내용 없음';
-                    } else {
-                        content = log.filename ? `파일: ${log.filename}` : (log.description || log.title || '내용 없음');
-                        if (log.slot !== undefined) {
-                            content += ` (슬롯 ${log.slot + 1})`;
-                        }
-                    }
-
-                    row.innerHTML = `
-                        <td class="log-datetime">${dateTime}</td>
-                        <td class="log-author">${author}</td>
-                        <td><span class="log-type-badge ${logType}">${typeLabel}</span></td>
-                        <td class="log-content">${content}</td>
-                    `;
-
-                    tableBody.appendChild(row);
-                });
-
-            } catch (e) {
-                console.error('테이블 뷰 렌더링 오류:', e);
-                const tableBody = document.getElementById('logTableBody');
-                if (tableBody) {
-                    tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--accent-red);">데이터를 불러오는 중 오류가 발생했습니다.</td></tr>';
-                }
-            }
-        }
-
-        // JSON 데이터 보기 함수
-        function viewJsonData(type, title, logId = null) {
-            try {
-                let data = [];
-                let jsonType = '';
-                
-                // 특정 로그 ID가 제공된 경우
-                if (logId) {
-                    const specificLog = uploadLogs.find(log => log.id === logId);
-                    if (specificLog) {
-                        data = [specificLog];
-                        jsonType = 'single_upload_log';
-                    } else {
-                        alert('해당 로그를 찾을 수 없습니다.');
-                        return;
-                    }
-                } else {
-                    // 기존 로직
-                    switch(type) {
-                        case 'all':
-                            data = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                            jsonType = 'all_logs';
-                            break;
-                        case 'directive':
-                            data = directiveLogs;
-                            jsonType = 'directive_logs';
-                            break;
-                        case 'upload':
-                            data = uploadLogs;
-                            jsonType = 'upload_logs';
-                            break;
-                        case 'today':
-                            const today = new Date();
-                            data = [...directiveLogs, ...uploadLogs].filter(log => {
-                                const logDate = new Date(log.timestamp);
-                                return logDate.toDateString() === today.toDateString();
-                            }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                            jsonType = 'today_logs';
-                            break;
-                        case 'recent':
-                            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-                            data = [...directiveLogs, ...uploadLogs].filter(log => {
-                                const logDate = new Date(log.timestamp);
-                                return logDate >= sevenDaysAgo;
-                            }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                            jsonType = 'recent_logs';
-                            break;
-                        case 'old':
-                            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-                            data = [...directiveLogs, ...uploadLogs].filter(log => {
-                                const logDate = new Date(log.timestamp);
-                                return logDate < thirtyDaysAgo;
-                            }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                            jsonType = 'old_logs';
-                            break;
-                    }
-                }
-                
-                if (data.length > 0) {
-                    openJsonViewer(data, jsonType, title);
-                } else {
-                    alert('📝 해당 카테고리에 로그가 없습니다.');
-                }
-            } catch (e) {
-                console.error('JSON 데이터 보기 오류:', e);
-                alert('❌ 데이터를 불러오는 중 오류가 발생했습니다.');
-            }
-        }
 
         // 통계 카드 클릭 이벤트 추가
         function makeStatsClickable() {
@@ -12081,54 +11753,10 @@
                 statItems.forEach((item, index) => {
                     item.classList.add('clickable');
                     item.onclick = function() {
-                        const label = item.querySelector('.log-stat-label').textContent;
-                        const number = item.querySelector('.log-stat-number').textContent;
                         
-                        let data = [];
-                        let type = '';
-                        let title = '';
                         
-                        switch(label) {
-                            case '전체 로그':
-                                data = [...directiveLogs, ...uploadLogs].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                                type = 'all_logs';
-                                title = '전체 로그 데이터';
-                                break;
-                            case '지시사항':
-                                data = directiveLogs;
-                                type = 'directive_logs';
-                                title = '지시사항 로그 데이터';
-                                break;
-                            case '업로드':
-                                data = uploadLogs;
-                                type = 'upload_logs';
-                                title = '업로드 로그 데이터';
-                                break;
-                            case '오늘':
-                                const today = new Date();
-                                data = [...directiveLogs, ...uploadLogs].filter(log => {
-                                    const logDate = new Date(log.timestamp);
-                                    return logDate.toDateString() === today.toDateString();
-                                }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                                type = 'today_logs';
-                                title = '오늘의 로그 데이터';
-                                break;
-                            case '30일 이상':
-                                const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-                                data = [...directiveLogs, ...uploadLogs].filter(log => {
-                                    const logDate = new Date(log.timestamp);
-                                    return logDate < thirtyDaysAgo;
-                                }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                                type = 'old_logs';
-                                title = '30일 이상 된 로그 데이터';
-                                break;
-                        }
-                        
-                        if (data.length > 0) {
-                            openJsonViewer(data, type, title);
-                        } else {
-                            alert('📝 해당 카테고리에 로그가 없습니다.');
-                        }
+                        // 전체화면 JSON 뷰어 열기
+                        openJsonViewer();
                     };
                 });
 
@@ -12137,8 +11765,6 @@
                 overviewCards.forEach((card, index) => {
                     card.classList.add('clickable');
                     card.onclick = function() {
-                        const label = card.querySelector('.log-overview-stat-label').textContent;
-                        const number = card.querySelector('.log-overview-stat-number').textContent;
                         
                         let data = [];
                         let type = '';
@@ -12180,11 +11806,8 @@
                                 break;
                         }
                         
-                        if (data.length > 0) {
-                            openJsonViewer(data, type, title);
-                        } else {
-                            alert('📝 해당 카테고리에 로그가 없습니다.');
-                        }
+                        // 전체화면 JSON 뷰어 열기
+                        openJsonViewer();
                     };
                 });
             } catch (e) {
