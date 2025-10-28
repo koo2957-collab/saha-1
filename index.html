@@ -4691,7 +4691,7 @@
                 <div class="card log-section">
             <h2 class="section-title"><i class="fa-solid fa-download"></i>로그 관리</h2>
             <div class="log-status" id="logStatus" style="margin-bottom: 15px; padding: 10px; background: var(--bg-dark-secondary); border-radius: 8px; font-size: 14px;">
-                <i class="fa-solid fa-info-circle"></i> 자동 정리: 30일 이상 된 로그가 자동으로 삭제됩니다.
+                <i class="fa-solid fa-info-circle"></i> 자동 정리(관리자 전용): 매일 0시에 30일 이상 된 로그/이미지가 자동 삭제됩니다.
             </div>
             
             <!-- 고급 저장공간 모니터링 대시보드 -->
@@ -4887,6 +4887,12 @@
                         <button class="log-action-btn" onclick="clearLogs()" style="background: var(--accent-red);">
                             <i class="fa-solid fa-trash"></i> 모든 로그 삭제
                         </button>
+                        <button class="log-action-btn" onclick="showCacheStats()" style="background: var(--accent-blue);">
+                            <i class="fa-solid fa-memory"></i> 캐시 통계
+                        </button>
+                        <button class="log-action-btn" onclick="clearImageCache()" style="background: var(--accent-orange);">
+                            <i class="fa-solid fa-broom"></i> 캐시 정리
+                        </button>
                     </div>
                 </div>
                 <div class="log-tab-content" id="logTabDirective">
@@ -5019,8 +5025,8 @@
                     <button class="file-storage-btn" onclick="downloadFileStorage()">
                         <i class="fa-solid fa-download"></i> 다운로드
                     </button>
-                    <button class="file-storage-btn" onclick="cleanupOldFiles(14)" style="background: var(--accent-orange);">
-                        <i class="fa-solid fa-broom"></i> 14일 이상 정리
+                <button class="file-storage-btn" onclick="cleanupOldFiles(30)" style="background: var(--accent-orange);">
+                    <i class="fa-solid fa-broom"></i> 30일 이상 정리
                     </button>
                 </div>
             </div>
@@ -7477,20 +7483,88 @@
             }
         }
 
+        // 이미지 캐시 시스템
+        let imageCache = new Map();
+        const MAX_CACHE_SIZE = 100; // 최대 캐시 항목 수
+
+        // 이미지 해시 계산 (중복 감지용)
+        async function calculateImageHash(dataUrl) {
+            try {
+                const response = await fetch(dataUrl);
+                const arrayBuffer = await response.arrayBuffer();
+                const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (e) {
+                console.warn('이미지 해시 계산 실패:', e);
+                return null;
+            }
+        }
+
+        // 캐시에서 이미지 찾기
+        function getCachedImage(hash) {
+            if (imageCache.has(hash)) {
+                const cached = imageCache.get(hash);
+                // 캐시 사용 횟수 증가
+                cached.accessCount++;
+                cached.lastAccessed = Date.now();
+                console.log(`📦 캐시된 이미지 사용: ${hash.substring(0, 8)}...`);
+                return cached.data;
+            }
+            return null;
+        }
+
+        // 이미지를 캐시에 저장
+        function cacheImage(hash, data) {
+            if (imageCache.size >= MAX_CACHE_SIZE) {
+                // LRU 방식으로 오래된 캐시 제거
+                const entries = Array.from(imageCache.entries());
+                entries.sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
+                const oldestKey = entries[0][0];
+                imageCache.delete(oldestKey);
+                console.log(`🗑️ 오래된 캐시 제거: ${oldestKey.substring(0, 8)}...`);
+            }
+            
+            imageCache.set(hash, {
+                data: data,
+                accessCount: 1,
+                lastAccessed: Date.now(),
+                size: data.length
+            });
+            console.log(`💾 이미지 캐시 저장: ${hash.substring(0, 8)}... (${(data.length / 1024).toFixed(1)}KB)`);
+        }
+
+        // 캐시 통계 조회
+        function getCacheStats() {
+            const entries = Array.from(imageCache.values());
+            const totalSize = entries.reduce((sum, entry) => sum + entry.size, 0);
+            const totalAccess = entries.reduce((sum, entry) => sum + entry.accessCount, 0);
+            
+            return {
+                count: imageCache.size,
+                totalSize: totalSize,
+                totalSizeKB: (totalSize / 1024).toFixed(1),
+                totalAccess: totalAccess,
+                avgAccess: (totalAccess / imageCache.size).toFixed(1)
+            };
+        }
+
         function compressImage(dataUrl, callback) {
             try {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 const img = new Image();
                 
-                img.onload = function() {
+                img.onload = async function() {
                     try {
-                        // Firebase 1GB 최적화 설정 (품질과 용량의 균형)
-                        const maxWidth = 1920;        // Full HD 해상도 (용량 최적화)
-                        const maxHeight = 1440;       // 4:3 비율 (문서에 최적)
+                        // 200KB 목표 압축 설정
+                        const targetSizeKB = 200;
+                        const maxWidth = 1600;        // 웹 최적화 해상도
+                        const maxHeight = 1200;       // 4:3 비율 유지
                         let width = img.width;
                         let height = img.height;
                         
+                        // 해상도 조정
                         if (width > maxWidth || height > maxHeight) {
                             const ratio = Math.min(maxWidth / width, maxHeight / height);
                             width *= ratio;
@@ -7506,8 +7580,26 @@
                         
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Firebase 최적화: 품질 80% (용량 효율성)
-                        const compressedData = canvas.toDataURL('image/jpeg', 0.8);
+                        // 품질을 점진적으로 낮춰가며 200KB 목표 달성
+                        let quality = 0.7; // 시작 품질
+                        let compressedData = canvas.toDataURL('image/jpeg', quality);
+                        
+                        // 200KB 목표를 달성할 때까지 품질 조정
+                        while (compressedData.length > targetSizeKB * 1024 && quality > 0.3) {
+                            quality -= 0.05;
+                            compressedData = canvas.toDataURL('image/jpeg', quality);
+                        }
+                        
+                        // 최종 크기 확인
+                        const finalSizeKB = (compressedData.length / 1024).toFixed(1);
+                        console.log(`📸 이미지 압축 완료: ${finalSizeKB}KB (품질: ${quality.toFixed(2)})`);
+                        
+                        // 이미지 해시 계산 및 캐싱
+                        const hash = await calculateImageHash(compressedData);
+                        if (hash) {
+                            cacheImage(hash, compressedData);
+                        }
+                        
                         callback(compressedData);
                     } catch (e) {
                         console.error('이미지 압축 오류:', e);
@@ -8288,6 +8380,11 @@
         // Firebase 1GB 최적화를 위한 자동 정리 스케줄러
         function scheduleAutoCleanup() {
             try {
+                // 관리자 전용 자동 정리만 수행
+                if (!hasPermission('logs_delete')) {
+                    console.log('ℹ️ 자동 정리 스케줄러는 관리자 전용입니다.');
+                    return;
+                }
                 // 매일 자정에 자동 정리 실행
                 const now = new Date();
                 const tomorrow = new Date(now);
@@ -8299,12 +8396,12 @@
                 // 첫 실행은 1시간 후
                 setTimeout(() => {
                     cleanupOldLogs(30);
-                    cleanupOldFiles(14); // 14일 이상 된 파일 삭제
+                    cleanupOldFiles(30); // 30일 이상 된 파일 삭제
                     optimizeFirebaseStorage(); // Firebase 저장공간 최적화
                     // 그 다음부터는 24시간마다 실행
                     setInterval(() => {
                         cleanupOldLogs(30);
-                        cleanupOldFiles(14); // 14일 이상 된 파일 삭제
+                        cleanupOldFiles(30); // 30일 이상 된 파일 삭제
                         optimizeFirebaseStorage();
                     }, 24 * 60 * 60 * 1000);
                 }, Math.min(timeUntilMidnight, 60 * 60 * 1000));
@@ -9093,12 +9190,179 @@
             }
         }
 
-        function downloadAllImages() {
+        // 사진 ZIP 다운로드 (Firebase RTDB 데이터 기반 + 캐싱 최적화)
+        async function downloadAllPhotos() {
             try {
-                // 모든 이미지 다운로드 기능 (향후 구현)
-                alert('전체 이미지 다운로드 기능은 향후 구현 예정입니다.');
+                // 권한 체크: 관리자만 가능
+                if (!hasPermission('admin')) {
+                    showPermissionError('사진 ZIP 다운로드');
+                    return;
+                }
+
+                showCustomAlert('📸 사진 수집 중... 잠시만 기다려주세요.', 'info');
+
+                const zip = new JSZip();
+                let downloadCount = 0;
+                let totalImages = 0;
+                let cachedCount = 0;
+                let processedHashes = new Set(); // 중복 이미지 방지
+
+                // 1. fileStorage에서 이미지 수집
+                const fileStorageImages = fileStorage.filter(file => file && file.data);
+                totalImages += fileStorageImages.length;
+
+                // 2. uploadLogs에서 이미지 수집 (fileStorage에 없는 것들)
+                const uploadLogImages = uploadLogs.filter(log => 
+                    log && log.imageData && 
+                    !fileStorageImages.some(file => file.id === log.id)
+                );
+                totalImages += uploadLogImages.length;
+
+                if (totalImages === 0) {
+                    showCustomAlert('📷 다운로드할 사진이 없습니다.', 'warning');
+                    return;
+                }
+
+                showCustomAlert(`📸 총 ${totalImages}개 사진을 ZIP으로 압축 중...`, 'info');
+
+                // 이미지 처리 함수 (캐싱 적용)
+                async function processImage(imageData, filename, uploadTime, slot) {
+                    try {
+                        if (!imageData || !imageData.startsWith('data:')) return null;
+
+                        // 이미지 해시 계산
+                        const hash = await calculateImageHash(imageData);
+                        if (!hash) return null;
+
+                        // 중복 이미지 체크
+                        if (processedHashes.has(hash)) {
+                            console.log(`🔄 중복 이미지 건너뛰기: ${filename}`);
+                            return null;
+                        }
+                        processedHashes.add(hash);
+
+                        // 캐시에서 이미지 확인
+                        let finalImageData = getCachedImage(hash);
+                        if (finalImageData) {
+                            cachedCount++;
+                            console.log(`📦 캐시된 이미지 사용: ${filename}`);
+                        } else {
+                            // 캐시에 없으면 원본 데이터 사용
+                            finalImageData = imageData;
+                        }
+
+                        // Base64 데이터를 Blob으로 변환
+                        const response = await fetch(finalImageData);
+                        const blob = await response.blob();
+                        
+                        // 파일명 생성 (슬롯 정보 포함)
+                        const timestamp = new Date(uploadTime).toISOString().replace(/[:.]/g, '-');
+                        const slotInfo = slot !== undefined ? `_슬롯${slot + 1}` : '';
+                        const fileName = `${timestamp}${slotInfo}_${filename || 'image.jpg'}`;
+                        
+                        return { blob, fileName };
+                    } catch (e) {
+                        console.warn(`이미지 처리 실패: ${filename}`, e);
+                        return null;
+                    }
+                }
+
+                // fileStorage 이미지 처리
+                for (const file of fileStorageImages) {
+                    const result = await processImage(file.data, file.filename, file.uploadTime, file.slot);
+                    if (result) {
+                        zip.file(result.fileName, result.blob);
+                        downloadCount++;
+                        
+                        // 진행률 업데이트 (5개마다)
+                        if (downloadCount % 5 === 0) {
+                            showCustomAlert(`📸 사진 압축 중... ${downloadCount}/${totalImages}`, 'info');
+                        }
+                    }
+                }
+
+                // uploadLogs 이미지 처리
+                for (const log of uploadLogImages) {
+                    const result = await processImage(log.imageData, log.filename, log.timestamp, log.slot);
+                    if (result) {
+                        zip.file(result.fileName, result.blob);
+                        downloadCount++;
+                        
+                        // 진행률 업데이트 (5개마다)
+                        if (downloadCount % 5 === 0) {
+                            showCustomAlert(`📸 사진 압축 중... ${downloadCount}/${totalImages}`, 'info');
+                        }
+                    }
+                }
+
+                // ZIP 파일 생성 및 다운로드
+                showCustomAlert('📦 ZIP 파일 생성 중...', 'info');
+                const zipBlob = await zip.generateAsync({ 
+                    type: 'blob',
+                    compression: 'DEFLATE',
+                    compressionOptions: { level: 6 }
+                });
+                
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fire-slotboard-photos-${new Date().toISOString().split('T')[0]}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // 캐시 통계 표시
+                const cacheStats = getCacheStats();
+                showCustomAlert(`✅ 사진 ZIP 다운로드 완료! (${downloadCount}개 파일, 캐시 사용: ${cachedCount}개)`, 'success');
+                console.log(`📊 캐시 통계: ${cacheStats.count}개 항목, ${cacheStats.totalSizeKB}KB, 평균 접근: ${cacheStats.avgAccess}회`);
+                
             } catch (e) {
-                console.error('전체 이미지 다운로드 오류:', e);
+                console.error('사진 ZIP 다운로드 오류:', e);
+                showCustomAlert('❌ 사진 ZIP 다운로드 실패: ' + e.message, 'error');
+            }
+        }
+
+        // 캐시 통계 표시 (관리자 전용)
+        function showCacheStats() {
+            try {
+                if (!hasPermission('admin')) {
+                    showPermissionError('캐시 통계');
+                    return;
+                }
+
+                const stats = getCacheStats();
+                const message = `📊 이미지 캐시 통계\n\n` +
+                    `• 캐시된 이미지: ${stats.count}개\n` +
+                    `• 총 용량: ${stats.totalSizeKB}KB\n` +
+                    `• 총 접근 횟수: ${stats.totalAccess}회\n` +
+                    `• 평균 접근 횟수: ${stats.avgAccess}회\n\n` +
+                    `💡 캐시는 중복 이미지 다운로드를 방지하여 성능을 향상시킵니다.`;
+
+                showCustomAlert(message, 'info');
+            } catch (e) {
+                console.error('캐시 통계 표시 오류:', e);
+                showCustomAlert('❌ 캐시 통계 표시 실패: ' + e.message, 'error');
+            }
+        }
+
+        // 캐시 정리 (관리자 전용)
+        function clearImageCache() {
+            try {
+                if (!hasPermission('admin')) {
+                    showPermissionError('캐시 정리');
+                    return;
+                }
+
+                if (confirm('이미지 캐시를 모두 정리하시겠습니까?\n\n정리 후에는 같은 이미지를 다시 다운로드할 때 캐시 효과가 없어집니다.')) {
+                    const beforeCount = imageCache.size;
+                    imageCache.clear();
+                    console.log(`🗑️ 이미지 캐시 정리 완료: ${beforeCount}개 항목 삭제`);
+                    showCustomAlert(`✅ 이미지 캐시 정리 완료! (${beforeCount}개 항목 삭제)`, 'success');
+                }
+            } catch (e) {
+                console.error('캐시 정리 오류:', e);
+                showCustomAlert('❌ 캐시 정리 실패: ' + e.message, 'error');
             }
         }
 
@@ -9367,12 +9631,12 @@
             }
         }
 
-        function cleanupOldFiles(days = 14) {
+        function cleanupOldFiles(days = 30) {
             try {
                 const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
                 const originalCount = fileStorage.length;
                 
-                // 14일 이상 된 파일 삭제
+                // 오래된 파일 삭제
                 fileStorage = fileStorage.filter(file => {
                     const fileDate = new Date(file.uploadTime);
                     return fileDate > cutoffDate;
