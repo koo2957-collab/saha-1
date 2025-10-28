@@ -34,6 +34,10 @@
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- JSZip for ZIP file creation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
@@ -702,6 +706,92 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
+        }
+
+        /* JSON 뷰어 모달 (데스크탑 전용) */
+        @media (min-width: 1025px) and (pointer: fine) {
+            .json-viewer-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 2000;
+                display: none;
+                flex-direction: column;
+            }
+
+            .json-viewer-header {
+                background: var(--bg-dark-secondary);
+                padding: 15px 20px;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .json-viewer-title {
+                color: var(--text-primary);
+                font-size: 18px;
+                font-weight: bold;
+                margin: 0;
+            }
+
+            .json-viewer-close {
+                background: var(--accent-red);
+                color: white;
+                border: none;
+                padding: 8px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s ease;
+            }
+
+            .json-viewer-close:hover {
+                background: #c82333;
+            }
+
+            .json-viewer-content {
+                flex: 1;
+                padding: 20px;
+                overflow: auto;
+                background: var(--bg-dark-primary);
+            }
+
+            .json-viewer-pre {
+                background: var(--bg-dark-tertiary);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 20px;
+                margin: 0;
+                color: var(--text-primary);
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+                line-height: 1.4;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                max-height: calc(100vh - 120px);
+                overflow: auto;
+            }
+
+            .json-viewer-stats {
+                background: var(--bg-dark-secondary);
+                padding: 10px 20px;
+                border-top: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                font-size: 12px;
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+
+        /* 모바일에서는 JSON 뷰어 버튼 숨김 */
+        @media (max-width: 1024px) {
+            .json-viewer-btn {
+                display: none !important;
+            }
         }
 
         .log-window.active {
@@ -4779,6 +4869,18 @@
                         <button class="log-action-btn" onclick="downloadAllLogs()">
                             <i class="fa-solid fa-download"></i> 전체 다운로드
                         </button>
+                        <button class="log-action-btn" onclick="exportLogsJSON()" style="background: var(--accent-blue);">
+                            <i class="fa-solid fa-file-code"></i> 로그 JSON 내보내기
+                        </button>
+                        <button class="log-action-btn" onclick="exportLogsCSV()" style="background: var(--accent-green);">
+                            <i class="fa-solid fa-file-csv"></i> 로그 CSV 내보내기
+                        </button>
+                        <button class="log-action-btn" onclick="downloadAllPhotos()" style="background: var(--accent-purple);">
+                            <i class="fa-solid fa-images"></i> 사진 ZIP 다운로드
+                        </button>
+                        <button class="log-action-btn json-viewer-btn" onclick="openJsonViewer()" style="background: var(--accent-orange);">
+                            <i class="fa-solid fa-code"></i> JSON 뷰어(전체화면)
+                        </button>
                         <button class="log-action-btn" onclick="manualCleanupLogs()">
                             <i class="fa-solid fa-broom"></i> 오래된 로그 정리
                         </button>
@@ -4845,6 +4947,25 @@
                     <div class="log-tab-list" id="allLogList"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- JSON 뷰어 모달 (데스크탑 관리자 전용) -->
+    <div class="json-viewer-modal" id="jsonViewerModal">
+        <div class="json-viewer-header">
+            <h3 class="json-viewer-title">
+                <i class="fa-solid fa-code"></i> JSON 뷰어 - 전체 로그 데이터
+            </h3>
+            <button class="json-viewer-close" onclick="closeJsonViewer()">
+                <i class="fa-solid fa-times"></i> 닫기 (ESC)
+            </button>
+        </div>
+        <div class="json-viewer-content">
+            <pre class="json-viewer-pre" id="jsonViewerContent">데이터를 로딩 중...</pre>
+        </div>
+        <div class="json-viewer-stats" id="jsonViewerStats">
+            <span>로딩 중...</span>
+            <span>ESC 키로 닫기</span>
         </div>
     </div>
 
@@ -5532,6 +5653,7 @@
                 // Firebase 서비스 초기화
                 database = window.firebase.database();
                 auth = window.firebase.auth();
+                storage = window.firebase.storage();
                 
                 // 모바일 안정성을 위한 Long Polling 강제 설정 (iOS/Android WebSocket 차단 대응)
                 if (window.firebase?.database?.INTERNAL) {
@@ -11172,6 +11294,205 @@
                 URL.revokeObjectURL(url);
             } catch (e) {
                 console.error('파일 저장소 다운로드 오류:', e);
+            }
+        }
+
+        // 로그 JSON 내보내기 (관리자 전용)
+        function exportLogsJSON() {
+            try {
+                if (!hasPermission('admin')) {
+                    showPermissionError('로그 JSON 내보내기');
+                    return;
+                }
+
+                const exportData = {
+                    exportInfo: {
+                        timestamp: new Date().toISOString(),
+                        exportedBy: currentUser,
+                        userRole: currentUserRole
+                    },
+                    directiveLogs: directiveLogs,
+                    uploadLogs: uploadLogs,
+                    reports: reports.filter(r => r),
+                    users: Array.from(users),
+                    statistics: {
+                        totalDirectiveLogs: directiveLogs.length,
+                        totalUploadLogs: uploadLogs.length,
+                        totalReports: reports.filter(r => r).length,
+                        totalUsers: users.size
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fire-slotboard-logs-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showCustomAlert('✅ 로그 JSON 내보내기가 완료되었습니다.', 'success');
+            } catch (e) {
+                console.error('로그 JSON 내보내기 오류:', e);
+                showCustomAlert('❌ 로그 JSON 내보내기 실패: ' + e.message, 'error');
+            }
+        }
+
+        // 로그 CSV 내보내기 (관리자 전용)
+        function exportLogsCSV() {
+            try {
+                if (!hasPermission('admin')) {
+                    showPermissionError('로그 CSV 내보내기');
+                    return;
+                }
+
+                let csvContent = '타입,ID,제목,내용,업로더,시간,슬롯\n';
+                
+                // 지시사항 로그
+                directiveLogs.forEach(log => {
+                    const row = [
+                        '지시사항',
+                        log.id || '',
+                        `"${(log.message || '').replace(/"/g, '""')}"`,
+                        `"${(log.sender || '').replace(/"/g, '""')}"`,
+                        log.sender || '',
+                        new Date(log.timestamp).toISOString(),
+                        ''
+                    ].join(',');
+                    csvContent += row + '\n';
+                });
+
+                // 업로드 로그
+                uploadLogs.forEach(log => {
+                    const row = [
+                        '업로드',
+                        log.id || '',
+                        `"${(log.title || '').replace(/"/g, '""')}"`,
+                        `"${(log.description || '').replace(/"/g, '""')}"`,
+                        log.uploader || '',
+                        new Date(log.timestamp).toISOString(),
+                        log.slot !== undefined ? log.slot + 1 : ''
+                    ].join(',');
+                    csvContent += row + '\n';
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fire-slotboard-logs-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showCustomAlert('✅ 로그 CSV 내보내기가 완료되었습니다.', 'success');
+            } catch (e) {
+                console.error('로그 CSV 내보내기 오류:', e);
+                showCustomAlert('❌ 로그 CSV 내보내기 실패: ' + e.message, 'error');
+            }
+        }
+
+        // JSON 뷰어 열기 (데스크탑 관리자 전용)
+        function openJsonViewer() {
+            try {
+                // 권한 체크: 관리자만 가능
+                if (!hasPermission('admin')) {
+                    showPermissionError('JSON 뷰어');
+                    return;
+                }
+
+                // 데스크탑 체크: 화면 크기와 포인터 타입 확인
+                const isDesktop = window.innerWidth >= 1025 && window.matchMedia('(pointer: fine)').matches;
+                if (!isDesktop) {
+                    showCustomAlert('❌ JSON 뷰어는 데스크탑에서만 사용할 수 있습니다.', 'warning');
+                    return;
+                }
+
+                const modal = document.getElementById('jsonViewerModal');
+                const content = document.getElementById('jsonViewerContent');
+                const stats = document.getElementById('jsonViewerStats');
+
+                if (!modal || !content || !stats) {
+                    showCustomAlert('❌ JSON 뷰어 요소를 찾을 수 없습니다.', 'error');
+                    return;
+                }
+
+                // 데이터 수집
+                const jsonData = {
+                    exportInfo: {
+                        timestamp: new Date().toISOString(),
+                        exportedBy: currentUser,
+                        userRole: currentUserRole,
+                        viewer: 'JSON Viewer (Fullscreen)'
+                    },
+                    directiveLogs: directiveLogs,
+                    uploadLogs: uploadLogs,
+                    reports: reports.filter(r => r),
+                    users: Array.from(users),
+                    fileStorage: fileStorage,
+                    statistics: {
+                        totalDirectiveLogs: directiveLogs.length,
+                        totalUploadLogs: uploadLogs.length,
+                        totalReports: reports.filter(r => r).length,
+                        totalUsers: users.size,
+                        totalFileStorage: fileStorage.length
+                    }
+                };
+
+                // JSON 문자열 생성 (예쁘게 포맷팅)
+                const jsonString = JSON.stringify(jsonData, null, 2);
+                
+                // 통계 업데이트
+                const dataSize = new Blob([jsonString]).size;
+                const sizeKB = Math.round(dataSize / 1024);
+                const sizeMB = Math.round(dataSize / (1024 * 1024) * 100) / 100;
+                
+                stats.innerHTML = `
+                    <span>총 ${directiveLogs.length + uploadLogs.length}개 로그 | ${reports.filter(r => r).length}개 리포트 | ${users.size}명 사용자 | ${fileStorage.length}개 파일</span>
+                    <span>데이터 크기: ${sizeMB > 1 ? sizeMB + 'MB' : sizeKB + 'KB'} | ESC로 닫기</span>
+                `;
+
+                // 내용 표시
+                content.textContent = jsonString;
+                
+                // 모달 표시
+                modal.style.display = 'flex';
+                
+                // ESC 키 이벤트 리스너 추가
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        closeJsonViewer();
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+                
+                // 모달이 닫힐 때 이벤트 리스너 제거
+                modal._escHandler = escHandler;
+
+            } catch (e) {
+                console.error('JSON 뷰어 열기 오류:', e);
+                showCustomAlert('❌ JSON 뷰어 열기 실패: ' + e.message, 'error');
+            }
+        }
+
+        // JSON 뷰어 닫기
+        function closeJsonViewer() {
+            try {
+                const modal = document.getElementById('jsonViewerModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    
+                    // ESC 키 이벤트 리스너 제거
+                    if (modal._escHandler) {
+                        document.removeEventListener('keydown', modal._escHandler);
+                        delete modal._escHandler;
+                    }
+                }
+            } catch (e) {
+                console.error('JSON 뷰어 닫기 오류:', e);
             }
         }
 
