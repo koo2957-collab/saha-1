@@ -1,5 +1,7 @@
 // FIRE SLOTBOARD Service Worker
-const CACHE_NAME = 'fire-slotboard-v2';
+// 캐시 버전 관리 - 배포 시 이 값만 변경하면 캐시 자동 갱신
+const CACHE_VERSION = 'v2.1.0';
+const CACHE_NAME = `fire-slotboard-${CACHE_VERSION}`;
 const urlsToCache = [
   './',
   './index.html',
@@ -17,11 +19,11 @@ const urlsToCache = [
 
 // Service Worker 설치
 self.addEventListener('install', function(event) {
-  console.log('Service Worker 설치 중...');
+  console.log(`Service Worker 설치 중... (버전: ${CACHE_VERSION})`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('캐시 열기');
+        console.log(`캐시 열기: ${CACHE_NAME}`);
         return cache.addAll(urlsToCache);
       })
   );
@@ -29,13 +31,13 @@ self.addEventListener('install', function(event) {
 
 // Service Worker 활성화
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker 활성화');
+  console.log(`Service Worker 활성화 (버전: ${CACHE_VERSION})`);
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
         cacheNames.map(function(cacheName) {
           if (cacheName !== CACHE_NAME) {
-            console.log('이전 캐시 삭제:', cacheName);
+            console.log(`이전 캐시 삭제: ${cacheName} (현재: ${CACHE_NAME})`);
             return caches.delete(cacheName);
           }
         })
