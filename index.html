@@ -5653,7 +5653,8 @@
             }
         }
 
-        const storage = secureStorage(); // 보안 강화된 스토리지 사용
+        // 보안 강화된 스토리지(지연 초기화)
+        var storage = null;
 
         function getTimeAgo(timestamp) {
             try {
@@ -5808,8 +5809,8 @@
         }
 
         // PWA 설치 관련 함수들
-        let deferredPrompt;
-        let pwaInstallShown = false;
+        var deferredPrompt = null;
+        var pwaInstallShown = false;
 
         function showPWAInstallGuide() {
             console.log('PWA 설치 안내 표시 시도');
@@ -6002,6 +6003,10 @@
                 
                 window.addEventListener('load', function() {
                     try {
+                        // 스토리지 초기화 (secureStorage 정의 이후 보장)
+                        if (!storage) {
+                            storage = secureStorage();
+                        }
                         // Firebase SDK 로드 대기 (모바일 호환성 향상)
                         waitForFirebaseAndInit();
                     } catch (e) {
@@ -6196,6 +6201,9 @@
 
         function loadData() {
             try {
+                if (!storage) {
+                    storage = secureStorage();
+                }
                 const savedReports = storage.getItem('reports');
                 const savedUsers = storage.getItem('users');
                 const savedDirectiveLogs = storage.getItem('directiveLogs');
@@ -6241,6 +6249,9 @@
 
         function saveData() {
             try {
+                if (!storage) {
+                    storage = secureStorage();
+                }
                 if (isFirebaseEnabled && firebaseInitialized && database) {
                     database.ref('reports').set(reports);
                     database.ref('users').set(Array.from(users));
@@ -6661,7 +6672,8 @@
 
         // 보안 강화된 로컬 스토리지
         function secureStorage() {
-            const storage = safeLocalStorage();
+            // 내부 함수 범위에서 전역 storage를 가리지 않도록 이름 변경
+            const rawStorage = safeLocalStorage();
             
             return {
                 setItem: function(key, value) {
@@ -6671,7 +6683,7 @@
                         const encryptedValue = sensitiveKeys.includes(key) ? 
                             encryptData(value) : value;
                         
-                        storage.setItem(key, encryptedValue);
+                        rawStorage.setItem(key, encryptedValue);
                     } catch (e) {
                         console.error('보안 저장 오류:', e);
                     }
@@ -6679,7 +6691,7 @@
                 
                 getItem: function(key) {
                     try {
-                        const value = storage.getItem(key);
+                        const value = rawStorage.getItem(key);
                         if (!value) return null;
                         
                         // 민감한 데이터는 복호화하여 반환
@@ -6693,11 +6705,11 @@
                 },
                 
                 removeItem: function(key) {
-                    storage.removeItem(key);
+                    rawStorage.removeItem(key);
                 },
                 
                 clear: function() {
-                    storage.clear();
+                    rawStorage.clear();
                 }
             };
         }
