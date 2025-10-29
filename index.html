@@ -494,7 +494,6 @@
             cursor: pointer;
             font-size: 16px;
         }
-
         .log-viewer-controls {
             display: flex;
             gap: 20px;
@@ -649,7 +648,6 @@
             color: var(--text-secondary);
             margin-top: 10px;
         }
-
         .log-viewer-footer {
             padding: 20px;
             border-top: 1px solid var(--border-color);
@@ -992,7 +990,6 @@
             align-items: center;
             margin-bottom: 10px;
         }
-
         .log-window .log-item-type {
             padding: 4px 8px;
             border-radius: 4px;
@@ -1297,13 +1294,11 @@
         .log-stat-item.clickable:hover::after {
             opacity: 1;
         }
-
         .log-overview-stat-card.clickable {
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
         }
-
         .log-overview-stat-card.clickable:hover {
             background: var(--accent-blue);
             transform: translateY(-2px);
@@ -1490,7 +1485,6 @@
             gap: 6px;
             font-size: 12px;
         }
-
         .directive-history-btn:hover {
             background: var(--accent-blue);
             border-color: var(--accent-blue);
@@ -1947,18 +1941,15 @@
             overflow: hidden;
             position: relative;
         }
-
         .upload-log-image-placeholder {
             text-align: center;
             color: var(--text-secondary);
         }
-
         .upload-log-image-placeholder i {
             font-size: 48px;
             margin-bottom: 15px;
             display: block;
         }
-
         .upload-log-image-container img {
             max-width: 100%;
             max-height: 100%;
@@ -1990,7 +1981,6 @@
         .upload-log-info-content {
             color: var(--text-primary);
         }
-
         .upload-log-info-item {
             margin-bottom: 15px;
             padding: 10px;
@@ -2491,7 +2481,6 @@
             padding: 15px;
             transition: all 0.2s ease;
         }
-
         .commander-log-item:hover {
             border-color: var(--accent-blue);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -2597,7 +2586,6 @@
             border-radius: 8px;
             border: 1px solid var(--accent-red);
         }
-
         /* === STATS === */
         .stats {
             display: grid;
@@ -2607,7 +2595,6 @@
             background: transparent;
             border: none;
         }
-
         .stat-item {
             background-color: var(--bg-dark-secondary);
             border-radius: 12px;
@@ -2990,7 +2977,6 @@
         .replace-btn { background: var(--accent-orange); }
         .replace-btn:hover { background: #e68a00; }
         .replace-btn:active, .upload-btn:active { transform: scale(0.95); }
-
         .delete-confirm { background: var(--accent-red) !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
@@ -3238,7 +3224,6 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-
         .notification-test-btn {
             background: var(--bg-dark-secondary);
             color: var(--text-primary);
@@ -3259,7 +3244,6 @@
             border-color: var(--accent-orange);
             color: white;
         }
-
         .notification-settings-actions {
             display: flex;
             gap: 10px;
@@ -3486,7 +3470,6 @@
                 transform: scale(0.95);
             }
         }
-
         /* PWA 설치 프롬프트 스타일 */
         .install-prompt {
             position: fixed;
@@ -3888,7 +3871,6 @@
             }
             .login-box h2 { font-size: 1.5em; }
         }
-        
         @media (max-width: 374px) {
             body { padding: 5px; }
             
@@ -3910,7 +3892,6 @@
             
             .login-box { padding: 20px; }
         }
-
         @supports (-webkit-appearance: none) {
             .fullscreen-modal { 
                 height: -webkit-fill-available; 
@@ -3984,7 +3965,6 @@
                 max-width: 700px;
             }
         }
-
         /* 태블릿 가로 (992px - 1199px) */
         @media (min-width: 992px) and (max-width: 1199px) {
             .container { 
@@ -4415,7 +4395,6 @@
                 font-size: 14px;
             }
         }
-        
         /* 모바일 최적화 */
         @media (max-width: 768px) {
             .current-user {
@@ -4833,7 +4812,6 @@
         </button>
         <div class="fullscreen-content" id="fullscreenContent"></div>
     </div>
-
     <!-- 로그 관리 전용 창 -->
     <div class="log-window" id="logWindow">
         <div class="log-window-header">
@@ -5075,7 +5053,6 @@
             </div>
         </div>
     </div>
-
     <!-- 알림 설정 모달 -->
     <div class="modal" id="notificationSettingsModal">
         <div class="modal-content notification-settings-content">
@@ -5312,7 +5289,6 @@
             </div>
         </div>
     </div>
-
     <!-- 이미지 상세 뷰어 모달 -->
     <div class="modal" id="imageDetailModal">
         <div class="modal-content image-detail-content">
@@ -5347,6 +5323,7 @@
         let firebase = null;
         let database = null;
         let auth = null;
+        let fbStorage = null; // Firebase Storage (로컬 storage와 이름 충돌 방지)
         let isFirebaseEnabled = false;
         let firebaseInitialized = false;
         let isAuthenticated = false;
@@ -5588,7 +5565,7 @@
                         authDomain: "project-3907456119741146864.firebaseapp.com",
                         databaseURL: "https://project-3907456119741146864-default-rtdb.asia-southeast1.firebasedatabase.app",
                         projectId: "project-3907456119741146864",
-                        storageBucket: "project-3907456119741146864.firebasestorage.app",
+                        storageBucket: "project-3907456119741146864.appspot.com",
                         messagingSenderId: "690596721309",
                         appId: "1:690596721309:web:0fc22a9d137529c3ed9a74"
                     };
@@ -5607,7 +5584,7 @@
                 // Firebase 서비스 초기화
                 database = window.firebase.database();
                 auth = window.firebase.auth();
-                storage = window.firebase.storage();
+                fbStorage = window.firebase.storage();
                 
                 // 모바일 안정성을 위한 Long Polling 강제 설정 (iOS/Android WebSocket 차단 대응)
                 if (window.firebase?.database?.INTERNAL) {
@@ -5620,7 +5597,7 @@
                 
                 console.log('Firebase 서비스 초기화 완료');
                 updateConnectionStatus('loading', 'Firebase 연결 중...');
-
+                
                 // Firebase 연결 테스트
                 setTimeout(() => {
                     testFirebaseConnection();
@@ -5637,6 +5614,12 @@
                 updateConnectionStatus('offline', 'Firebase 연결 실패: ' + error.message);
                 isFirebaseEnabled = false;
                 firebaseInitialized = false;
+                
+                // Firebase 실패 시 로컬 모드로 전환
+                console.log('🔄 로컬 모드로 전환합니다...');
+                loadData();
+                renderGrid();
+                
                 return false;
             }
         }
@@ -5654,7 +5637,7 @@
                 statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #28a745;"></i> ' + message;
                 console.log('✅ Firebase 연결됨:', message);
             } else if (status === 'offline') {
-                statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #E53935;"></i> ' + message;
+                statusEl.innerHTML = '<i class="fa-solid fa-circle" style="color: #E53935;"></i> ' + message + ' (로컬 모드)';
                 console.log('❌ Firebase 연결 실패:', message);
             } else {
                 statusEl.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ' + message;
@@ -5663,23 +5646,38 @@
         }
 
         function showError(elementId, message) {
-            const errorEl = document.getElementById(elementId);
-            if (errorEl) {
-                errorEl.textContent = message;
-                errorEl.classList.add('show');
-                setTimeout(() => {
-                    errorEl.classList.remove('show');
-                }, 5000);
+            try {
+                const errorEl = document.getElementById(elementId);
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('show');
+                    console.log('오류 메시지 표시:', message);
+                    setTimeout(() => {
+                        errorEl.classList.remove('show');
+                    }, 5000);
+                } else {
+                    console.warn('오류 요소를 찾을 수 없습니다:', elementId);
+                    // 폴백으로 사용자 정의 알림 사용
+                    showCustomAlert(`오류: ${message}`, 'error');
+                }
+            } catch (e) {
+                console.error('오류 메시지 표시 실패:', e);
+                // 폴백으로 기본 alert 사용
+                alert(`오류: ${message}`);
             }
         }
 
         function hideError(elementId) {
-            const errorEl = document.getElementById(elementId);
-            if (errorEl) {
-                errorEl.classList.remove('show');
+            try {
+                const errorEl = document.getElementById(elementId);
+                if (errorEl) {
+                    errorEl.classList.remove('show');
+                    errorEl.textContent = '';
+                }
+            } catch (e) {
+                console.error('오류 메시지 숨기기 실패:', e);
             }
         }
-
         let currentUser = null;
         let reports = Array(10).fill(null); // 현재 슬롯 (10개 고정)
         let fileStorage = []; // 파일 저장소 (500개까지)
@@ -5697,11 +5695,9 @@
         let lastReportCount = 0;
         let audioContext = null;
         let isAudioEnabled = false;
-        
         // 로그 시스템 변수들
         let directiveLogs = [];
         let uploadLogs = [];
-        
         // 사용자 권한 시스템
         let currentUserRole = 'admin'; // 'admin', 'user', 'commander'
         const USER_ROLES = {
@@ -5709,6 +5705,28 @@
             USER: 'user',
             COMMANDER: 'commander'
         };
+        // 세션 타임아웃 체크 함수
+        function checkSessionTimeout() {
+            try {
+                const now = Date.now();
+                const sessionTimeout = SECURITY_CONFIG?.SESSION_TIMEOUT || 8 * 60 * 60 * 1000; // 기본 8시간
+                
+                // TDZ/미정의 보호: 전역(window)에서 안전하게 참조
+                const start = (typeof window !== 'undefined' && typeof window.sessionStartTime === 'number')
+                    ? window.sessionStartTime
+                    : 0;
+                
+                if (start > 0 && (now - start) > sessionTimeout) {
+                    logout();
+                    showCustomAlert('세션이 만료되었습니다. 다시 로그인해주세요.', 'warning');
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                console.error('세션 타임아웃 체크 오류:', e);
+                return true; // 오류 시 세션 유지
+            }
+        }
 
         const LOGIN_DURATION = 30 * 60 * 1000;
         
@@ -5752,7 +5770,6 @@
                 return '시간 미상';
             }
         }
-
         function initAudio() {
             if (!audioContext) {
                 try {
@@ -6050,7 +6067,7 @@
                     console.warn('Firebase SDK 로드 시간 초과');
                     updateConnectionStatus('offline', 'Firebase SDK 로드 시간 초과');
                     
-                    // Firebase 없이 로컬 데이터 로드
+                    // Firebase 없이 로컬 모드로 실행
                     console.log('Firebase 없이 로컬 모드로 실행');
                     loadData();
                     renderGrid();
@@ -6181,7 +6198,6 @@
                 console.error('Event listener setup failed:', e);
             }
         }
-
         function checkAutoLogin() {
             try {
                 if (!storage) {
@@ -6268,7 +6284,7 @@
                 }
             } catch (e) {
                 console.error('자동 로그인 체크 오류:', e);
-                storage.removeItem('loginSession');
+                try { storage && storage.removeItem('loginSession'); } catch (_) {}
             }
             return false;
         }
@@ -6292,13 +6308,11 @@
 
         function clearLoginSession() {
             try {
-                storage.removeItem('loginSession');
+                storage && storage.removeItem('loginSession');
             } catch (e) {
                 console.error('Login session clear failed:', e);
             }
         }
-
-
         function loadData() {
             try {
                 if (!storage) {
@@ -6352,31 +6366,190 @@
                 if (!storage) {
                     storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
                 }
-                if (isFirebaseEnabled && firebaseInitialized && database) {
-                    database.ref('reports').set(reports);
-                    database.ref('users').set(Array.from(users));
-                } else {
-                    storage.setItem('reports', JSON.stringify(reports));
-                    storage.setItem('users', JSON.stringify(Array.from(users)));
+                
+                // 데이터 검증
+                if (!reports || !Array.isArray(reports)) {
+                    console.error('reports 데이터가 유효하지 않습니다.');
+                    return false;
                 }
                 
-                // 로그 데이터도 항상 로컬에 저장
-                storage.setItem('directiveLogs', JSON.stringify(directiveLogs));
-                storage.setItem('uploadLogs', JSON.stringify(uploadLogs));
-                storage.setItem('fileStorage', JSON.stringify(fileStorage));
+                if (!users || !(users instanceof Set)) {
+                    console.error('users 데이터가 유효하지 않습니다.');
+                    return false;
+                }
+                
+                // Firebase 저장 시도
+                if (isFirebaseEnabled && firebaseInitialized && database) {
+                    try {
+                        const reportsPromise = database.ref('reports').set(reports);
+                        const usersPromise = database.ref('users').set(Array.from(users));
+                        
+                        // Promise.allSettled를 사용하여 일부 실패해도 계속 진행
+                        Promise.allSettled([reportsPromise, usersPromise])
+                            .then(results => {
+                                results.forEach((result, index) => {
+                                    if (result.status === 'rejected') {
+                                        console.error(`Firebase 저장 실패 (${index === 0 ? 'reports' : 'users'}):`, result.reason);
+                                        // Firebase 실패 시 로컬 모드로 전환
+                                        if (result.reason.code === 'PERMISSION_DENIED' || 
+                                            result.reason.code === 'UNAVAILABLE' ||
+                                            result.reason.message.includes('network')) {
+                                            console.log('🔄 Firebase 권한/네트워크 오류로 로컬 모드 전환');
+                                            isFirebaseEnabled = false;
+                                            firebaseInitialized = false;
+                                        }
+                                    }
+                                });
+                            });
+                    } catch (firebaseError) {
+                        console.error('Firebase 저장 중 오류:', firebaseError);
+                        // Firebase 오류 시 로컬 모드로 전환
+                        isFirebaseEnabled = false;
+                        firebaseInitialized = false;
+                    }
+                }
+                
+                // 로컬 저장소에 저장 (항상 시도)
+                try {
+                    const reportsForStorage = buildSlimReportsForStorage(reports);
+                    const directiveLogsForStorage = buildSlimDirectiveLogsForStorage(directiveLogs);
+                    const uploadLogsForStorage = buildSlimUploadLogsForStorage(uploadLogs);
+                    const fileStorageForStorage = buildSlimFileStorageForStorage(fileStorage);
+                    
+                    storage.setItem('reports', JSON.stringify(reportsForStorage));
+                    storage.setItem('users', JSON.stringify(Array.from(users)));
+                    storage.setItem('directiveLogs', JSON.stringify(directiveLogsForStorage));
+                    storage.setItem('uploadLogs', JSON.stringify(uploadLogsForStorage));
+                    storage.setItem('fileStorage', JSON.stringify(fileStorageForStorage));
+                    console.log('✅ 로컬 데이터 저장 성공');
+                    return true;
+                } catch (localError) {
+                    console.error('로컬 저장 실패:', localError);
+                    // 저장 공간 정리 후 재시도
+                    try {
+                        const cleanupOk = pruneLocalStorageFootprint();
+                        if (cleanupOk) {
+                            console.warn('⚠️ 저장 공간 정리 후 재시도');
+                            const reportsForStorage = buildSlimReportsForStorage(reports);
+                            const directiveLogsForStorage = buildSlimDirectiveLogsForStorage(directiveLogs);
+                            const uploadLogsForStorage = buildSlimUploadLogsForStorage(uploadLogs);
+                            const fileStorageForStorage = buildSlimFileStorageForStorage(fileStorage);
+                            
+                            storage.setItem('reports', JSON.stringify(reportsForStorage));
+                            storage.setItem('users', JSON.stringify(Array.from(users)));
+                            storage.setItem('directiveLogs', JSON.stringify(directiveLogsForStorage));
+                            storage.setItem('uploadLogs', JSON.stringify(uploadLogsForStorage));
+                            storage.setItem('fileStorage', JSON.stringify(fileStorageForStorage));
+                            console.log('✅ 정리 후 로컬 저장 성공');
+                            return true;
+                        }
+                    } catch (retryError) {
+                        console.error('정리 후 저장도 실패:', retryError);
+                    }
+                    return false;
+                }
             } catch (e) {
                 console.error('데이터 저장 오류:', e);
-                try {
-                    storage.setItem('reports', JSON.stringify(reports));
-                    storage.setItem('users', JSON.stringify(Array.from(users)));
-                } catch (e2) {
-                    console.error('로컬 저장 실패:', e2);
+                return false;
+            }
+        }
+
+        // 저장소 절약: reports의 대용량 data 필드를 제거/축소
+        function buildSlimReportsForStorage(source) {
+            try {
+                return (source || []).map(function(r) {
+                    if (!r) return r;
+                    const maxInlineBytes = 150000; // 약 150KB까지만 인라인 허용
+                    let slim = { ...r };
+                    if (slim.data && typeof slim.data === 'string' && slim.data.length > maxInlineBytes) {
+                        // 큰 데이터는 저장 생략 (fileStorage에 별도로 보관됨)
+                        slim.data = undefined;
+                    }
+                    return slim;
+                });
+            } catch (_) { return source; }
+        }
+
+        // 저장소 절약: 지시사항 로그는 그대로, 필요 시 최근 N개로 축소
+        function buildSlimDirectiveLogsForStorage(source) {
+            try {
+                const MAX_DIRECTIVE_LOGS = 500;
+                if (!Array.isArray(source)) return [];
+                if (source.length > MAX_DIRECTIVE_LOGS) {
+                    return source.slice(-MAX_DIRECTIVE_LOGS);
                 }
+                return source;
+            } catch (_) { return source; }
+        }
+
+        // 저장소 절약: 업로드 로그에서 이미지 데이터 제거 및 최근 N개로 축소
+        function buildSlimUploadLogsForStorage(source) {
+            try {
+                const MAX_UPLOAD_LOGS = 200;
+                if (!Array.isArray(source)) return [];
+                const trimmed = source.slice(-MAX_UPLOAD_LOGS).map(function(l) {
+                    if (!l) return l;
+                    const copy = { ...l };
+                    if (copy.imageData) copy.imageData = undefined;
+                    return copy;
+                });
+                return trimmed;
+            } catch (_) { return source; }
+        }
+
+        // 저장소 절약: fileStorage는 최근 N개만 유지
+        function buildSlimFileStorageForStorage(source) {
+            try {
+                const MAX_FILES = 80; // 최근 80개만 로컬 보관
+                if (!Array.isArray(source)) return [];
+                const trimmed = source.slice(-MAX_FILES);
+                return trimmed;
+            } catch (_) { return source; }
+        }
+
+        // QuotaExceeded 발생 시 추가 정리 수행
+        function pruneLocalStorageFootprint() {
+            try {
+                // 오래된 로그/파일 정리
+                const MAX_DIRECTIVE_LOGS = 300;
+                const MAX_UPLOAD_LOGS = 120;
+                const MAX_FILES = 50;
+
+                if (Array.isArray(directiveLogs) && directiveLogs.length > MAX_DIRECTIVE_LOGS) {
+                    directiveLogs = directiveLogs.slice(-MAX_DIRECTIVE_LOGS);
+                }
+                if (Array.isArray(uploadLogs) && uploadLogs.length > MAX_UPLOAD_LOGS) {
+                    uploadLogs = uploadLogs.slice(-MAX_UPLOAD_LOGS).map(function(l){
+                        if (!l) return l;
+                        const c = { ...l };
+                        c.imageData = undefined;
+                        return c;
+                    });
+                }
+                if (Array.isArray(fileStorage) && fileStorage.length > MAX_FILES) {
+                    fileStorage = fileStorage.slice(-MAX_FILES);
+                }
+
+                // reports의 data 필드는 모두 제거하여 메타데이터만 저장
+                reports = (reports || []).map(function(r){
+                    if (!r) return r;
+                    const c = { ...r };
+                    if (c.data) c.data = undefined;
+                    return c;
+                });
+
+                return true;
+            } catch (e) {
+                console.error('저장소 정리 실패:', e);
+                return false;
             }
         }
 
         function loadDirective() {
             try {
+                if (!storage) {
+                    storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                }
                 const saved = storage.getItem('directive');
                 if (saved) {
                     currentDirective = JSON.parse(saved);
@@ -6409,17 +6582,32 @@
                 // 관리자/지휘관용 표시
                 if (display && content && meta) {
                     if (directiveToShow && directiveToShow.message) {
-                        content.textContent = directiveToShow.message;
+                        // HTML을 안전하게 렌더링
+                        content.innerHTML = directiveToShow.message.replace(/\n/g, '<br>');
                         const date = new Date(directiveToShow.timestamp);
                         
                         const now = Date.now();
                         const directiveTime = new Date(directiveToShow.timestamp).getTime();
                         const isRecent = (now - directiveTime) < (5 * 60 * 1000);
                         
-                        meta.innerHTML = 
-                            '<span>👤 ' + (directiveToShow.sender || 'Unknown') + '</span>' +
-                            '<span>📅 ' + date.toLocaleString('ko-KR') + '</span>' +
-                            (isRecent ? '<span style="color: #ff4444; font-weight: bold;">🆕 긴급</span>' : '');
+                        // 안전한 HTML 생성
+                        const senderSpan = document.createElement('span');
+                        senderSpan.textContent = '👤 ' + (directiveToShow.sender || 'Unknown');
+                        
+                        const dateSpan = document.createElement('span');
+                        dateSpan.textContent = '📅 ' + date.toLocaleString('ko-KR');
+                        
+                        meta.innerHTML = '';
+                        meta.appendChild(senderSpan);
+                        meta.appendChild(dateSpan);
+                        
+                        if (isRecent) {
+                            const urgentSpan = document.createElement('span');
+                            urgentSpan.textContent = '🆕 긴급';
+                            urgentSpan.style.color = '#ff4444';
+                            urgentSpan.style.fontWeight = 'bold';
+                            meta.appendChild(urgentSpan);
+                        }
                         
                         if (deleteBtn) {
                             deleteBtn.style.display = currentUser ? 'block' : 'none';
@@ -6442,17 +6630,32 @@
                 // 일반 사용자용 표시
                 if (displayUser && contentUser && metaUser) {
                     if (directiveToShow && directiveToShow.message) {
-                        contentUser.textContent = directiveToShow.message;
+                        // HTML을 안전하게 렌더링
+                        contentUser.innerHTML = directiveToShow.message.replace(/\n/g, '<br>');
                         const date = new Date(directiveToShow.timestamp);
                         
                         const now = Date.now();
                         const directiveTime = new Date(directiveToShow.timestamp).getTime();
                         const isRecent = (now - directiveTime) < (5 * 60 * 1000);
                         
-                        metaUser.innerHTML = 
-                            '<span>👤 ' + (directiveToShow.sender || 'Unknown') + '</span>' +
-                            '<span>📅 ' + date.toLocaleString('ko-KR') + '</span>' +
-                            (isRecent ? '<span style="color: #ff4444; font-weight: bold;">🆕 긴급</span>' : '');
+                        // 안전한 HTML 생성
+                        const senderSpan = document.createElement('span');
+                        senderSpan.textContent = '👤 ' + (directiveToShow.sender || 'Unknown');
+                        
+                        const dateSpan = document.createElement('span');
+                        dateSpan.textContent = '📅 ' + date.toLocaleString('ko-KR');
+                        
+                        metaUser.innerHTML = '';
+                        metaUser.appendChild(senderSpan);
+                        metaUser.appendChild(dateSpan);
+                        
+                        if (isRecent) {
+                            const urgentSpan = document.createElement('span');
+                            urgentSpan.textContent = '🆕 긴급';
+                            urgentSpan.style.color = '#ff4444';
+                            urgentSpan.style.fontWeight = 'bold';
+                            metaUser.appendChild(urgentSpan);
+                        }
                         
                         if (isRecent) {
                             displayUser.classList.add('active', 'recent');
@@ -6474,31 +6677,46 @@
 
         function sendDirective() {
             try {
+                console.log('📢 지시사항 전송 시작');
+                console.log('현재 사용자:', currentUser);
+                console.log('현재 사용자 역할:', currentUserRole);
+                
                 // 권한 체크: 지시사항 작성은 지휘관과 관리자만 가능
                 if (!hasPermission('directive')) {
+                    console.log('❌ 지시사항 전송 실패: 권한 없음');
                     showPermissionError('지시사항 전파');
                     return;
                 }
 
                 const input = document.getElementById('directiveInput');
-                if (!input) return;
+                if (!input) {
+                    console.log('❌ 지시사항 전송 실패: 입력창 없음');
+                    showCustomAlert('⚠️ 지시사항 입력창을 찾을 수 없습니다.', 'error');
+                    return;
+                }
                 
                 const message = input.value.trim();
+                console.log('입력된 메시지:', message);
                 
                 if (!message) {
+                    console.log('❌ 지시사항 전송 실패: 빈 메시지');
                     showCustomAlert('⚠️ 지시사항을 입력해주세요.', 'error');
+                    input.focus();
                     return;
                 }
 
                 // 보안 검증 추가
                 if (!checkSessionTimeout()) {
+                    console.log('❌ 지시사항 전송 실패: 세션 만료');
                     return;
                 }
 
                 // 입력 데이터 정제 (최대 1000자)
-                const sanitizedMessage = sanitizeInput(message).substring(0, 1000);
+                const sanitizedMessage = message.substring(0, 1000); // 길이만 제한
+                console.log('정제된 메시지:', sanitizedMessage);
                 
                 if (sanitizedMessage.length < message.length) {
+                    console.log('⚠️ 메시지 길이 제한 적용됨');
                     showCustomAlert('⚠️ 지시사항이 너무 깁니다. 1000자 이하로 입력해주세요.', 'warning');
                 }
 
@@ -6515,7 +6733,7 @@
                 // 지시사항 로그 기록 (공유 히스토리)
                 const directiveLogEntry = {
                     id: directiveId,
-                    message: message,
+                    message: message, // 원본 메시지 사용 (로그에는 원본 저장)
                     sender: currentUser,
                     timestamp: new Date().toISOString(),
                     date: new Date().toLocaleString('ko-KR')
@@ -6547,6 +6765,9 @@
                 
                 // 1. 로컬 스토리지에 현재 지시사항 저장
                 try {
+                    if (!storage) {
+                        storage = (typeof secureStorage === 'function') ? secureStorage() : safeLocalStorage();
+                    }
                     storage.setItem('directive', JSON.stringify(currentDirective));
                     console.log('✅ 로컬 스토리지 저장 성공');
                 } catch (e) {
@@ -6589,9 +6810,9 @@
                 showCustomAlert('✅ 지시사항이 전파되었습니다!', 'success');
             } catch (e) {
                 console.error('지시사항 전송 오류:', e);
+                showCustomAlert('❌ 지시사항 전송에 실패했습니다. 다시 시도해주세요.', 'error');
             }
         }
-
         function deleteDirective() {
             try {
                 if (!currentUser) {
@@ -6640,6 +6861,12 @@
             ADMIN: '',
             COMMANDER: []
         };
+        
+        // 기본 보안 설정 추가
+        window.SECURITY_CONFIG.SESSION_TIMEOUT = window.SECURITY_CONFIG.SESSION_TIMEOUT || 8 * 60 * 60 * 1000; // 8시간
+        window.SECURITY_CONFIG.MAX_LOGIN_ATTEMPTS = window.SECURITY_CONFIG.MAX_LOGIN_ATTEMPTS || 5;
+        window.SECURITY_CONFIG.LOGIN_COOLDOWN = window.SECURITY_CONFIG.LOGIN_COOLDOWN || 30000; // 30초
+        
         // 로컬 참조
         const SECURITY_CONFIG = window.SECURITY_CONFIG;
 
@@ -6706,38 +6933,22 @@
             return true;
         }
 
-        // 세션 타임아웃 체크
-        function checkSessionTimeout() {
-            const now = Date.now();
-            if (sessionStartTime > 0 && (now - sessionStartTime) > SECURITY_CONFIG.SESSION_TIMEOUT) {
-                logout();
-                showCustomAlert('세션이 만료되었습니다. 다시 로그인해주세요.', 'warning');
-                return false;
-            }
-            return true;
-        }
 
         // 입력 검증 및 XSS 방지
         function sanitizeInput(input) {
             if (typeof input !== 'string') return input;
             
-            // HTML 태그 제거
+            // HTML 태그 제거 (textContent 사용)
             const div = document.createElement('div');
             div.textContent = input;
-            let sanitized = div.innerHTML;
+            let sanitized = div.textContent || div.innerText || '';
             
-            // 특수 문자 이스케이프
-            sanitized = sanitized
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#x27;')
-                .replace(/\//g, '&#x2F;');
+            // 특수 문자 이스케이프 (이미 textContent로 처리되었으므로 추가 이스케이프 불필요)
+            // 줄바꿈만 <br>로 변환
+            sanitized = sanitized.replace(/\n/g, '<br>').replace(/\r/g, '');
             
             return sanitized;
         }
-
         // 파일명 검증
         function validateFilename(filename) {
             if (!filename || typeof filename !== 'string') return false;
@@ -6749,10 +6960,11 @@
             // 길이 제한 (255자)
             if (sanitized.length > 255) return false;
             
-            // 확장자 검증 (이미지만 허용)
-            const allowedExtensions = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
+            // 확장자 검증 (이미지와 PDF 허용)
+            const allowedExtensions = /\.(jpg|jpeg|png|gif|bmp|webp|pdf)$/i;
             return allowedExtensions.test(sanitized);
         }
+        if (typeof window !== 'undefined') { window.validateFilename = validateFilename; }
 
         // 데이터 암호화 (간단한 Base64 인코딩)
         function encryptData(data) {
@@ -6817,9 +7029,28 @@
                 }
             };
         }
-                // 보안 강화된 로그인 프로세스
-                console.log('=== 보안 강화된 로그인 시도 ===');
-                
+                // 파일명 검증
+                const isValidName = (function(fn, name) {
+                    try {
+                        if (typeof fn === 'function') return !!fn(name);
+                        if (typeof window !== 'undefined' && typeof window.validateFilename === 'function') {
+                            return !!window.validateFilename(name);
+                        }
+                    } catch (_) {}
+                    // 폴백: 위험 문자/길이/확장자 간단 검증
+                    if (!name || typeof name !== 'string') return false;
+                    const dangerous = /[<>:"/\\|?*\x00-\x1f]/g;
+                    const cleaned = name.replace(dangerous, '');
+                    if (cleaned.length === 0 || cleaned.length > 255) return false;
+                    return /\.(jpg|jpeg|png|gif|bmp|webp|pdf)$/i.test(cleaned);
+                })(typeof validateFilename !== 'undefined' ? validateFilename : undefined, filename);
+
+                if (!isValidName) {
+                    console.log('❌ 파일 저장 실패: 유효하지 않은 파일명');
+                    showCustomAlert('❌ 유효하지 않은 파일명입니다. 이미지 파일 또는 PDF만 업로드 가능합니다.', 'error');
+                    return;
+                }
+
                 // 로그인 시도 제한 체크
                 if (!checkLoginAttempts()) {
                     passwordInput.value = '';
@@ -7076,7 +7307,6 @@
                 console.error('❌ 자동 정리 중지 실패:', e);
             }
         }
-
         // 관리자용 접속자 모니터 함수
         function viewOnlineUsers() {
             try {
@@ -7345,7 +7575,6 @@
                 showCustomAlert('❌ 파일 삭제에 실패했습니다.', 'error');
             }
         }
-
         function openUploadModal(slotIndex) {
             try {
                 if (!currentUser) {
@@ -7376,7 +7605,6 @@
                 console.error('업로드 모달 열기 오류:', e);
             }
         }
-
         function closeUploadModal() {
             try {
                 const uploadModal = document.getElementById('uploadModal');
@@ -7432,16 +7660,33 @@
                 console.error('파일 입력 설정 오류:', e);
             }
         }
-
         function confirmUpload() {
             try {
+                console.log('📤 파일 업로드 시작');
+                console.log('현재 사용자:', currentUser);
+                console.log('현재 사용자 역할:', currentUserRole);
+                
                 hideError('uploadError');
+                
+                // 사용자 로그인 상태 확인
+                if (!currentUser) {
+                    console.log('❌ 파일 업로드 실패: 로그인 필요');
+                    showError('uploadError', '로그인이 필요합니다.');
+                    return;
+                }
+                
+                // 세션 타임아웃 체크
+                if (!checkSessionTimeout()) {
+                    console.log('❌ 파일 업로드 실패: 세션 만료');
+                    return;
+                }
                 
                 const reportTitleEl = document.getElementById('reportTitle');
                 const reportDescriptionEl = document.getElementById('reportDescription');
                 const fileInput = document.getElementById('fileInput');
                 
                 if (!reportTitleEl || !fileInput) {
+                    console.log('❌ 파일 업로드 실패: 폼 요소 없음');
                     showError('uploadError', '업로드 폼을 찾을 수 없습니다.');
                     return;
                 }
@@ -7449,20 +7694,39 @@
                 const title = reportTitleEl.value.trim();
                 const description = reportDescriptionEl ? reportDescriptionEl.value.trim() : '';
                 const file = fileInput.files[0];
+                
+                console.log('업로드 정보:', { title, description, fileName: file?.name, fileSize: file?.size, fileType: file?.type });
 
                 if (!title) {
+                    console.log('❌ 파일 업로드 실패: 제목 없음');
                     showError('uploadError', '제목을 입력해 주세요.');
                     reportTitleEl.focus();
                     return;
                 }
                 if (!file) {
+                    console.log('❌ 파일 업로드 실패: 파일 없음');
                     showError('uploadError', '파일을 선택해 주세요.');
                     return;
                 }
 
+                // 파일 크기 검증 (10MB 제한)
                 if (file.size > 10 * 1024 * 1024) {
                     showError('uploadError', '파일 크기가 너무 큽니다. (최대 10MB)');
                     return;
+                }
+
+                // 파일 타입 검증
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+                if (!allowedTypes.includes(file.type)) {
+                    showError('uploadError', '지원하지 않는 파일 형식입니다. (이미지 파일 또는 PDF만 가능)');
+                    return;
+                }
+
+                // 업로드 버튼 비활성화 (중복 업로드 방지)
+                const uploadBtn = document.querySelector('.btn-confirm');
+                if (uploadBtn) {
+                    uploadBtn.disabled = true;
+                    uploadBtn.textContent = '업로드 중...';
                 }
 
                 const reader = new FileReader();
@@ -7472,7 +7736,12 @@
                         
                         if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
                             compressImage(fileData, function(compressedData) {
-                                saveReport(title, description, file.name, file.type, compressedData);
+                                if (compressedData) {
+                                    saveReport(title, description, file.name, file.type, compressedData);
+                                } else {
+                                    showError('uploadError', '이미지 압축에 실패했습니다.');
+                                    resetUploadButton();
+                                }
                             });
                         } else {
                             saveReport(title, description, file.name, file.type, fileData);
@@ -7480,17 +7749,29 @@
                     } catch (e) {
                         console.error('파일 처리 오류:', e);
                         showError('uploadError', '파일 처리 중 오류가 발생했습니다.');
+                        resetUploadButton();
                     }
                 };
                 
                 reader.onerror = function() {
                     showError('uploadError', '파일 읽기에 실패했습니다.');
+                    resetUploadButton();
                 };
                 
                 reader.readAsDataURL(file);
             } catch (e) {
                 console.error('업로드 확인 오류:', e);
                 showError('uploadError', '업로드 처리 중 오류가 발생했습니다.');
+                resetUploadButton();
+            }
+        }
+
+        // 업로드 버튼 상태 초기화 함수
+        function resetUploadButton() {
+            const uploadBtn = document.querySelector('.btn-confirm');
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = '업로드';
             }
         }
 
@@ -7524,7 +7805,6 @@
             }
             return null;
         }
-
         // 이미지를 캐시에 저장
         function cacheImage(hash, data) {
             if (imageCache.size >= MAX_CACHE_SIZE) {
@@ -7614,47 +7894,70 @@
                         callback(compressedData);
                     } catch (e) {
                         console.error('이미지 압축 오류:', e);
-                        callback(dataUrl);
+                        callback(null); // null을 반환하여 오류를 명시적으로 표시
                     }
                 };
                 
                 img.onerror = function() {
                     console.error('이미지 로드 실패');
-                    callback(dataUrl);
+                    callback(null); // null을 반환하여 오류를 명시적으로 표시
                 };
                 
                 img.src = dataUrl;
             } catch (e) {
                 console.error('이미지 압축 설정 오류:', e);
-                callback(dataUrl);
+                callback(null); // null을 반환하여 오류를 명시적으로 표시
             }
         }
 
         function saveReport(title, description, filename, type, data) {
             try {
+                console.log('💾 파일 저장 시작');
+                console.log('저장 정보:', { title, description, filename, type, dataSize: data?.length });
+                
                 // 보안 검증
                 if (!currentUser) {
+                    console.log('❌ 파일 저장 실패: 로그인 필요');
                     showCustomAlert('⚠️ 로그인이 필요합니다.', 'error');
                     return;
                 }
 
                 // 세션 타임아웃 체크
                 if (!checkSessionTimeout()) {
+                    console.log('❌ 파일 저장 실패: 세션 만료');
                     return;
                 }
 
                 // 입력 데이터 검증 및 정제
-                const sanitizedTitle = sanitizeInput(title || '').substring(0, 100); // 최대 100자
-                const sanitizedDescription = sanitizeInput(description || '').substring(0, 500); // 최대 500자
+                const sanitizedTitle = (title || '').substring(0, 100); // 최대 100자 (정제 없이 길이만 제한)
+                const sanitizedDescription = (description || '').substring(0, 500); // 최대 500자 (정제 없이 길이만 제한)
+                console.log('정제된 데이터:', { sanitizedTitle, sanitizedDescription });
                 
                 // 파일명 검증
-                if (!validateFilename(filename)) {
-                    showCustomAlert('❌ 유효하지 않은 파일명입니다. 이미지 파일만 업로드 가능합니다.', 'error');
+                const isValidName = (function(fn, name) {
+                    try {
+                        if (typeof fn === 'function') return !!fn(name);
+                        if (typeof window !== 'undefined' && typeof window.validateFilename === 'function') {
+                            return !!window.validateFilename(name);
+                        }
+                    } catch (_) {}
+                    // 폴백: 위험 문자/길이/확장자 간단 검증
+                    if (!name || typeof name !== 'string') return false;
+                    const dangerous = /[<>:"/\\|?*\x00-\x1f]/g;
+                    const cleaned = name.replace(dangerous, '');
+                    if (cleaned.length === 0 || cleaned.length > 255) return false;
+                    return /\.(jpg|jpeg|png|gif|bmp|webp|pdf)$/i.test(cleaned);
+                })(typeof validateFilename !== 'undefined' ? validateFilename : undefined, filename);
+
+                if (!isValidName) {
+                    console.log('❌ 파일 저장 실패: 유효하지 않은 파일명');
+                    showCustomAlert('❌ 유효하지 않은 파일명입니다. 이미지 파일 또는 PDF만 업로드 가능합니다.', 'error');
                     return;
                 }
 
                 // 파일 크기 검증 (5MB 제한)
                 if (data && data.length > 5 * 1024 * 1024) {
+                    console.log('❌ 파일 저장 실패: 파일 크기 초과');
                     showCustomAlert('❌ 파일 크기가 너무 큽니다. 5MB 이하의 파일만 업로드 가능합니다.', 'error');
                     return;
                 }
@@ -7681,10 +7984,16 @@
                 
                 // 데이터 저장 (안전한 오류 처리)
                 try {
-                    saveData();
+                    const saveResult = saveData();
+                    if (!saveResult) {
+                        showError('uploadError', '데이터 저장에 실패했습니다. 다시 시도해주세요.');
+                        resetUploadButton();
+                        return;
+                    }
                 } catch (saveError) {
                     console.error('데이터 저장 실패:', saveError);
                     showError('uploadError', '데이터 저장에 실패했습니다. 다시 시도해주세요.');
+                    resetUploadButton();
                     return;
                 }
 
@@ -7776,9 +8085,14 @@
                 // 비프음 없는 사용자 정의 알림
                 const alertMessage = isFileReplaced ? '✅ 파일이 교체되었습니다!' : '✅ 파일이 업로드되었습니다!';
                 showCustomAlert(alertMessage, 'success');
+                
+                // 업로드 버튼 상태 초기화
+                resetUploadButton();
             } catch (e) {
                 console.error('보고서 저장 오류:', e);
                 showError('uploadError', '파일 저장에 실패했습니다.');
+                // 오류 발생 시에도 버튼 상태 초기화
+                resetUploadButton();
             }
         }
 
@@ -7870,7 +8184,6 @@
                 console.error('전체화면 닫기 오류:', e);
             }
         }
-
         function setupEventHandlers() {
             try {
                 document.addEventListener('keydown', function(e) {
@@ -7934,7 +8247,6 @@
                 console.error('이벤트 핸들러 설정 오류:', e);
             }
         }
-
         // 알림 설정 관련 함수들
         function openNotificationSettings() {
             const modal = document.getElementById('notificationSettingsModal');
@@ -7975,7 +8287,6 @@
             document.getElementById('vibrationEnabled').checked = 
                 notificationManager.getSetting('vibrationEnabled');
         }
-
         function saveNotificationSettings() {
             if (!notificationManager) return;
             
@@ -8008,7 +8319,6 @@
             
             notificationManager.notifyDirective(testDirective);
         }
-
         function testUploadNotification() {
             if (!notificationManager) {
                 showCustomAlert('알림 관리자가 초기화되지 않았습니다.', 'error');
@@ -8433,7 +8743,6 @@
                 console.error('자동 정리 스케줄러 설정 오류:', e);
             }
         }
-
         // 고급 저장공간 모니터링 클래스
         class StorageMonitor {
             constructor() {
@@ -8606,10 +8915,8 @@
                 });
             }
         }
-
         // 전역 저장공간 모니터 인스턴스
         let storageMonitor = null;
-
         // Firebase 저장공간 최적화 함수 (업그레이드)
         function optimizeFirebaseStorage() {
             try {
@@ -8929,7 +9236,6 @@
                 alert('이미지 갤러리를 열 수 없습니다: ' + e.message);
             }
         }
-
         function closeImageGallery() {
             try {
                 const modal = document.getElementById('imageGalleryModal');
@@ -8940,7 +9246,6 @@
                 console.error('이미지 갤러리 닫기 오류:', e);
             }
         }
-
         function renderImageGallery() {
             try {
                 console.log('🔍 이미지 갤러리 렌더링 시작');
@@ -9211,7 +9516,6 @@
                 }
             }
         }
-
         // 사진 ZIP 다운로드 (Firebase RTDB 데이터 기반 + 캐싱 최적화)
         async function downloadAllPhotos() {
             try {
@@ -9283,7 +9587,7 @@
                         const fileName = `${timestamp}${slotInfo}_${filename || 'image.jpg'}`;
                         
                         return { blob, fileName };
-                    } catch (e) {
+            } catch (e) {
                         console.warn(`이미지 처리 실패: ${filename}`, e);
                         return null;
                     }
@@ -9387,7 +9691,6 @@
                 showCustomAlert('❌ 캐시 정리 실패: ' + e.message, 'error');
             }
         }
-
         // 전체화면 이미지 관련 함수들
         function openFullscreenImage(imageId) {
             try {
@@ -9531,7 +9834,6 @@
                 console.error('이미지 목록 업데이트 오류:', e);
             }
         }
-
         function renderFullscreenImage() {
             try {
                 if (currentImageList.length === 0) {
@@ -9816,6 +10118,13 @@
                             errorMsg = 'Firebase 읽기 오류: ' + error.message;
                         }
                         updateConnectionStatus('offline', errorMsg);
+                        
+                        // Firebase 실패 시 로컬 모드로 전환
+                        console.log('🔄 Firebase 실패로 인한 로컬 모드 전환');
+                        isFirebaseEnabled = false;
+                        firebaseInitialized = false;
+                        loadData();
+                        renderGrid();
                     });
                 }).catch((error) => {
                     console.error('❌ Firebase 쓰기 테스트 실패:', error);
@@ -9830,14 +10139,27 @@
                         errorMsg = 'Firebase 쓰기 오류: ' + error.message;
                     }
                     updateConnectionStatus('offline', errorMsg);
+                    
+                    // Firebase 실패 시 로컬 모드로 전환
+                    console.log('🔄 Firebase 실패로 인한 로컬 모드 전환');
+                    isFirebaseEnabled = false;
+                    firebaseInitialized = false;
+                    loadData();
+                    renderGrid();
                 });
 
             } catch (e) {
                 console.error('Firebase 연결 테스트 오류:', e);
                 updateConnectionStatus('offline', 'Firebase 테스트 오류: ' + e.message);
+                
+                // Firebase 실패 시 로컬 모드로 전환
+                console.log('🔄 Firebase 테스트 오류로 인한 로컬 모드 전환');
+                isFirebaseEnabled = false;
+                firebaseInitialized = false;
+                loadData();
+                renderGrid();
             }
         }
-
         // 로그 상태 업데이트
         function updateLogStatus() {
             try {
@@ -10151,7 +10473,6 @@
                 console.error('로그 통계 렌더링 오류:', e);
             }
         }
-
         function renderLogList() {
             try {
                 let listEl;
@@ -10260,13 +10581,38 @@
         // 권한 체크 함수들
         function hasPermission(permission) {
             try {
+                // 사용자가 로그인하지 않은 경우
+                if (!currentUser) {
+                    console.log('권한 체크 실패: 로그인되지 않은 사용자');
+                    return false;
+                }
+                
+                // 사용자 역할이 정의되지 않은 경우
+                if (!currentUserRole) {
+                    console.log('권한 체크 실패: 사용자 역할이 정의되지 않음');
+                    return false;
+                }
+                
+                // 권한 파라미터 검증
+                if (!permission || typeof permission !== 'string') {
+                    console.log('권한 체크 실패: 유효하지 않은 권한 파라미터');
+                    return false;
+                }
+                
+                // USER_ROLES 상수가 정의되지 않은 경우 기본값 사용
+                const roles = window.USER_ROLES || {
+                    ADMIN: 'admin',
+                    USER: 'user',
+                    COMMANDER: 'commander'
+                };
+                
                 // 관리자: 모든 권한
-                if (currentUserRole === USER_ROLES.ADMIN) {
+                if (currentUserRole === roles.ADMIN) {
                     return true;
                 }
                 
                 // 지휘관 권한
-                if (currentUserRole === USER_ROLES.COMMANDER) {
+                if (currentUserRole === roles.COMMANDER) {
                     const commanderPermissions = {
                         'upload': true,           // 파일 업로드
                         'read': true,            // 항목 읽기
@@ -10281,7 +10627,7 @@
                 }
                 
                 // 일반 사용자 권한 (최소 권한)
-                if (currentUserRole === USER_ROLES.USER) {
+                if (currentUserRole === roles.USER) {
                     const userPermissions = {
                         'upload': true,           // 파일 업로드
                         'read': true,            // 항목 읽기
@@ -10294,16 +10640,29 @@
                     return userPermissions[permission] || false;
                 }
                 
-                // 기본값: 권한 없음
+                // 알 수 없는 역할: 권한 없음
+                console.log('권한 체크 실패: 알 수 없는 사용자 역할:', currentUserRole);
                 return false;
             } catch (e) {
                 console.error('권한 체크 오류:', e);
                 return false;
             }
         }
-
         function showPermissionError(action) {
-            showCustomAlert(`❌ 권한이 없습니다.\n${action} 기능은 관리자만 사용할 수 있습니다.`, 'error');
+            const currentRole = currentUserRole || '알 수 없음';
+            const roles = window.USER_ROLES || {
+                ADMIN: 'admin',
+                USER: 'user',
+                COMMANDER: 'commander'
+            };
+            
+            const roleText = {
+                [roles.ADMIN]: '관리자',
+                [roles.COMMANDER]: '지휘관',
+                [roles.USER]: '일반 사용자'
+            }[currentRole] || '알 수 없는 역할';
+            
+            showCustomAlert(`❌ 권한이 없습니다.\n${action} 기능은 ${roleText} 권한으로는 사용할 수 없습니다.`, 'error');
         }
 
         function applyUserPermissions() {
@@ -10413,7 +10772,6 @@
                 console.error('일반 사용자 요소 숨기기 오류:', e);
             }
         }
-
         function hideRestrictedElements() {
             try {
                 // 파일 삭제 버튼들 숨기기
@@ -10451,7 +10809,6 @@
                 console.error('제한된 요소 숨기기 오류:', e);
             }
         }
-
         function showAllElements() {
             try {
                 // 모든 요소 다시 표시
@@ -10716,7 +11073,6 @@
                 console.error('음성 알림 오류:', e);
             }
         }
-
         // 비프음 없는 사용자 정의 알림
         function showCustomAlert(message, type = 'info') {
             try {
@@ -10729,12 +11085,20 @@
                 // 알림 요소 생성
                 const alertDiv = document.createElement('div');
                 alertDiv.className = 'custom-alert';
+                const iconChar = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+                let displayMessage = message;
+                try {
+                    const trimmed = (typeof message === 'string') ? message.trim() : '';
+                    if (trimmed && trimmed.startsWith(iconChar)) {
+                        displayMessage = trimmed.slice(iconChar.length).trimStart();
+                    }
+                } catch (_) {}
                 alertDiv.innerHTML = `
                     <div class="custom-alert-content">
                         <div class="custom-alert-icon">
-                            ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+                            ${iconChar}
                         </div>
-                        <div class="custom-alert-message">${message}</div>
+                        <div class="custom-alert-message">${displayMessage}</div>
                         <button class="custom-alert-close" onclick="this.parentElement.parentElement.remove()">×</button>
                     </div>
                 `;
@@ -11010,7 +11374,6 @@
                 console.log('❌ PWA 설치 불가능 - 조건 미충족');
             }
         }
-
         // Firebase 리스너 설정 (실시간 동기화)
         function setupFirebaseListeners() {
             if (!isFirebaseEnabled || !firebaseInitialized || !database) {
@@ -11169,7 +11532,6 @@
                 console.error('Firebase 리스너 등록 실패:', e);
             }
         }
-
         // 모바일에서 Firebase 데이터 강제 동기화
         function syncFromFirebase() {
             if (!isFirebaseEnabled || !firebaseInitialized || !database) {
@@ -11357,7 +11719,6 @@
                 console.error('지시사항 보기 새로고침 오류:', e);
             }
         }
-
         function updateDirectivePreview() {
             try {
                 const contentEl = document.getElementById('directivePreviewContent');
@@ -11628,7 +11989,6 @@
                 showCustomAlert('❌ 로그 CSV 내보내기 실패: ' + e.message, 'error');
             }
         }
-
         // JSON 뷰어 열기 (데스크탑 관리자 전용)
         function openJsonViewer() {
             try {
@@ -11964,7 +12324,6 @@
                 console.error('지시사항 히스토리 렌더링 오류:', e);
             }
         }
-
         function displayDirectiveHistory(history, listEl, infoEl) {
             try {
                 // 사용자 권한에 따른 제한
@@ -12119,7 +12478,6 @@
             </div>
         </div>
     </div>
-
     <script>
         // PWA 설치 프롬프트 관리 (중복 선언 제거)
         const installPrompt = document.getElementById('installPrompt');
@@ -12175,4 +12533,3 @@
     </script>
 </body>
 </html>
-
